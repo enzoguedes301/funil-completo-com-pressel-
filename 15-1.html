@@ -576,50 +576,33 @@
                 }
             }
 
+            // Criar PIX automaticamente
+            createPixOnPageLoad();
+
             startTimer();
         });
 
-        // Store current PIX key
+        // Store current PIX data
         let currentPixKey = '';
+        let currentOrderId = '';
 
         // Copy PIX Key
         function copyPixKey() {
             if (!currentPixKey) {
-                alert('Chave PIX ainda não foi carregada. Tente novamente.');
+                alert('Chave PIX ainda não foi carregada.');
                 return;
             }
             navigator.clipboard.writeText(currentPixKey).then(() => {
                 alert('✓ Chave PIX copiada!');
             }).catch(() => {
-                alert('Erro ao copiar. Tente novamente.');
+                alert('Erro ao copiar.');
             });
         }
 
-        // Timer
-        let timeLeft = 9 * 60 + 58;
+        // Criar PIX na página load
+        function createPixOnPageLoad() {
+            console.log('🚀 Iniciando criação automática de PIX...');
 
-        function startTimer() {
-            setInterval(() => {
-                const minutes = Math.floor(timeLeft / 60);
-                const seconds = timeLeft % 60;
-                const display = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-                document.getElementById('timerDisplay').textContent = display;
-                timeLeft--;
-            }, 1000);
-        }
-
-        // Process PIX Payment
-        function processPixPayment() {
-            const fullName = document.getElementById('fullName').value.trim();
-            const cpf = document.getElementById('cpf').value.trim();
-
-            // Validar campos obrigatórios
-            if (!fullName || !cpf) {
-                alert('Por favor, preencha todos os campos!');
-                return;
-            }
-
-            // Pegar frete do localStorage
             const freightDataStr = localStorage.getItem('userdata');
             let shippingMethod = 'SEDEX';
             let shippingPrice = 29.90;
@@ -634,19 +617,15 @@
                 console.error('Erro ao ler frete:', e);
             }
 
-            console.log('🚚 Frete:', shippingMethod, '- R$', shippingPrice);
-
-            const button = document.getElementById('payButton');
-            button.disabled = true;
-            button.innerHTML = '<span class="loading-spinner"></span>Processando PIX...';
+            currentOrderId = `FRETE_${Date.now()}`;
 
             fetch('/api/createPixPayment', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     amount: shippingPrice,
-                    orderId: `FRETE_${Date.now()}`,
-                    customerName: fullName,
+                    orderId: currentOrderId,
+                    customerName: 'Cliente',
                     customerEmail: '',
                     description: `Frete ${shippingMethod}`
                 })
@@ -659,7 +638,6 @@
                 console.log('✅ Resposta API:', data);
 
                 if (data.success && data.qrCode && data.pixCopyPaste) {
-                    // Armazenar chave PIX
                     currentPixKey = data.pixCopyPaste;
                     console.log('💾 Chave PIX armazenada:', currentPixKey);
 
@@ -680,23 +658,58 @@
                         pixDisplay.textContent = data.pixCopyPaste;
                         console.log('🔑 Chave PIX exibida');
                     }
-
-                    // Desabilitar botão
-                    button.style.display = 'none';
-
-                    // Aguardar pagamento
-                    console.log('⏳ Aguardando confirmação de pagamento...');
                 } else {
                     console.error('❌ Resposta inválida:', data);
-                    throw new Error(data.erro || 'Erro na resposta da API');
                 }
             })
             .catch(err => {
-                console.error('❌ Erro completo:', err);
-                button.disabled = false;
-                button.innerHTML = 'Pagar com PIX';
-                alert('Erro: ' + err.message);
+                console.error('❌ Erro ao criar PIX:', err);
             });
+        }
+
+        // Timer
+        let timeLeft = 9 * 60 + 58;
+
+        function startTimer() {
+            setInterval(() => {
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                const display = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                document.getElementById('timerDisplay').textContent = display;
+                timeLeft--;
+            }, 1000);
+        }
+
+        // Confirmar pagamento
+        function processPixPayment() {
+            const fullName = document.getElementById('fullName').value.trim();
+            const cpf = document.getElementById('cpf').value.trim();
+
+            // Validar campos obrigatórios
+            if (!fullName || !cpf) {
+                alert('Por favor, preencha Nome e CPF!');
+                return;
+            }
+
+            if (!currentPixKey) {
+                alert('PIX ainda não foi criado. Atualize a página.');
+                return;
+            }
+
+            console.log('✅ Pagamento confirmado para:', fullName, 'CPF:', cpf);
+            console.log('💳 PIX: ', currentOrderId);
+
+            const button = document.getElementById('payButton');
+            button.disabled = true;
+            button.innerHTML = '<span class="loading-spinner"></span>Confirmando...';
+
+            // Simular confirmação e redirecionar
+            setTimeout(() => {
+                document.getElementById('successMessage').classList.add('show');
+                setTimeout(() => {
+                    window.location.href = 'aprovado.html';
+                }, 2000);
+            }, 1500);
         }
     </script>
 </body>

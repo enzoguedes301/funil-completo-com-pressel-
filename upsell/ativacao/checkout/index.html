@@ -207,9 +207,24 @@
         });
 
         function confirmarPagamento() {
-            // Redireciona para o próximo upsell (seguro)
-            const nextUrl = buildUrlWithParams('../../seguro/');
-            window.location.href = nextUrl;
+            // NOVO: Redireciona para checkout PIX dinâmico
+            const params = getUrlParams();
+            const pixCheckoutUrl = new URL('../../../upsell-checkout-pix.html', window.location.href);
+
+            // Adicionar parâmetros do checkout PIX
+            pixCheckoutUrl.searchParams.append('amount', '25.00');
+            pixCheckoutUrl.searchParams.append('productName', 'Ativar Conta');
+            pixCheckoutUrl.searchParams.append('description', 'Depósito inicial para ativação');
+            pixCheckoutUrl.searchParams.append('orderId', `ATIVACAO_${Date.now()}`);
+            pixCheckoutUrl.searchParams.append('nextUrl', '../../seguro/');
+
+            // Preservar dados do cliente
+            if (params.nome) pixCheckoutUrl.searchParams.append('nome', params.nome);
+            if (params.email) pixCheckoutUrl.searchParams.append('email', params.email);
+            if (params.cpf) pixCheckoutUrl.searchParams.append('cpf', params.cpf);
+
+            console.log('Redirecionando para checkout PIX:', pixCheckoutUrl.toString());
+            window.location.href = pixCheckoutUrl.toString();
         }
 
         function voltarUpsell() {

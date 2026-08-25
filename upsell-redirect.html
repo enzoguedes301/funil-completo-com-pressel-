@@ -104,9 +104,9 @@
         function getNextUpsell() {
             const index = getUpsellIndex();
             if (index >= upsellSequence.length) {
-                // Volta para o início se necessário
+                // Funil encerrado - redirecionar para Google
                 sessionStorage.removeItem('upsell_index');
-                return '3.html';
+                return 'https://www.google.com';
             }
             return upsellSequence[index];
         }

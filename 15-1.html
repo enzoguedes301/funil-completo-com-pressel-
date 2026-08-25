@@ -663,14 +663,6 @@
 
         // Process PIX Payment
         function processPixPayment() {
-            const fullName = document.getElementById('fullName').value.trim();
-            const cpf = document.getElementById('cpf').value.trim();
-
-            // Validar campos
-            if (!fullName || !cpf) {
-                alert('Por favor, preencha todos os campos!');
-                return;
-            }
 
             // Pegar método de envio do localStorage (selecionado em 12.html)
             const userDataStr = localStorage.getItem('userdata');
@@ -693,18 +685,6 @@
             console.log('✅ Método final:', shippingMethod);
             console.log('✅ Preço final:', shippingPrice);
 
-            // Salvar dados
-            const paymentData = {
-                fullName,
-                cpf,
-                amount: shippingPrice,
-                shippingMethod: shippingMethod,
-                method: 'PIX',
-                timestamp: new Date().toISOString()
-            };
-
-            sessionStorage.setItem('payment_data', JSON.stringify(paymentData));
-
             // Integrar com API Skale para criar transação PIX
             const button = document.getElementById('payButton');
             button.disabled = true;
@@ -713,7 +693,6 @@
             console.log('🚀 Chamando API Skale com:');
             console.log('  - Valor:', shippingPrice);
             console.log('  - Método:', shippingMethod);
-            console.log('  - Nome:', fullName);
 
             // Criar transação PIX via Skale
             fetch('/api/createPixPayment', {
@@ -722,8 +701,8 @@
                 body: JSON.stringify({
                     amount: shippingPrice,
                     orderId: `FRETE_${shippingMethod.toUpperCase()}_${Date.now()}`,
-                    customerName: fullName,
-                    customerEmail: userDataObj.email || '',
+                    customerName: 'Cliente',
+                    customerEmail: '',
                     description: `Frete ${shippingMethod.toUpperCase()} - R$${shippingPrice}`
                 })
             })

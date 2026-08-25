@@ -651,50 +651,48 @@
                     description: `Frete ${shippingMethod}`
                 })
             })
-            .then(res => res.json())
+            .then(res => {
+                console.log('📡 Status:', res.status);
+                return res.json();
+            })
             .then(data => {
-                if (data.success) {
-                    // Armazenar chave PIX para copiar
-                    currentPixKey = data.pixCopyPaste || data.qrCode || '';
+                console.log('✅ Resposta API:', data);
 
-                    // Exibir QR Code se for imagem
-                    if (data.qrCode && data.qrCode.startsWith('data:')) {
-                        const qrImg = document.getElementById('qrImage');
-                        const qrPlaceholder = document.getElementById('qrPlaceholder');
+                if (data.success && data.qrCode && data.pixCopyPaste) {
+                    // Armazenar chave PIX
+                    currentPixKey = data.pixCopyPaste;
+                    console.log('💾 Chave PIX armazenada:', currentPixKey);
+
+                    // Exibir QR Code
+                    const qrImg = document.getElementById('qrImage');
+                    const qrPlaceholder = document.getElementById('qrPlaceholder');
+
+                    if (qrImg && data.qrCode) {
                         qrImg.src = data.qrCode;
                         qrImg.style.display = 'block';
-                        qrPlaceholder.style.display = 'none';
+                        if (qrPlaceholder) qrPlaceholder.style.display = 'none';
+                        console.log('📱 QR Code exibido');
                     }
 
                     // Exibir chave PIX
                     const pixDisplay = document.getElementById('pixKeyDisplay');
                     if (pixDisplay) {
-                        pixDisplay.textContent = data.pixCopyPaste || 'Chave não disponível';
+                        pixDisplay.textContent = data.pixCopyPaste;
+                        console.log('🔑 Chave PIX exibida');
                     }
 
-                    // Desabilitar botão de pagamento
+                    // Desabilitar botão
                     button.style.display = 'none';
 
-                    // Mostrar mensagem após pagamento recebido
-                    const checkPayment = setInterval(() => {
-                        fetch(`/api/getPixPayment?orderId=FRETE_${Date.now()}`)
-                            .then(res => res.json())
-                            .then(data => {
-                                if (data.status === 'CONFIRMED') {
-                                    clearInterval(checkPayment);
-                                    document.getElementById('successMessage').classList.add('show');
-                                    setTimeout(() => {
-                                        window.location.href = 'aprovado.html';
-                                    }, 2000);
-                                }
-                            });
-                    }, 3000);
+                    // Aguardar pagamento
+                    console.log('⏳ Aguardando confirmação de pagamento...');
                 } else {
-                    throw new Error(data.erro || 'Erro ao criar PIX');
+                    console.error('❌ Resposta inválida:', data);
+                    throw new Error(data.erro || 'Erro na resposta da API');
                 }
             })
             .catch(err => {
-                console.error('Erro:', err);
+                console.error('❌ Erro completo:', err);
                 button.disabled = false;
                 button.innerHTML = 'Pagar com PIX';
                 alert('Erro: ' + err.message);

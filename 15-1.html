@@ -632,7 +632,7 @@
 
         // Criar PIX na página load
         function createPixOnPageLoad() {
-            console.log('🚀 Iniciando criação automática de PIX...');
+            console.log('🚀 Iniciando criação automática de PIX via Skale...');
 
             const freightDataStr = localStorage.getItem('userdata');
             let shippingMethod = 'SEDEX';
@@ -648,23 +648,54 @@
                 console.error('Erro ao ler frete:', e);
             }
 
-            // Gerar Brcode válido
-            const brcode = generateBrcode(shippingPrice);
-            currentPixKey = brcode;
+            // Chamada para API para criar transação na Skale
+            const orderId = `FRETE_${Date.now()}`;
+            const payload = {
+                amount: shippingPrice,
+                orderId: orderId,
+                customerName: 'Cliente',
+                customerEmail: 'cliente@example.com',
+                description: `Frete ${shippingMethod}`
+            };
 
-            console.log('💾 Brcode gerado:', brcode.substring(0, 50) + '...');
+            console.log('📤 Enviando requisição para criar PIX na Skale:', payload);
 
-            // Gerar QR Code visualmente
-            generateQRCode(brcode);
+            fetch('/api/createPixPayment', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            })
+            .then(res => res.json())
+            .then(data => {
+                console.log('✅ Resposta da Skale:', data);
 
-            // Exibir chave PIX
-            const pixDisplay = document.getElementById('pixKeyDisplay');
-            if (pixDisplay) {
-                pixDisplay.textContent = brcode;
-                console.log('🔑 Brcode exibido');
-            }
+                if (data.success && data.pixCopyPaste) {
+                    const brcode = data.pixCopyPaste;
+                    currentPixKey = brcode;
+                    currentOrderId = data.orderId;
 
-            console.log('✅ PIX pronto para usar!');
+                    console.log('💾 Brcode da Skale recebido:', brcode.substring(0, 50) + '...');
+
+                    // Gerar QR Code com o Brcode real da Skale
+                    generateQRCode(brcode);
+
+                    // Exibir chave PIX
+                    const pixDisplay = document.getElementById('pixKeyDisplay');
+                    if (pixDisplay) {
+                        pixDisplay.textContent = brcode;
+                        console.log('🔑 Brcode da Skale exibido');
+                    }
+
+                    console.log('✅ PIX da Skale pronto para usar!');
+                } else {
+                    console.error('❌ Erro: resposta inválida da API', data);
+                    alert('Erro ao gerar PIX. Recarregue a página.');
+                }
+            })
+            .catch(err => {
+                console.error('❌ Erro na requisição:', err);
+                alert('Erro ao conectar com a API PIX. Recarregue a página.');
+            });
         }
 
         // Timer

@@ -75,30 +75,37 @@ function generatePixCopyPaste(pixKey, amount) {
 // Integração Skale Payments - Criar transação PIX
 async function createSkalePixTransaction(amount, orderId, customerName, customerEmail, description) {
   return new Promise((resolve, reject) => {
+    const amountCentavos = Math.round(amount * 100);
+
     const payload = JSON.stringify({
-      amount: Math.round(amount * 100), // Converter para centavos
+      amount: amountCentavos,
       currency: 'BRL',
       paymentMethod: 'pix',
-      order_id: orderId,
       customer: {
-        name: customerName || 'Cliente',
-        email: customerEmail || 'noemail@example.com',
-        phone: '11999999999',
-        document: '00000000000' // CPF inválido (será tratado pelo fallback)
+        name: customerName || 'Cliente Teste',
+        email: customerEmail || 'cliente@example.com',
+        phone: '(11) 99999-9999',
+        document: {
+          number: '11144477735',
+          type: 'cpf'
+        }
       },
-      description: description || 'Pagamento PIX',
       items: [
         {
-          name: description || 'Frete',
+          title: description || 'Frete Entrega',
           quantity: 1,
-          price: Math.round(amount * 100)
+          unitPrice: amountCentavos,
+          tangible: false
         }
       ],
-      metadata: {
-        source: 'web_checkout',
-        created_at: new Date().toISOString()
+      pix: {
+        expiresInDays: 1
       },
-      postback_url: SKALE_WEBHOOK_URL
+      metadata: {
+        orderId: orderId,
+        source: 'web_checkout'
+      },
+      postbackUrl: SKALE_WEBHOOK_URL
     });
 
     const options = {
@@ -125,20 +132,18 @@ async function createSkalePixTransaction(amount, orderId, customerName, customer
           console.log(`[Skale PIX] Status ${res.statusCode}: ${orderId}`, JSON.stringify(response, null, 2));
 
           if (res.statusCode === 201 || res.statusCode === 200) {
-            // Extrair chave PIX da resposta (pode vir em diferentes formatos)
-            const pixKey = response.pix_key || response.pixKey || response.copy_paste || response.brcode || generatePixKey();
-            const qrCodeUrl = response.qr_code_url || response.qr_code || response.qr_image || generateQrCodeBase64(pixKey);
+            // Extrair chave PIX da resposta Skale
+            const pixKey = response.pix?.qrcode || response.pix?.brcode || generatePixKey();
 
-            console.log(`[Skale PIX] ✅ Chave: ${pixKey}`);
-            console.log(`[Skale PIX] ✅ QR: ${qrCodeUrl.substring(0, 50)}...`);
+            console.log(`[Skale PIX] ✅ Chave (Brcode): ${pixKey.substring(0, 50)}...`);
+            console.log(`[Skale PIX] ✅ Transaction ID: ${response.id}`);
 
             resolve({
               success: true,
               skaleTransactionId: response.id,
-              qrCode: qrCodeUrl,
               pixKey: pixKey,
-              expiresAt: response.expires_at || new Date(Date.now() + 30 * 60 * 1000).toISOString(),
-              status: response.status || 'PENDING'
+              expiresAt: response.pix?.expirationDate || new Date(Date.now() + 30 * 60 * 1000).toISOString(),
+              status: response.status || 'waiting_payment'
             });
           } else {
             console.log(`[Skale PIX] ❌ Erro ${res.statusCode}:`, response.message || response);
@@ -518,6 +523,11 @@ const server = http.createServer((req, res) => {
 
   // Servir arquivos estáticos
   let filePath = path.join(__dirname, pathname === '/' ? 'index.html' : pathname);
+
+  // Se a URL terminar com /, tentar index.html naquele diretório
+  if (pathname.endsWith('/')) {
+    filePath = path.join(__dirname, pathname, 'index.html');
+  }
 
   fs.readFile(filePath, (err, data) => {
     if (err) {

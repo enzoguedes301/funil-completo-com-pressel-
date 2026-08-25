@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Checkout - Ativar Conta</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
         body {
             background-color: #f5f7f9;
@@ -131,9 +132,12 @@
         <div class="pix-section">
             <div class="pix-icon">📱</div>
             <h4>Pagar com PIX</h4>
+
+            <div id="qrCodeContainer" style="background: white; padding: 1.5rem; border-radius: 8px; margin-bottom: 1rem; display: flex; align-items: center; justify-content: center; min-height: 260px;"></div>
+
             <p style="color: #666; font-size: 0.9rem; margin: 1rem 0;">Copie o código PIX abaixo</p>
 
-            <div class="pix-key" id="pixKey" onclick="copiarPix()">
+            <div class="pix-key" id="pixKey" onclick="copiarPix()" style="display: none;">
 00020126580014br.gov.bcb.pix0136CHAVE-PIX-EXEMPLO-0000000000000000520400005303986540510.005802BR5913FUNIL CMPLT6009SAO PAULO62760503***63041D3D
             </div>
 
@@ -163,6 +167,54 @@
     </div>
 
     <script>
+        let currentPixKey = '';
+
+        function generateQRCode(brcode) {
+            const container = document.getElementById('qrCodeContainer');
+            container.innerHTML = '';
+            try {
+                new QRCode(container, {
+                    text: brcode,
+                    width: 220,
+                    height: 220,
+                    colorDark: '#000000',
+                    colorLight: '#ffffff',
+                    correctLevel: QRCode.CorrectLevel.H
+                });
+            } catch (e) {
+                container.innerHTML = '<p style="color: #666;">QR Code gerado</p>';
+            }
+        }
+
+        // Criar PIX ao carregar página
+        window.addEventListener('DOMContentLoaded', () => {
+            const orderId = `ATIVACAO_${Date.now()}`;
+            const payload = {
+                amount: 25.00,
+                orderId: orderId,
+                customerName: 'Cliente',
+                customerEmail: 'cliente@example.com',
+                description: 'Ativar Conta'
+            };
+
+            fetch('/api/createPixPayment', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success && data.pixCopyPaste) {
+                    currentPixKey = data.pixCopyPaste;
+                    document.getElementById('pixKey').textContent = currentPixKey;
+                    document.getElementById('pixKey').style.display = 'block';
+                    generateQRCode(currentPixKey);
+                    console.log('✅ QR Code gerado para Ativação');
+                }
+            })
+            .catch(err => console.error('❌ Erro:', err));
+        });
+
         function getUrlParams() {
             const params = {};
             const queryString = window.location.search;
@@ -207,24 +259,9 @@
         });
 
         function confirmarPagamento() {
-            // NOVO: Redireciona para checkout PIX dinâmico
-            const params = getUrlParams();
-            const pixCheckoutUrl = new URL('../../../upsell-checkout-pix.html', window.location.href);
-
-            // Adicionar parâmetros do checkout PIX
-            pixCheckoutUrl.searchParams.append('amount', '25.00');
-            pixCheckoutUrl.searchParams.append('productName', 'Ativar Conta');
-            pixCheckoutUrl.searchParams.append('description', 'Depósito inicial para ativação');
-            pixCheckoutUrl.searchParams.append('orderId', `ATIVACAO_${Date.now()}`);
-            pixCheckoutUrl.searchParams.append('nextUrl', '../../seguro/');
-
-            // Preservar dados do cliente
-            if (params.nome) pixCheckoutUrl.searchParams.append('nome', params.nome);
-            if (params.email) pixCheckoutUrl.searchParams.append('email', params.email);
-            if (params.cpf) pixCheckoutUrl.searchParams.append('cpf', params.cpf);
-
-            console.log('Redirecionando para checkout PIX:', pixCheckoutUrl.toString());
-            window.location.href = pixCheckoutUrl.toString();
+            // Redireciona para o próximo upsell (Imposto)
+            const nextUrl = buildUrlWithParams('../../imposto/');
+            window.location.href = nextUrl;
         }
 
         function voltarUpsell() {

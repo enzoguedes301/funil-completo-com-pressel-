@@ -49,12 +49,11 @@ if (function_exists('curl_init')) {
     }
 }
 
-// FALLBACK: BASE DE DADOS LOCAL
+// FALLBACK: BASE DE DADOS LOCAL (CPFs válidos na API real)
 $cpfsValidos = [
-    '11144477735' => ['nome' => 'JOÃO SILVA SANTOS', 'nascimento' => '15/05/1990', 'mae' => 'MARIA SANTOS', 'sexo' => 'M'],
-    '52998222191' => ['nome' => 'ANNA CAROLINA COSTA', 'nascimento' => '22/08/1995', 'mae' => 'SANDRA COSTA', 'sexo' => 'F'],
-    '00000000000' => ['nome' => 'PEDRO OLIVEIRA FERREIRA', 'nascimento' => '10/03/1988', 'mae' => 'HELENA FERREIRA', 'sexo' => 'M'],
-    '86070529500' => ['nome' => 'FERNANDA RIBEIRO SOUZA', 'nascimento' => '30/11/1992', 'mae' => 'ROSANA RIBEIRO', 'sexo' => 'F'],
+    '11144477735' => ['nome' => 'NOME REMOVIDO', 'nascimento' => '01/01/1900', 'mae' => 'NOME REMOVIDO', 'sexo' => 'Masculino'],
+    '00000000000' => ['nome' => 'NOME REMOVIDO', 'nascimento' => '01/01/1900', 'mae' => 'NOME REMOVIDO', 'sexo' => 'Feminino'],
+    '00000000000' => ['nome' => 'NOME REMOVIDO', 'nascimento' => '01/01/1900', 'mae' => 'NOME REMOVIDO', 'sexo' => 'Masculino'],
 ];
 
 if (isset($cpfsValidos[$cpf])) {
@@ -74,7 +73,7 @@ http_response_code(404);
 echo json_encode([
     'success' => false,
     'erro' => 'CPF não encontrado',
-    'dica' => 'Use um desses: 11144477735, 52998222191, 00000000000, 86070529500'
+    'dica' => 'CPFs válidos para teste: 11144477735, 00000000000 ou 00000000000'
 ]);
 exit;
 ?>

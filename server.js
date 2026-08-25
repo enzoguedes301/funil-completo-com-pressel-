@@ -10,8 +10,9 @@ const API_URL = 'https://magmadatahub.com/api.php';
 
 // PIX Configuration
 const PIX_STORAGE_FILE = path.join(__dirname, 'pix_payments.json');
-const SKALE_API_KEY = process.env.SKALE_API_KEY || 'seu_skale_api_key_aqui';
-const SKALE_API_URL = 'https://api.skale.com.br'; // Ajuste conforme documentação da Skale
+const SKALE_API_KEY = process.env.SKALE_API_KEY || 'sk_test_sua_chave_aqui'; // Substitua com sua chave real
+const SKALE_API_URL = 'https://api.skalepayments.com.br'; // API Skale Production
+const SKALE_WEBHOOK_URL = process.env.SKALE_WEBHOOK_URL || 'http://localhost:8080/api/pixWebhook'; // URL para confirmação
 
 // Inicializar arquivo de pagamentos PIX
 function initPixStorage() {
@@ -54,6 +55,111 @@ function generateQrCodeString(amount, orderId) {
   return `PIX|${amount}|${orderId}|${Date.now()}`;
 }
 
+// Integração Skale Payments - Criar transação PIX
+async function createSkalePixTransaction(amount, orderId, customerName, customerEmail, description) {
+  return new Promise((resolve, reject) => {
+    const payload = JSON.stringify({
+      amount: Math.round(amount * 100), // Converter para centavos
+      currency: 'BRL',
+      method: 'pix',
+      order_id: orderId,
+      customer: {
+        name: customerName,
+        email: customerEmail
+      },
+      description: description || 'Pagamento PIX',
+      metadata: {
+        source: 'web_checkout',
+        created_at: new Date().toISOString()
+      },
+      postback_url: SKALE_WEBHOOK_URL
+    });
+
+    const options = {
+      hostname: 'api.skalepayments.com.br',
+      path: '/transactions',
+      method: 'POST',
+      headers: {
+        'X-API-Key': SKALE_API_KEY,
+        'Content-Type': 'application/json',
+        'Content-Length': payload.length
+      }
+    };
+
+    const req = https.request(options, (res) => {
+      let data = '';
+
+      res.on('data', (chunk) => {
+        data += chunk;
+      });
+
+      res.on('end', () => {
+        try {
+          const response = JSON.parse(data);
+          console.log(`[Skale PIX] Transação criada: ${orderId}`, response);
+
+          if (res.statusCode === 201 || res.statusCode === 200) {
+            resolve({
+              success: true,
+              skaleTransactionId: response.id,
+              qrCode: response.qr_code_url,
+              pixKey: response.pix_key,
+              expiresAt: response.expires_at,
+              status: response.status
+            });
+          } else {
+            reject(new Error(response.message || 'Erro ao criar transação Skale'));
+          }
+        } catch (e) {
+          reject(new Error(`Erro ao fazer parse da resposta Skale: ${e.message}`));
+        }
+      });
+    });
+
+    req.on('error', (err) => {
+      console.error(`[Skale PIX] Erro na requisição: ${err.message}`);
+      reject(err);
+    });
+
+    req.write(payload);
+    req.end();
+  });
+}
+
+// Consultar status no Skale
+async function getSkaleTransactionStatus(skaleTransactionId) {
+  return new Promise((resolve, reject) => {
+    const options = {
+      hostname: 'api.skalepayments.com.br',
+      path: `/transactions/${skaleTransactionId}`,
+      method: 'GET',
+      headers: {
+        'X-API-Key': SKALE_API_KEY
+      }
+    };
+
+    const req = https.request(options, (res) => {
+      let data = '';
+
+      res.on('data', (chunk) => {
+        data += chunk;
+      });
+
+      res.on('end', () => {
+        try {
+          const response = JSON.parse(data);
+          resolve(response);
+        } catch (e) {
+          reject(new Error(`Erro ao fazer parse: ${e.message}`));
+        }
+      });
+    });
+
+    req.on('error', reject);
+    req.end();
+  });
+}
+
 const server = http.createServer((req, res) => {
   const parsedUrl = url.parse(req.url, true);
   const pathname = parsedUrl.pathname;
@@ -71,13 +177,13 @@ const server = http.createServer((req, res) => {
     return;
   }
 
-  // API: Criar Pagamento PIX
+  // API: Criar Pagamento PIX (integrado com Skale)
   if (pathname === '/api/createPixPayment' && req.method === 'POST') {
     res.setHeader('Content-Type', 'application/json; charset=utf-8');
 
     let body = '';
     req.on('data', chunk => body += chunk);
-    req.on('end', () => {
+    req.on('end', async () => {
       try {
         const { amount, orderId, customerName, customerEmail, description } = JSON.parse(body);
 
@@ -88,11 +194,29 @@ const server = http.createServer((req, res) => {
         }
 
         const paymentId = `PIX_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-        const expiresAt = new Date(Date.now() + 30 * 60 * 1000).toISOString();
+
+        // Tentar criar com Skale (se chave estiver configurada)
+        let skaleData = null;
+        if (SKALE_API_KEY && !SKALE_API_KEY.includes('sua_chave')) {
+          try {
+            console.log(`[Skale] Criando transação PIX para: ${orderId}`);
+            skaleData = await createSkalePixTransaction(amount, orderId, customerName, customerEmail, description);
+            console.log(`[Skale] Transação criada com sucesso: ${skaleData.skaleTransactionId}`);
+          } catch (skaleError) {
+            console.warn(`[Skale] Erro ao criar transação (usando fallback local): ${skaleError.message}`);
+            // Fallback para geração local se Skale falhar
+          }
+        }
+
+        // Usar dados do Skale ou gerar localmente
+        const expiresAt = skaleData?.expiresAt || new Date(Date.now() + 30 * 60 * 1000).toISOString();
+        const qrCode = skaleData?.qrCode || generateQrCodeString(amount, orderId);
+        const pixCopyPaste = skaleData?.pixKey || generatePixCopyPaste(amount, orderId);
 
         const payment = {
           id: paymentId,
           orderId,
+          skaleTransactionId: skaleData?.skaleTransactionId || null,
           amount,
           customerName,
           customerEmail,
@@ -100,8 +224,9 @@ const server = http.createServer((req, res) => {
           status: 'PENDING',
           createdAt: new Date().toISOString(),
           expiresAt,
-          qrCode: generateQrCodeString(amount, orderId),
-          pixCopyPaste: generatePixCopyPaste(amount, orderId)
+          qrCode,
+          pixCopyPaste,
+          source: skaleData ? 'skale' : 'local'
         };
 
         const data = loadPixPayments();
@@ -116,13 +241,14 @@ const server = http.createServer((req, res) => {
           orderId,
           status: 'PENDING',
           expiresAt,
-          qrCode: payment.qrCode,
-          pixCopyPaste: payment.pixCopyPaste
+          qrCode,
+          pixCopyPaste,
+          source: payment.source
         }));
       } catch (e) {
         console.error('Erro ao criar pagamento PIX:', e.message);
-        res.writeHead(400);
-        res.end(JSON.stringify({ success: false, erro: 'Erro ao processar requisição' }));
+        res.writeHead(500);
+        res.end(JSON.stringify({ success: false, erro: 'Erro ao processar requisição: ' + e.message }));
       }
     });
     return;
@@ -161,7 +287,60 @@ const server = http.createServer((req, res) => {
     return;
   }
 
-  // API: Confirmar Pagamento PIX (para testing/webhook)
+  // API: Webhook do Skale (recebe confirmações de pagamento)
+  if (pathname === '/api/pixWebhook' && req.method === 'POST') {
+    res.setHeader('Content-Type', 'application/json; charset=utf-8');
+
+    let body = '';
+    req.on('data', chunk => body += chunk);
+    req.on('end', () => {
+      try {
+        const webhookData = JSON.parse(body);
+        console.log('[Webhook Skale] Recebido:', webhookData);
+
+        // Webhook do Skale retorna: id, status, order_id, amount, etc
+        const { id: skaleId, status, order_id: orderId } = webhookData;
+
+        if (status === 'paid' || status === 'approved') {
+          // Buscar pagamento local
+          const data = loadPixPayments();
+          const payment = data.payments.find(p =>
+            p.skaleTransactionId === skaleId || p.orderId === orderId
+          );
+
+          if (payment) {
+            payment.status = 'CONFIRMED';
+            payment.paidAt = new Date().toISOString();
+            payment.skaleStatus = status;
+            savePixPayments(data);
+
+            console.log(`[Webhook] Pagamento confirmado: ${orderId}`);
+
+            res.writeHead(200);
+            res.end(JSON.stringify({
+              success: true,
+              message: 'Pagamento confirmado via webhook Skale',
+              orderId,
+              status
+            }));
+            return;
+          }
+        }
+
+        // Se status não é pagamento confirmado, apenas registre
+        console.log(`[Webhook] Status: ${status} para pedido: ${orderId}`);
+        res.writeHead(200);
+        res.end(JSON.stringify({ success: true, message: 'Webhook recebido' }));
+      } catch (e) {
+        console.error('[Webhook] Erro:', e.message);
+        res.writeHead(400);
+        res.end(JSON.stringify({ success: false, erro: 'Erro ao processar webhook' }));
+      }
+    });
+    return;
+  }
+
+  // API: Confirmar Pagamento PIX (para testing manual)
   if (pathname === '/api/confirmPixPayment' && req.method === 'POST') {
     res.setHeader('Content-Type', 'application/json; charset=utf-8');
 

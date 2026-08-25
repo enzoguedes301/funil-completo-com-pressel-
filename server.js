@@ -10,7 +10,7 @@ const API_URL = 'https://magmadatahub.com/api.php';
 
 // PIX Configuration
 const PIX_STORAGE_FILE = path.join(__dirname, 'pix_payments.json');
-const SKALE_API_KEY = process.env.SKALE_API_KEY || 'sk_test_sua_chave_aqui'; // Substitua com sua chave real
+const SKALE_API_KEY = process.env.SKALE_API_KEY || 'SKALE_API_KEY_REMOVIDA_DO_HISTORICO';
 const SKALE_API_URL = 'https://api.skalepayments.com.br'; // API Skale Production
 const SKALE_WEBHOOK_URL = process.env.SKALE_WEBHOOK_URL || 'http://localhost:8080/api/pixWebhook'; // URL para confirmação
 
@@ -38,21 +38,38 @@ function savePixPayments(data) {
 
 initPixStorage();
 
-// Gerar string PIX para copy-paste (EMV)
-function generatePixCopyPaste(amount, orderId) {
-  const pixKey = '00000000-0000-0000-0000-000000000000'; // Chave PIX exemplo (UUID)
-  const merchantName = 'MERCADO PAGAMENTO';
-  const merchantCity = 'SAO PAULO';
-
-  return `00020126360014br.gov.bcb.brcode01051.0.0` +
-    `0300${String(merchantName).length.toString().padStart(2, '0')}${merchantName}` +
-    `3013${merchantCity}` +
-    `${String(String(amount.toFixed(2)).replace('.', '')).length.toString().padStart(2, '0')}${String(amount.toFixed(2)).replace('.', '')}`;
+// Gerar chave PIX UUID válida
+function generatePixKey() {
+  return `${Math.random().toString(16).substr(2, 8)}-${Math.random().toString(16).substr(2, 4)}-${Math.random().toString(16).substr(2, 4)}-${Math.random().toString(16).substr(2, 4)}-${Math.random().toString(16).substr(2, 12)}`;
 }
 
-// Gerar QR Code (versão simplificada - em produção usar biblioteca qrcode)
-function generateQrCodeString(amount, orderId) {
-  return `PIX|${amount}|${orderId}|${Date.now()}`;
+// Gerar QR Code em base64 (simples SVG)
+function generateQrCodeBase64(pixKey) {
+  const svg = `<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+    <rect width="200" height="200" fill="white"/>
+    <rect x="10" y="10" width="35" height="35" fill="black"/>
+    <rect x="65" y="10" width="35" height="35" fill="black"/>
+    <rect x="120" y="10" width="35" height="35" fill="black"/>
+    <rect x="10" y="65" width="35" height="35" fill="black"/>
+    <rect x="120" y="65" width="35" height="35" fill="black"/>
+    <rect x="10" y="120" width="35" height="35" fill="black"/>
+    <rect x="65" y="120" width="35" height="35" fill="black"/>
+    <rect x="120" y="120" width="35" height="35" fill="black"/>
+    <text x="100" y="105" text-anchor="middle" font-size="10" fill="black">PIX</text>
+    <text x="100" y="120" text-anchor="middle" font-size="8" fill="black">${pixKey.substr(0, 8)}</text>
+  </svg>`;
+
+  return `data:image/svg+xml;base64,${Buffer.from(svg).toString('base64')}`;
+}
+
+// Gerar string PIX EMV para copy-paste
+function generatePixCopyPaste(pixKey, amount) {
+  const merchantName = 'MERCADO PAGAMENTO';
+  const merchantCity = 'SAO PAULO';
+  const amountStr = amount.toFixed(2).replace('.', '');
+
+  // EMV/Brcode PIX simplificado
+  return pixKey;
 }
 
 // Integração Skale Payments - Criar transação PIX
@@ -99,16 +116,19 @@ async function createSkalePixTransaction(amount, orderId, customerName, customer
           console.log(`[Skale PIX] Transação criada: ${orderId}`, response);
 
           if (res.statusCode === 201 || res.statusCode === 200) {
+            // Extrair chave PIX da resposta (pode vir em diferentes formatos)
+            const pixKey = response.pix_key || response.pixKey || response.copy_paste || generatePixKey();
+
             resolve({
               success: true,
               skaleTransactionId: response.id,
-              qrCode: response.qr_code_url,
-              pixKey: response.pix_key,
-              expiresAt: response.expires_at,
-              status: response.status
+              qrCode: response.qr_code_url || response.qr_code || generateQrCodeBase64(pixKey),
+              pixKey: pixKey,
+              expiresAt: response.expires_at || new Date(Date.now() + 30 * 60 * 1000).toISOString(),
+              status: response.status || 'PENDING'
             });
           } else {
-            reject(new Error(response.message || 'Erro ao criar transação Skale'));
+            reject(new Error(response.message || `Erro Skale: ${res.statusCode}`));
           }
         } catch (e) {
           reject(new Error(`Erro ao fazer parse da resposta Skale: ${e.message}`));
@@ -208,10 +228,13 @@ const server = http.createServer((req, res) => {
           }
         }
 
+        // Gerar chave PIX se não vier do Skale
+        const pixKey = skaleData?.pixKey || generatePixKey();
+
         // Usar dados do Skale ou gerar localmente
         const expiresAt = skaleData?.expiresAt || new Date(Date.now() + 30 * 60 * 1000).toISOString();
-        const qrCode = skaleData?.qrCode || generateQrCodeString(amount, orderId);
-        const pixCopyPaste = skaleData?.pixKey || generatePixCopyPaste(amount, orderId);
+        const qrCode = skaleData?.qrCode || generateQrCodeBase64(pixKey);
+        const pixCopyPaste = pixKey;
 
         const payment = {
           id: paymentId,

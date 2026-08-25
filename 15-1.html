@@ -461,27 +461,16 @@
             </div>
         </div>
 
-        <!-- Método de Pagamento PIX -->
+        <!-- Pagamento PIX -->
         <div class="section">
-            <div class="section-title">Método de Pagamento</div>
-
-            <div class="pix-methods">
-                <div class="pix-method active" onclick="selectPixMethod('qr')">
-                    <div class="pix-method-icon">📱</div>
-                    <div class="pix-method-label">QR Code PIX</div>
-                </div>
-                <div class="pix-method" onclick="selectPixMethod('key')">
-                    <div class="pix-method-icon">🔑</div>
-                    <div class="pix-method-label">Chave PIX</div>
-                </div>
-            </div>
+            <div class="section-title">Escanear QR Code PIX</div>
 
             <!-- QR Code PIX -->
             <div class="qr-code-container active" id="qrContainer">
-                <p style="font-size: 14px; color: #666; margin-bottom: 15px;">Escaneie o código QR com seu banco</p>
-                <div class="qr-code-image">
-                    <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-                        <!-- QR Code Placeholder -->
+                <p style="font-size: 14px; color: #666; margin-bottom: 20px;">Escaneie com seu banco para pagar</p>
+                <div class="qr-code-image" id="qrCodeImg" style="border: 3px solid #3483FA; border-radius: 12px;">
+                    <img src="" alt="QR Code PIX" style="width: 100%; height: auto; display: none;" id="qrImage"/>
+                    <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" id="qrPlaceholder">
                         <rect width="200" height="200" fill="white"/>
                         <rect x="10" y="10" width="35" height="35" fill="black"/>
                         <rect x="65" y="10" width="35" height="35" fill="black"/>
@@ -491,19 +480,13 @@
                         <rect x="10" y="120" width="35" height="35" fill="black"/>
                         <rect x="65" y="120" width="35" height="35" fill="black"/>
                         <rect x="120" y="120" width="35" height="35" fill="black"/>
-                        <text x="100" y="110" text-anchor="middle" font-size="14" fill="black">PIX</text>
                     </svg>
                 </div>
-                <button class="copy-pix-button" onclick="copyToClipboard()">Copiar Chave PIX</button>
-            </div>
-
-            <!-- Chave PIX -->
-            <div class="qr-code-container" id="keyContainer">
-                <p style="font-size: 14px; color: #666; margin-bottom: 15px;">Use a chave PIX abaixo</p>
-                <div class="pix-key-display" id="pixKey">
-                    a1b2c3d4-e5f6-7890-abcd-ef1234567890
+                <p style="font-size: 12px; color: #999; margin-top: 15px; margin-bottom: 15px;">Ou copie a chave PIX abaixo</p>
+                <div class="pix-key-display" id="pixKeyDisplay" style="word-break: break-all; min-height: 40px;">
+                    Carregando...
                 </div>
-                <button class="copy-pix-button" onclick="copyToClipboard()">Copiar Chave PIX</button>
+                <button class="copy-pix-button" onclick="copyPixKey()">Copiar Chave PIX</button>
             </div>
 
             <!-- Informações PIX -->
@@ -596,25 +579,17 @@
             startTimer();
         });
 
-        // PIX Method Selection
-        function selectPixMethod(method) {
-            document.querySelectorAll('.pix-method').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.qr-code-container').forEach(el => el.classList.remove('active'));
-
-            if (method === 'qr') {
-                document.querySelectorAll('.pix-method')[0].classList.add('active');
-                document.getElementById('qrContainer').classList.add('active');
-            } else if (method === 'key') {
-                document.querySelectorAll('.pix-method')[1].classList.add('active');
-                document.getElementById('keyContainer').classList.add('active');
-            }
-        }
+        // Store current PIX key
+        let currentPixKey = '';
 
         // Copy PIX Key
-        function copyToClipboard() {
-            const pixKey = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890';
-            navigator.clipboard.writeText(pixKey).then(() => {
-                alert('Chave PIX copiada!');
+        function copyPixKey() {
+            if (!currentPixKey) {
+                alert('Chave PIX ainda não foi carregada. Tente novamente.');
+                return;
+            }
+            navigator.clipboard.writeText(currentPixKey).then(() => {
+                alert('✓ Chave PIX copiada!');
             }).catch(() => {
                 alert('Erro ao copiar. Tente novamente.');
             });
@@ -679,12 +654,41 @@
             .then(res => res.json())
             .then(data => {
                 if (data.success) {
-                    setTimeout(() => {
-                        document.getElementById('successMessage').classList.add('show');
-                        setTimeout(() => {
-                            window.location.href = 'aprovado.html';
-                        }, 2000);
-                    }, 1500);
+                    // Armazenar chave PIX para copiar
+                    currentPixKey = data.pixCopyPaste || data.qrCode || '';
+
+                    // Exibir QR Code se for imagem
+                    if (data.qrCode && data.qrCode.startsWith('data:')) {
+                        const qrImg = document.getElementById('qrImage');
+                        const qrPlaceholder = document.getElementById('qrPlaceholder');
+                        qrImg.src = data.qrCode;
+                        qrImg.style.display = 'block';
+                        qrPlaceholder.style.display = 'none';
+                    }
+
+                    // Exibir chave PIX
+                    const pixDisplay = document.getElementById('pixKeyDisplay');
+                    if (pixDisplay) {
+                        pixDisplay.textContent = data.pixCopyPaste || 'Chave não disponível';
+                    }
+
+                    // Desabilitar botão de pagamento
+                    button.style.display = 'none';
+
+                    // Mostrar mensagem após pagamento recebido
+                    const checkPayment = setInterval(() => {
+                        fetch(`/api/getPixPayment?orderId=FRETE_${Date.now()}`)
+                            .then(res => res.json())
+                            .then(data => {
+                                if (data.status === 'CONFIRMED') {
+                                    clearInterval(checkPayment);
+                                    document.getElementById('successMessage').classList.add('show');
+                                    setTimeout(() => {
+                                        window.location.href = 'aprovado.html';
+                                    }, 2000);
+                                }
+                            });
+                    }, 3000);
                 } else {
                     throw new Error(data.erro || 'Erro ao criar PIX');
                 }

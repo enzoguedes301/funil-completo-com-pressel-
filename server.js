@@ -122,21 +122,26 @@ async function createSkalePixTransaction(amount, orderId, customerName, customer
       res.on('end', () => {
         try {
           const response = JSON.parse(data);
-          console.log(`[Skale PIX] Transação criada: ${orderId}`, response);
+          console.log(`[Skale PIX] Status ${res.statusCode}: ${orderId}`, JSON.stringify(response, null, 2));
 
           if (res.statusCode === 201 || res.statusCode === 200) {
             // Extrair chave PIX da resposta (pode vir em diferentes formatos)
-            const pixKey = response.pix_key || response.pixKey || response.copy_paste || generatePixKey();
+            const pixKey = response.pix_key || response.pixKey || response.copy_paste || response.brcode || generatePixKey();
+            const qrCodeUrl = response.qr_code_url || response.qr_code || response.qr_image || generateQrCodeBase64(pixKey);
+
+            console.log(`[Skale PIX] ✅ Chave: ${pixKey}`);
+            console.log(`[Skale PIX] ✅ QR: ${qrCodeUrl.substring(0, 50)}...`);
 
             resolve({
               success: true,
               skaleTransactionId: response.id,
-              qrCode: response.qr_code_url || response.qr_code || generateQrCodeBase64(pixKey),
+              qrCode: qrCodeUrl,
               pixKey: pixKey,
               expiresAt: response.expires_at || new Date(Date.now() + 30 * 60 * 1000).toISOString(),
               status: response.status || 'PENDING'
             });
           } else {
+            console.log(`[Skale PIX] ❌ Erro ${res.statusCode}:`, response.message || response);
             reject(new Error(response.message || `Erro Skale: ${res.statusCode}`));
           }
         } catch (e) {
@@ -264,6 +269,11 @@ const server = http.createServer((req, res) => {
         const data = loadPixPayments();
         data.payments.push(payment);
         savePixPayments(data);
+
+        console.log(`[API Response] Enviando ao frontend:`);
+        console.log(`  - Chave PIX: ${pixCopyPaste}`);
+        console.log(`  - QR Code: ${qrCode.substring(0, 50)}...`);
+        console.log(`  - Source: ${skaleData ? 'SKALE' : 'LOCAL'}`);
 
         res.writeHead(200);
         res.end(JSON.stringify({

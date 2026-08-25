@@ -78,13 +78,22 @@ async function createSkalePixTransaction(amount, orderId, customerName, customer
     const payload = JSON.stringify({
       amount: Math.round(amount * 100), // Converter para centavos
       currency: 'BRL',
-      method: 'pix',
+      paymentMethod: 'pix',
       order_id: orderId,
       customer: {
-        name: customerName,
-        email: customerEmail
+        name: customerName || 'Cliente',
+        email: customerEmail || 'noemail@example.com',
+        phone: '11999999999',
+        document: '00000000000' // CPF inválido (será tratado pelo fallback)
       },
       description: description || 'Pagamento PIX',
+      items: [
+        {
+          name: description || 'Frete',
+          quantity: 1,
+          price: Math.round(amount * 100)
+        }
+      ],
       metadata: {
         source: 'web_checkout',
         created_at: new Date().toISOString()

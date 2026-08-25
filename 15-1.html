@@ -638,41 +638,75 @@
                 return;
             }
 
+            // Pegar método de envio do localStorage (selecionado em 12.html)
+            const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+            const shippingMethod = userData.metodo_envio?.metodo || 'sedex'; // padrão: SEDEX
+            const shippingPrice = shippingMethod.toLowerCase() === 'pac' ? 24.30 : 29.90;
+
             // Salvar dados
             const paymentData = {
                 fullName,
                 cpf,
-                amount: 24.30,
+                amount: shippingPrice,
+                shippingMethod: shippingMethod,
                 method: 'PIX',
                 timestamp: new Date().toISOString()
             };
 
             sessionStorage.setItem('payment_data', JSON.stringify(paymentData));
 
-            // Simular processamento
+            // Integrar com API Skale para criar transação PIX
             const button = document.getElementById('payButton');
             button.disabled = true;
-            button.innerHTML = '<span class="loading-spinner"></span>Processando...';
+            button.innerHTML = '<span class="loading-spinner"></span>Gerando código PIX...';
 
-            // Simular delay de processamento
-            setTimeout(() => {
-                // Mostrar mensagem de sucesso
-                document.getElementById('successMessage').classList.add('show');
+            // Criar transação PIX via Skale
+            fetch('/api/createPixPayment', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    amount: shippingPrice,
+                    orderId: `FRETE_${shippingMethod.toUpperCase()}_${Date.now()}`,
+                    customerName: fullName,
+                    customerEmail: userData.email || '',
+                    description: `Frete ${shippingMethod.toUpperCase()} - R$${shippingPrice}`
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    console.log('✅ PIX criado:', data.paymentId);
 
-                // Redirecionar após 2 segundos
-                setTimeout(() => {
-                    // Redirecionar para aprovado
-                    const urlParams = getUrlParams();
-                    const baseUrl = 'aprovado.html';
-                    const url = new URL(baseUrl, window.location.origin);
+                    // Mostrar mensagem de sucesso após pagamento
+                    setTimeout(() => {
+                        document.getElementById('successMessage').classList.add('show');
 
-                    Object.keys(urlParams).forEach(key => {
-                        url.searchParams.append(key, urlParams[key]);
-                    });
+                        // Redirecionar para aprovado após 2 segundos
+                        setTimeout(() => {
+                            const urlParams = getUrlParams();
+                            const baseUrl = 'aprovado.html';
+                            const url = new URL(baseUrl, window.location.origin);
 
-                    window.location.href = url.pathname + url.search;
-                }, 2000);
-            }, 1500);
+                            Object.keys(urlParams).forEach(key => {
+                                url.searchParams.append(key, urlParams[key]);
+                            });
+
+                            // Adicionar payment ID
+                            url.searchParams.append('paymentId', data.paymentId);
+
+                            window.location.href = url.pathname + url.search;
+                        }, 2000);
+                    }, 1500);
+                } else {
+                    throw new Error(data.erro || 'Erro ao criar PIX');
+                }
+            })
+            .catch(err => {
+                console.error('❌ Erro:', err);
+                button.disabled = false;
+                button.innerHTML = 'Pagar com PIX';
+                alert('Erro ao gerar código PIX: ' + err.message);
+            });
         }
     </script>
 </body>

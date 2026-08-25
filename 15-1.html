@@ -641,7 +641,7 @@
             // Pegar método de envio do localStorage (selecionado em 12.html)
             const userDataStr = localStorage.getItem('userdata');
             const userDataObj = userDataStr ? JSON.parse(userDataStr) : {};
-            const shippingMethod = userDataObj.o_confirmado || 'SEDEX'; // padrão: SEDEX
+            const shippingMethod = userDataObj.metodo_confirmado || 'SEDEX'; // padrão: SEDEX
             const shippingPrice = parseFloat(userDataObj.preco_confirmado) || (shippingMethod.toLowerCase() === 'pac' ? 24.30 : 29.90);
 
             // Salvar dados

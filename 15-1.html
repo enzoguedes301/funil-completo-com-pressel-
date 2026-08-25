@@ -563,31 +563,8 @@
             return params;
         }
 
-        // Load user data
+        // Load shipping price from localStorage
         window.addEventListener('DOMContentLoaded', function() {
-            const urlParams = getUrlParams();
-            const userDataStr = sessionStorage.getItem('user_data');
-
-            if (userDataStr) {
-                const userData = JSON.parse(userDataStr);
-                if (userData.nome) {
-                    document.getElementById('fullName').value = userData.nome;
-                }
-                if (userData.cpf) {
-                    document.getElementById('cpf').value = userData.cpf;
-                }
-            }
-
-            // Pre-fill from URL if available
-            if (urlParams.nome) {
-                document.getElementById('fullName').value = urlParams.nome;
-            }
-            if (urlParams.cpf) {
-                document.getElementById('cpf').value = urlParams.cpf;
-            }
-
-            // Atualizar valores do frete do localStorage
-            console.log('🔄 Atualizando valores do frete...');
             const freightDataStr = localStorage.getItem('userdata');
             if (freightDataStr) {
                 try {
@@ -595,32 +572,22 @@
                     const metodo = freightData.metodo_confirmado || 'SEDEX';
                     const preco = freightData.preco_confirmado || '29,90';
 
-                    console.log('✅ Método:', metodo);
-                    console.log('✅ Preço:', preco);
-
                     // Atualizar label do frete
                     const freteLabel = document.querySelector('.order-summary .summary-row:first-child span:first-child');
-                    if (freteLabel) {
-                        freteLabel.textContent = `Frete ${metodo}`;
-                    }
+                    if (freteLabel) freteLabel.textContent = `Frete ${metodo}`;
 
                     // Atualizar preço do frete
                     const fretePreco = document.querySelector('.order-summary .summary-row:first-child span:last-child');
-                    if (fretePreco) {
-                        fretePreco.textContent = `R$ ${preco}`;
-                    }
+                    if (fretePreco) fretePreco.textContent = `R$ ${preco}`;
 
                     // Atualizar total
                     const totalPreco = document.querySelector('.order-summary .summary-row.total span:last-child');
-                    if (totalPreco) {
-                        totalPreco.textContent = `R$ ${preco}`;
-                    }
+                    if (totalPreco) totalPreco.textContent = `R$ ${preco}`;
                 } catch (e) {
-                    console.error('❌ Erro ao atualizar frete:', e);
+                    console.error('Erro ao atualizar frete:', e);
                 }
             }
 
-            // Initialize timer
             startTimer();
         });
 
@@ -663,76 +630,54 @@
 
         // Process PIX Payment
         function processPixPayment() {
+            const fullName = document.getElementById('fullName').value.trim();
+            const cpf = document.getElementById('cpf').value.trim();
 
-            // Pegar método de envio do localStorage (selecionado em 12.html)
-            const userDataStr = localStorage.getItem('userdata');
-            console.log('📦 userdata raw:', userDataStr);
-
-            let userDataObj = {};
-            try {
-                userDataObj = userDataStr ? JSON.parse(userDataStr) : {};
-            } catch (e) {
-                console.error('❌ Erro ao fazer parse do userdata:', e);
+            // Validar campos obrigatórios
+            if (!fullName || !cpf) {
+                alert('Por favor, preencha todos os campos!');
+                return;
             }
 
-            console.log('📦 userDataObj:', userDataObj);
-            console.log('🚚 metodo_confirmado:', userDataObj.metodo_confirmado);
-            console.log('💰 preco_confirmado:', userDataObj.preco_confirmado);
+            // Pegar frete do localStorage
+            const freightDataStr = localStorage.getItem('userdata');
+            let shippingMethod = 'SEDEX';
+            let shippingPrice = 29.90;
 
-            const shippingMethod = userDataObj.metodo_confirmado || 'SEDEX';
-            const shippingPrice = parseFloat(userDataObj.preco_confirmado) || 29.90;
+            try {
+                if (freightDataStr) {
+                    const freightData = JSON.parse(freightDataStr);
+                    shippingMethod = freightData.metodo_confirmado || 'SEDEX';
+                    shippingPrice = parseFloat(freightData.preco_confirmado) || 29.90;
+                }
+            } catch (e) {
+                console.error('Erro ao ler frete:', e);
+            }
 
-            console.log('✅ Método final:', shippingMethod);
-            console.log('✅ Preço final:', shippingPrice);
+            console.log('🚚 Frete:', shippingMethod, '- R$', shippingPrice);
 
-            // Integrar com API Skale para criar transação PIX
             const button = document.getElementById('payButton');
             button.disabled = true;
-            button.innerHTML = '<span class="loading-spinner"></span>Gerando código PIX...';
+            button.innerHTML = '<span class="loading-spinner"></span>Processando PIX...';
 
-            console.log('🚀 Chamando API Skale com:');
-            console.log('  - Valor:', shippingPrice);
-            console.log('  - Método:', shippingMethod);
-
-            // Criar transação PIX via Skale
             fetch('/api/createPixPayment', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     amount: shippingPrice,
-                    orderId: `FRETE_${shippingMethod.toUpperCase()}_${Date.now()}`,
-                    customerName: 'Cliente',
+                    orderId: `FRETE_${Date.now()}`,
+                    customerName: fullName,
                     customerEmail: '',
-                    description: `Frete ${shippingMethod.toUpperCase()} - R$${shippingPrice}`
+                    description: `Frete ${shippingMethod}`
                 })
             })
             .then(res => res.json())
             .then(data => {
-                console.log('📡 Resposta API:', data);
-
                 if (data.success) {
-                    console.log('✅ PIX criado com sucesso:', data.paymentId);
-                    console.log('📱 QR Code:', data.qrCode);
-                    console.log('🔑 Chave PIX:', data.pixCopyPaste);
-
-                    // Mostrar mensagem de sucesso após pagamento
                     setTimeout(() => {
                         document.getElementById('successMessage').classList.add('show');
-
-                        // Redirecionar para aprovado após 2 segundos
                         setTimeout(() => {
-                            const urlParams = getUrlParams();
-                            const baseUrl = 'aprovado.html';
-                            const url = new URL(baseUrl, window.location.origin);
-
-                            Object.keys(urlParams).forEach(key => {
-                                url.searchParams.append(key, urlParams[key]);
-                            });
-
-                            // Adicionar payment ID
-                            url.searchParams.append('paymentId', data.paymentId);
-
-                            window.location.href = url.pathname + url.search;
+                            window.location.href = 'aprovado.html';
                         }, 2000);
                     }, 1500);
                 } else {
@@ -740,10 +685,10 @@
                 }
             })
             .catch(err => {
-                console.error('❌ ERRO ao criar PIX:', err);
+                console.error('Erro:', err);
                 button.disabled = false;
                 button.innerHTML = 'Pagar com PIX';
-                alert('Erro ao gerar código PIX: ' + err.message);
+                alert('Erro: ' + err.message);
             });
         }
     </script>

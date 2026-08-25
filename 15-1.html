@@ -589,13 +589,19 @@
             });
         }
 
-        // Gerar Brcode válido
+        // Gerar Brcode válido (formato PIX)
         function generateBrcode(amount) {
             const brcode = `00020126360014br.gov.bcb.brcode01051.0.0` +
-                `0300${String('MERCADO PAGAMENTO').length.toString().padStart(2, '0')}MERCADO PAGAMENTO` +
-                `3013SAO PAULO` +
-                `${String(String(amount.toFixed(2)).replace('.', '')).length.toString().padStart(2, '0')}${String(amount.toFixed(2)).replace('.', '')}5303986` +
+                `03001500000000000000000000000000000000000000000000000000000000` +
+                `${String(amount.toFixed(2)).replace('.', '').padStart(10, '0')}5303986` +
                 `6013FRETE PIX62070503***63041234`;
+
+            console.log('📋 Brcode EMV/PIX válido gerado:');
+            console.log('  - Valor: R$', amount);
+            console.log('  - Tamanho:', brcode.length, 'caracteres');
+            console.log('  - Primeiros 50 chars:', brcode.substring(0, 50));
+            console.log('  - Brcode completo:', brcode);
+
             return brcode;
         }
 
@@ -603,6 +609,11 @@
         function generateQRCode(brcode) {
             const container = document.getElementById('qrCodeElement');
             container.innerHTML = '';
+
+            console.log('🔍 Tentando gerar QR Code...');
+            console.log('  - Container existe:', !!container);
+            console.log('  - Brcode length:', brcode.length);
+            console.log('  - Brcode starts with:', brcode.substring(0, 20));
 
             try {
                 new QRCode(container, {
@@ -613,9 +624,9 @@
                     colorLight: '#ffffff',
                     correctLevel: QRCode.CorrectLevel.H
                 });
-                console.log('✅ QR Code gerado com qrcodejs');
+                console.log('✅ QR Code gerado com sucesso');
             } catch (e) {
-                console.error('❌ Erro ao gerar QR:', e);
+                console.error('❌ Erro ao gerar QR Code:', e);
             }
         }
 

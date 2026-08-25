@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conclusão - Conta Ativada</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #089b08 0%, #28c45c 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+        .success-container {
+            background: white;
+            border-radius: 15px;
+            padding: 3rem 2rem;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 10px 50px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            animation: slideUp 0.6s ease-out;
+        }
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .success-icon {
+            width: 100px;
+            height: 100px;
+            background: #28c45c;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 2rem;
+            font-size: 3rem;
+            animation: scaleIn 0.6s ease-out;
+        }
+        @keyframes scaleIn {
+            from {
+                transform: scale(0);
+            }
+            to {
+                transform: scale(1);
+            }
+        }
+        .success-container h1 {
+            color: #089b08;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            font-size: 2rem;
+        }
+        .success-container p {
+            color: #666;
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+        .status-box {
+            background: #f5f7f9;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border-left: 4px solid #28c45c;
+        }
+        .status-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+            text-align: left;
+        }
+        .status-item:last-child {
+            margin-bottom: 0;
+        }
+        .status-check {
+            color: #28c45c;
+            font-size: 1.5rem;
+            margin-right: 1rem;
+            font-weight: bold;
+        }
+        .status-text {
+            color: #333;
+        }
+        .next-btn {
+            background: #089b08;
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 500;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+        .next-btn:hover {
+            background: #067006;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(8, 155, 8, 0.3);
+            color: white;
+        }
+        .footer-text {
+            margin-top: 2rem;
+            color: #999;
+            font-size: 0.9rem;
+        }
+        .info-badge {
+            display: inline-block;
+            background: #e8f5e9;
+            color: #089b08;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            margin: 0.5rem 0;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="success-container">
+        <div class="success-icon">✓</div>
+
+        <h1>Parabéns!</h1>
+        <p>Sua conta foi ativada com sucesso e todos os serviços estão disponíveis.</p>
+
+        <div class="status-box">
+            <div class="status-item">
+                <div class="status-check">✓</div>
+                <div class="status-text">Ativação da conta</div>
+            </div>
+            <div class="status-item">
+                <div class="status-check">✓</div>
+                <div class="status-text">Seguro de proteção</div>
+            </div>
+            <div class="status-item">
+                <div class="status-check">✓</div>
+                <div class="status-text">Taxa de processamento</div>
+            </div>
+            <div class="status-item">
+                <div class="status-check">✓</div>
+                <div class="status-text">Depósito banking</div>
+            </div>
+            <div class="status-item">
+                <div class="status-check">✓</div>
+                <div class="status-text">Aumento de limite</div>
+            </div>
+        </div>
+
+        <div style="margin-bottom: 2rem;">
+            <p style="margin-bottom: 1rem; color: #333; font-weight: 500;">Próximos passos:</p>
+            <div class="info-badge">📱 Baixe o aplicativo</div>
+            <div class="info-badge">🔑 Use suas credenciais de login</div>
+            <div class="info-badge">💳 Acesse seu cartão virtual</div>
+        </div>
+
+        <button class="next-btn" onclick="irParaDashboard()">
+            Ir para o Dashboard
+        </button>
+
+        <div class="footer-text">
+            <p>Qualquer dúvida? Entre em contato com nosso suporte 24/7</p>
+        </div>
+    </div>
+
+    <script>
+        function getUrlParams() {
+            const params = {};
+            const queryString = window.location.search;
+            const urlParams = new URLSearchParams(queryString);
+            for (const [key, value] of urlParams) {
+                params[key] = value;
+            }
+            return params;
+        }
+
+        function buildUrlWithParams(baseUrl) {
+            const params = getUrlParams();
+            let url = baseUrl;
+            const paramStr = new URLSearchParams(params).toString();
+            if (paramStr) {
+                url += '?' + paramStr;
+            }
+            return url;
+        }
+
+        function irParaDashboard() {
+            // Redireciona para o Google
+            window.location.href = 'https://www.google.com';
+        }
+    </script>
+</body>
+</html>

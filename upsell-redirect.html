@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carregando Oferta...</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #EEEEEE;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #333333;
+        }
+
+        .container {
+            background: white;
+            padding: 40px 30px;
+            border-radius: 12px;
+            text-align: center;
+            max-width: 400px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #F0F0F0;
+            border-top: 4px solid #3483FA;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .text {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .subtext {
+            font-size: 14px;
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="spinner"></div>
+        <div class="text">Carregando sua oferta...</div>
+        <div class="subtext">Você será redirecionado em instantes</div>
+    </div>
+
+    <script>
+        // Sequência de upsells
+        const upsellSequence = [
+            'upsell/ativacao/index.html',      // 0
+            'upsell/imposto/index.html',       // 1
+            'upsell/seguro/index.html',        // 2
+            'upsell/banking/index.html',       // 3
+            'upsell/aumento/index.html',       // 4
+            'upsell/aumento/index.html',       // 5 (repetindo aumento)
+            'conclusao/index.html'             // 6 (finalizar - conclusão)
+        ];
+
+        // Função para obter parâmetros da URL
+        function getUrlParams() {
+            const params = {};
+            const queryString = window.location.search;
+            const urlParams = new URLSearchParams(queryString);
+
+            for (const [key, value] of urlParams) {
+                params[key] = value;
+            }
+            return params;
+        }
+
+        // Inicializar ou recuperar índice da sessão
+        function getUpsellIndex() {
+            let index = sessionStorage.getItem('upsell_index');
+            if (index === null) {
+                index = 0;
+            } else {
+                index = parseInt(index) + 1;
+            }
+            sessionStorage.setItem('upsell_index', index);
+            return index;
+        }
+
+        // Obter próxima página de upsell
+        function getNextUpsell() {
+            const index = getUpsellIndex();
+            if (index >= upsellSequence.length) {
+                // Volta para o início se necessário
+                sessionStorage.removeItem('upsell_index');
+                return '3.html';
+            }
+            return upsellSequence[index];
+        }
+
+        // Construir URL com parâmetros preservados
+        function buildUrlWithParams(baseUrl) {
+            const params = getUrlParams();
+            let url = baseUrl;
+            const paramStr = new URLSearchParams(params).toString();
+
+            if (paramStr) {
+                url += '?' + paramStr;
+            }
+
+            return url;
+        }
+
+        // Redirecionar para o próximo upsell
+        window.addEventListener('DOMContentLoaded', () => {
+            const nextUpsell = getNextUpsell();
+            const finalUrl = buildUrlWithParams(nextUpsell);
+
+            console.log('Redirecionando para upsell:', finalUrl);
+
+            // Aguardar 500ms antes de redirecionar para dar tempo de carregar a página
+            setTimeout(() => {
+                window.location.href = finalUrl;
+            }, 500);
+        });
+    </script>
+</body>
+</html>

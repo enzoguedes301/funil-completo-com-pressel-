@@ -639,9 +639,10 @@
             }
 
             // Pegar método de envio do localStorage (selecionado em 12.html)
-            const userData = JSON.parse(localStorage.getItem('userData') || '{}');
-            const shippingMethod = userData.metodo_envio?.metodo || 'sedex'; // padrão: SEDEX
-            const shippingPrice = shippingMethod.toLowerCase() === 'pac' ? 24.30 : 29.90;
+            const userDataStr = localStorage.getItem('userdata');
+            const userDataObj = userDataStr ? JSON.parse(userDataStr) : {};
+            const shippingMethod = userDataObj.o_confirmado || 'SEDEX'; // padrão: SEDEX
+            const shippingPrice = parseFloat(userDataObj.preco_confirmado) || (shippingMethod.toLowerCase() === 'pac' ? 24.30 : 29.90);
 
             // Salvar dados
             const paymentData = {

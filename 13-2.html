@@ -995,6 +995,7 @@
                 dadosExistentes.confirmacao_data = new Date().toISOString();
                 dadosExistentes.metodo_confirmado = 'PAC';
                 dadosExistentes.preco_confirmado = '24,30';
+                dadosExistentes.prazo_confirmado = '15-20 dias úteis';
                 localStorage.setItem('userdata', JSON.stringify(dadosExistentes));
                 console.log('✅ Dados salvos no localStorage:', dadosExistentes);
             } catch(e) {

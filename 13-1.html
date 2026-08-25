@@ -995,6 +995,7 @@
                 dadosExistentes.confirmacao_data = new Date().toISOString();
                 dadosExistentes.metodo_confirmado = 'SEDEX';
                 dadosExistentes.preco_confirmado = '29,90';
+                dadosExistentes.prazo_confirmado = '1 dia útil';
                 localStorage.setItem('userdata', JSON.stringify(dadosExistentes));
                 console.log('✅ Dados salvos no localStorage:', dadosExistentes);
             } catch(e) {

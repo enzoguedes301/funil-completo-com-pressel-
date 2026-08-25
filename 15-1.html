@@ -563,7 +563,7 @@
             return params;
         }
 
-        // Load shipping price from localStorage
+        // Load shipping data from localStorage
         window.addEventListener('DOMContentLoaded', function() {
             const freightDataStr = localStorage.getItem('userdata');
             if (freightDataStr) {
@@ -571,6 +571,7 @@
                     const freightData = JSON.parse(freightDataStr);
                     const metodo = freightData.metodo_confirmado || 'SEDEX';
                     const preco = freightData.preco_confirmado || '29,90';
+                    const prazo = freightData.prazo_confirmado || (metodo === 'SEDEX' ? '1 dia útil' : '15-20 dias úteis');
 
                     // Atualizar label do frete
                     const freteLabel = document.querySelector('.order-summary .summary-row:first-child span:first-child');
@@ -579,6 +580,10 @@
                     // Atualizar preço do frete
                     const fretePreco = document.querySelector('.order-summary .summary-row:first-child span:last-child');
                     if (fretePreco) fretePreco.textContent = `R$ ${preco}`;
+
+                    // Atualizar prazo
+                    const prazoElement = document.querySelector('.order-summary .summary-row:nth-child(2) span:last-child');
+                    if (prazoElement) prazoElement.textContent = prazo;
 
                     // Atualizar total
                     const totalPreco = document.querySelector('.order-summary .summary-row.total span:last-child');

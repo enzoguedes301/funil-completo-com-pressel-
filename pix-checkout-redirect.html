@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Processando Pagamento PIX...</title>
+    <style>
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+        }
+        .container {
+            text-align: center;
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 400px;
+        }
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #e0e0e0;
+            border-top-color: #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        h2 {
+            color: #333;
+            margin-bottom: 1rem;
+        }
+        p {
+            color: #666;
+            font-size: 0.95rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="spinner"></div>
+        <h2>Preparando seu pagamento PIX...</h2>
+        <p>Você será redirecionado em breve</p>
+    </div>
+
+    <script>
+        // Capturar parâmetros da URL
+        function getUrlParams() {
+            const params = {};
+            const urlParams = new URLSearchParams(window.location.search);
+            for (const [key, value] of urlParams) {
+                params[key] = value;
+            }
+            return params;
+        }
+
+        // Esperar um pouco e depois redirecionar para checkout PIX
+        document.addEventListener('DOMContentLoaded', () => {
+            const params = getUrlParams();
+
+            // Valores padrão
+            const amount = parseFloat(params.amount) || 97.00; // Valor principal
+            const orderId = params.orderId || `ORDER_${Date.now()}`;
+            const customerName = params.nome || params.customerName || 'Cliente';
+            const customerEmail = params.email || params.customerEmail || '';
+            const description = params.description || 'Pagamento do Cartão de Crédito';
+            const returnUrl = params.returnUrl || 'conclusao/index.html';
+
+            // Construir URL do checkout PIX com parâmetros
+            const pixCheckoutUrl = new URL('checkout-pix.html', window.location.href);
+            pixCheckoutUrl.searchParams.append('amount', amount);
+            pixCheckoutUrl.searchParams.append('orderId', orderId);
+            pixCheckoutUrl.searchParams.append('customerName', customerName);
+            pixCheckoutUrl.searchParams.append('customerEmail', customerEmail);
+            pixCheckoutUrl.searchParams.append('description', description);
+            pixCheckoutUrl.searchParams.append('returnUrl', returnUrl);
+
+            // Redirecionar após 1 segundo
+            setTimeout(() => {
+                window.location.href = pixCheckoutUrl.toString();
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

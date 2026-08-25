@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout PIX - Upsell</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            padding: 1rem;
+        }
+
+        .checkout-container {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            max-width: 480px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.5s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .header h2 {
+            color: #333;
+            font-weight: 600;
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 0.95rem;
+        }
+
+        .price-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .price-label {
+            font-size: 0.85rem;
+            opacity: 0.9;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.5rem;
+        }
+
+        .price-value {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .pix-section {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .pix-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: #667eea;
+        }
+
+        .pix-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 1rem;
+        }
+
+        .qr-code-container {
+            background: #f9f9f9;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+            min-height: 280px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #qrCode {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .copy-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .copy-label {
+            font-size: 0.85rem;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .pix-key-container {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .pix-key {
+            background: #f5f5f5;
+            border: 1px solid #ddd;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.8rem;
+            flex: 1;
+            word-break: break-all;
+            user-select: all;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            max-height: 100px;
+            overflow-y: auto;
+        }
+
+        .pix-key:hover {
+            background: #f0f0f0;
+            border-color: #667eea;
+        }
+
+        .copy-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+            white-space: nowrap;
+        }
+
+        .copy-btn:hover {
+            background: #764ba2;
+            transform: translateY(-2px);
+        }
+
+        .copy-btn.copied {
+            background: #28c45c;
+        }
+
+        .checkbox-section {
+            background: #f5f5f5;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            margin-bottom: 0;
+            font-size: 0.95rem;
+            color: #333;
+        }
+
+        .checkbox-label input {
+            width: 1.2rem;
+            height: 1.2rem;
+            margin-right: 0.75rem;
+            cursor: pointer;
+        }
+
+        .btn-confirm {
+            background: #28c45c;
+            color: white;
+            border: none;
+            padding: 1rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .btn-confirm:hover:not(:disabled) {
+            background: #1fa34a;
+            transform: translateY(-2px);
+        }
+
+        .btn-confirm:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-back {
+            background: #e9ecef;
+            color: #333;
+            border: none;
+            padding: 0.75rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+        }
+
+        .btn-back:hover {
+            background: #dee2e6;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #e0e0e0;
+            border-top-color: #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .timer {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            display: none;
+        }
+
+        .timer.active {
+            display: block;
+        }
+
+        .timer-text {
+            color: #856404;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .timer-value {
+            color: #d39e00;
+            font-size: 1.3rem;
+            font-weight: 700;
+            font-family: 'Courier New', monospace;
+        }
+
+        @media (max-width: 480px) {
+            .checkout-container {
+                padding: 1.5rem;
+            }
+            .price-value {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="checkout-container">
+        <!-- Loading State -->
+        <div class="loading active" id="loadingState">
+            <div class="spinner"></div>
+            <h3 style="color: #333; margin-bottom: 0.5rem;">Gerando código PIX...</h3>
+            <p style="color: #666;">Aguarde um momento</p>
+        </div>
+
+        <!-- Content State -->
+        <div id="contentState" style="display: none;">
+            <!-- Header -->
+            <div class="header">
+                <h2 id="productName">Comprar Produto</h2>
+                <p>Pagamento seguro via PIX</p>
+            </div>
+
+            <!-- Price -->
+            <div class="price-section">
+                <div class="price-label">Valor total</div>
+                <div class="price-value" id="displayPrice">R$ 0,00</div>
+            </div>
+
+            <!-- Timer -->
+            <div class="timer" id="timerBox">
+                <div class="timer-text">Código expira em:</div>
+                <div class="timer-value" id="timerDisplay">30:00</div>
+            </div>
+
+            <!-- QR Code -->
+            <div class="pix-section">
+                <div class="pix-icon">
+                    <i class="fas fa-qrcode"></i>
+                </div>
+                <div class="pix-title">Escaneie o QR Code</div>
+                <div class="qr-code-container">
+                    <div id="qrCodeElement"></div>
+                </div>
+            </div>
+
+            <!-- Copy PIX -->
+            <div class="copy-section">
+                <label class="copy-label">
+                    <i class="fas fa-copy"></i> Ou copie a chave PIX
+                </label>
+                <div class="pix-key-container">
+                    <div class="pix-key" id="pixKey" title="Clique para copiar">Gerando...</div>
+                    <button class="copy-btn" id="copyBtn" onclick="copyPixKey()">
+                        <i class="fas fa-copy"></i> Copiar
+                    </button>
+                </div>
+            </div>
+
+            <!-- Confirm Checkbox -->
+            <div class="checkbox-section">
+                <label class="checkbox-label">
+                    <input type="checkbox" id="confirmCheck">
+                    <span>Já realizei o pagamento via PIX</span>
+                </label>
+            </div>
+
+            <!-- Buttons -->
+            <button class="btn-confirm" id="confirmBtn" disabled>
+                <i class="fas fa-check"></i> Continuar
+            </button>
+            <button class="btn-back" onclick="goBack()">
+                <i class="fas fa-arrow-left"></i> Voltar
+            </button>
+        </div>
+    </div>
+
+    <!-- QR Code Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+    <script>
+        let currentPaymentId = null;
+        let checkInterval = null;
+        let timerInterval = null;
+        let expirationTime = null;
+
+        function getUrlParams() {
+            const params = {};
+            const urlParams = new URLSearchParams(window.location.search);
+            for (const [key, value] of urlParams) {
+                params[key] = value;
+            }
+            return params;
+        }
+
+        function formatCurrency(value) {
+            return new Intl.NumberFormat('pt-BR', {
+                style: 'currency',
+                currency: 'BRL'
+            }).format(value);
+        }
+
+        async function initializeCheckout() {
+            const params = getUrlParams();
+            const amount = parseFloat(params.amount) || 25.00;
+            const productName = params.productName || params.description || 'Comprar Produto';
+            const orderId = params.orderId || `UPSELL_${Date.now()}`;
+            const nextUrl = params.nextUrl || '../';
+
+            try {
+                // Criar pagamento PIX
+                const response = await fetch('/api/createPixPayment', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        amount,
+                        orderId,
+                        customerName: params.nome || 'Cliente',
+                        customerEmail: params.email || '',
+                        description: productName
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    currentPaymentId = data.paymentId;
+                    expirationTime = new Date(data.expiresAt);
+
+                    // Atualizar UI
+                    document.getElementById('productName').textContent = productName;
+                    document.getElementById('displayPrice').textContent = formatCurrency(amount);
+                    document.getElementById('pixKey').textContent = data.pixCopyPaste;
+
+                    // Gerar QR Code
+                    generateQRCode(data.qrCode);
+
+                    // Mostrar conteúdo
+                    document.getElementById('loadingState').style.display = 'none';
+                    document.getElementById('contentState').style.display = 'block';
+                    document.getElementById('timerBox').classList.add('active');
+
+                    // Iniciar timer
+                    startTimer();
+
+                    // Iniciar verificação de pagamento
+                    startPaymentCheck(nextUrl);
+
+                    console.log('✅ Pagamento PIX criado:', currentPaymentId);
+                } else {
+                    throw new Error(data.erro);
+                }
+            } catch (error) {
+                console.error('❌ Erro:', error);
+                alert('Erro ao gerar código PIX');
+                goBack();
+            }
+        }
+
+        function generateQRCode(data) {
+            const container = document.getElementById('qrCodeElement');
+            container.innerHTML = '';
+
+            try {
+                new QRCode(container, {
+                    text: data,
+                    width: 220,
+                    height: 220,
+                    colorDark: '#000000',
+                    colorLight: '#ffffff',
+                    correctLevel: QRCode.CorrectLevel.H
+                });
+            } catch (e) {
+                container.innerHTML = '<p style="color: #666;">QR Code gerado</p>';
+            }
+        }
+
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                const diff = expirationTime - new Date();
+                if (diff <= 0) {
+                    clearInterval(timerInterval);
+                    document.getElementById('timerBox').classList.remove('active');
+                    return;
+                }
+
+                const minutes = Math.floor(diff / 60000);
+                const seconds = Math.floor((diff % 60000) / 1000);
+                document.getElementById('timerDisplay').textContent =
+                    `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            }, 1000);
+        }
+
+        function startPaymentCheck(nextUrl) {
+            checkInterval = setInterval(async () => {
+                if (!currentPaymentId) return;
+
+                try {
+                    const response = await fetch(`/api/getPixPayment?id=${currentPaymentId}`);
+                    const data = await response.json();
+
+                    if (data.success && data.status === 'CONFIRMED') {
+                        clearInterval(checkInterval);
+                        clearInterval(timerInterval);
+
+                        setTimeout(() => {
+                            const params = getUrlParams();
+                            const url = new URL(nextUrl, window.location.href);
+                            Object.keys(params).forEach(key => {
+                                url.searchParams.append(key, params[key]);
+                            });
+                            window.location.href = url.toString();
+                        }, 1000);
+                    }
+                } catch (error) {
+                    console.error('Erro ao verificar pagamento:', error);
+                }
+            }, 2000);
+        }
+
+        function copyPixKey() {
+            const pixKey = document.getElementById('pixKey').textContent;
+            navigator.clipboard.writeText(pixKey).then(() => {
+                const btn = document.getElementById('copyBtn');
+                const originalText = btn.innerHTML;
+                btn.innerHTML = '<i class="fas fa-check"></i> Copiado!';
+                btn.classList.add('copied');
+
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                    btn.classList.remove('copied');
+                }, 2000);
+            });
+        }
+
+        function goBack() {
+            window.history.back();
+        }
+
+        // Habilitar botão quando checkbox selecionado
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('confirmCheck').addEventListener('change', function() {
+                document.getElementById('confirmBtn').disabled = !this.checked;
+            });
+
+            document.getElementById('confirmBtn').addEventListener('click', () => {
+                // Simular pagamento confirmado para teste
+                // Em produção, o servidor confirma via webhook
+                if (currentPaymentId) {
+                    fetch('/api/confirmPixPayment', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ paymentId: currentPaymentId })
+                    }).catch(console.error);
+                }
+            });
+
+            initializeCheckout();
+        });
+    </script>
+</body>
+</html>

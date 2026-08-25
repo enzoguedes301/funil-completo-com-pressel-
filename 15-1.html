@@ -586,6 +586,40 @@
                 document.getElementById('cpf').value = urlParams.cpf;
             }
 
+            // Atualizar valores do frete do localStorage
+            console.log('🔄 Atualizando valores do frete...');
+            const freightDataStr = localStorage.getItem('userdata');
+            if (freightDataStr) {
+                try {
+                    const freightData = JSON.parse(freightDataStr);
+                    const metodo = freightData.metodo_confirmado || 'SEDEX';
+                    const preco = freightData.preco_confirmado || '29,90';
+
+                    console.log('✅ Método:', metodo);
+                    console.log('✅ Preço:', preco);
+
+                    // Atualizar label do frete
+                    const freteLabel = document.querySelector('.order-summary .summary-row:first-child span:first-child');
+                    if (freteLabel) {
+                        freteLabel.textContent = `Frete ${metodo}`;
+                    }
+
+                    // Atualizar preço do frete
+                    const fretePreco = document.querySelector('.order-summary .summary-row:first-child span:last-child');
+                    if (fretePreco) {
+                        fretePreco.textContent = `R$ ${preco}`;
+                    }
+
+                    // Atualizar total
+                    const totalPreco = document.querySelector('.order-summary .summary-row.total span:last-child');
+                    if (totalPreco) {
+                        totalPreco.textContent = `R$ ${preco}`;
+                    }
+                } catch (e) {
+                    console.error('❌ Erro ao atualizar frete:', e);
+                }
+            }
+
             // Initialize timer
             startTimer();
         });

@@ -15,7 +15,7 @@ if (preg_match('/^(\d)\1{10}$/', $cpf)) {
     exit;
 }
 
-// CPFs conhecidos que existem na API MagmaDataHub
+// CPFs reais que funcionam na API MagmaDataHub
 $cpfsReais = [
     '00000000000' => [
         'nome' => 'NOME REMOVIDO',
@@ -50,7 +50,10 @@ if (isset($cpfsReais[$cpf])) {
     exit;
 }
 
-// Se não encontrou, retorna erro
 http_response_code(404);
-echo json_encode(['success' => false, 'erro' => 'CPF não encontrado']);
+echo json_encode([
+    'success' => false,
+    'erro' => 'CPF não encontrado',
+    'dica' => 'CPFs disponíveis: 00000000000, 11144477735, 00000000000'
+]);
 ?>

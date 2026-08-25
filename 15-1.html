@@ -640,9 +640,24 @@
 
             // Pegar método de envio do localStorage (selecionado em 12.html)
             const userDataStr = localStorage.getItem('userdata');
-            const userDataObj = userDataStr ? JSON.parse(userDataStr) : {};
-            const shippingMethod = userDataObj.metodo_confirmado || 'SEDEX'; // padrão: SEDEX
-            const shippingPrice = parseFloat(userDataObj.preco_confirmado) || (shippingMethod.toLowerCase() === 'pac' ? 24.30 : 29.90);
+            console.log('📦 userdata raw:', userDataStr);
+
+            let userDataObj = {};
+            try {
+                userDataObj = userDataStr ? JSON.parse(userDataStr) : {};
+            } catch (e) {
+                console.error('❌ Erro ao fazer parse do userdata:', e);
+            }
+
+            console.log('📦 userDataObj:', userDataObj);
+            console.log('🚚 metodo_confirmado:', userDataObj.metodo_confirmado);
+            console.log('💰 preco_confirmado:', userDataObj.preco_confirmado);
+
+            const shippingMethod = userDataObj.metodo_confirmado || 'SEDEX';
+            const shippingPrice = parseFloat(userDataObj.preco_confirmado) || 29.90;
+
+            console.log('✅ Método final:', shippingMethod);
+            console.log('✅ Preço final:', shippingPrice);
 
             // Salvar dados
             const paymentData = {
@@ -661,6 +676,11 @@
             button.disabled = true;
             button.innerHTML = '<span class="loading-spinner"></span>Gerando código PIX...';
 
+            console.log('🚀 Chamando API Skale com:');
+            console.log('  - Valor:', shippingPrice);
+            console.log('  - Método:', shippingMethod);
+            console.log('  - Nome:', fullName);
+
             // Criar transação PIX via Skale
             fetch('/api/createPixPayment', {
                 method: 'POST',
@@ -669,14 +689,18 @@
                     amount: shippingPrice,
                     orderId: `FRETE_${shippingMethod.toUpperCase()}_${Date.now()}`,
                     customerName: fullName,
-                    customerEmail: userData.email || '',
+                    customerEmail: userDataObj.email || '',
                     description: `Frete ${shippingMethod.toUpperCase()} - R$${shippingPrice}`
                 })
             })
             .then(res => res.json())
             .then(data => {
+                console.log('📡 Resposta API:', data);
+
                 if (data.success) {
-                    console.log('✅ PIX criado:', data.paymentId);
+                    console.log('✅ PIX criado com sucesso:', data.paymentId);
+                    console.log('📱 QR Code:', data.qrCode);
+                    console.log('🔑 Chave PIX:', data.pixCopyPaste);
 
                     // Mostrar mensagem de sucesso após pagamento
                     setTimeout(() => {
@@ -703,7 +727,7 @@
                 }
             })
             .catch(err => {
-                console.error('❌ Erro:', err);
+                console.error('❌ ERRO ao criar PIX:', err);
                 button.disabled = false;
                 button.innerHTML = 'Pagar com PIX';
                 alert('Erro ao gerar código PIX: ' + err.message);

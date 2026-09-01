@@ -124,8 +124,15 @@ async function createSkalePixTransaction(amount, orderId, customerName, customer
           console.log(`[Skale PIX] Status ${res.statusCode}: ${orderId}`, JSON.stringify(response, null, 2));
 
           if (res.statusCode === 201 || res.statusCode === 200) {
-            // Extrair chave PIX da resposta Skale
-            const pixKey = response.pix?.qrcode || response.pix?.brcode || generatePixKey();
+            // O Brcode é o código EMV que o app do banco lê. Sem ele não há
+            // pagamento possível — não inventamos um código local.
+            const pixKey = response.pix?.brcode || response.pix?.qrcode;
+
+            if (!pixKey) {
+              console.error('[Skale PIX] ❌ Resposta 200 sem brcode/qrcode:', JSON.stringify(response));
+              reject(new Error('A Skale respondeu sem o código PIX (brcode)'));
+              return;
+            }
 
             console.log(`[Skale PIX] ✅ Chave (Brcode): ${pixKey.substring(0, 50)}...`);
             console.log(`[Skale PIX] ✅ Transaction ID: ${response.id}`);
@@ -137,6 +144,17 @@ async function createSkalePixTransaction(amount, orderId, customerName, customer
               expiresAt: response.pix?.expirationDate || new Date(Date.now() + 30 * 60 * 1000).toISOString(),
               status: response.status || 'waiting_payment'
             });
+          } else if (res.statusCode === 401 || res.statusCode === 403) {
+            // Erro de credencial: o funil inteiro para aqui até trocar a chave.
+            console.error('═'.repeat(70));
+            console.error('[Skale PIX] ❌ CHAVE DE API RECUSADA PELA SKALE (HTTP ' + res.statusCode + ')');
+            console.error(`  Mensagem da Skale: ${response.message || 'sem detalhe'}`);
+            console.error(`  Chave em uso: ${String(SKALE_API_KEY).slice(0, 12)}...`);
+            console.error('  Nenhum PIX será gerado enquanto isso. Pegue a chave em');
+            console.error('  https://dashboard.skalepayments.com.br (Configurações -> API Keys)');
+            console.error('  e coloque em SKALE_API_KEY no .env. Ela começa com sk_live_ ou sk_test_.');
+            console.error('═'.repeat(70));
+            reject(new Error('SKALE_AUTH: ' + (response.message || 'API key inválida')));
           } else {
             console.log(`[Skale PIX] ❌ Erro ${res.statusCode}:`, response.message || response);
             reject(new Error(response.message || `Erro Skale: ${res.statusCode}`));

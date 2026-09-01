@@ -5,6 +5,7 @@ const https = require('https');
 const url = require('url');
 const path = require('path');
 const fs = require('fs');
+const QRCode = require('qrcode');
 
 // Token da API (usando o primeiro token disponível)
 const API_TOKEN = 'CPF_API_TOKEN_REMOVIDO_DO_HISTORICO';
@@ -44,38 +45,23 @@ function savePixPayments(data) {
 
 initPixStorage();
 
-// Gerar chave PIX UUID válida
-function generatePixKey() {
-  return `${Math.random().toString(16).substr(2, 8)}-${Math.random().toString(16).substr(2, 4)}-${Math.random().toString(16).substr(2, 4)}-${Math.random().toString(16).substr(2, 4)}-${Math.random().toString(16).substr(2, 12)}`;
-}
-
-// Gerar QR Code em base64 (simples SVG)
-function generateQrCodeBase64(pixKey) {
-  const svg = `<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-    <rect width="200" height="200" fill="white"/>
-    <rect x="10" y="10" width="35" height="35" fill="black"/>
-    <rect x="65" y="10" width="35" height="35" fill="black"/>
-    <rect x="120" y="10" width="35" height="35" fill="black"/>
-    <rect x="10" y="65" width="35" height="35" fill="black"/>
-    <rect x="120" y="65" width="35" height="35" fill="black"/>
-    <rect x="10" y="120" width="35" height="35" fill="black"/>
-    <rect x="65" y="120" width="35" height="35" fill="black"/>
-    <rect x="120" y="120" width="35" height="35" fill="black"/>
-    <text x="100" y="105" text-anchor="middle" font-size="10" fill="black">PIX</text>
-    <text x="100" y="120" text-anchor="middle" font-size="8" fill="black">${pixKey.substr(0, 8)}</text>
-  </svg>`;
-
-  return `data:image/svg+xml;base64,${Buffer.from(svg).toString('base64')}`;
-}
-
-// Gerar string PIX EMV para copy-paste
-function generatePixCopyPaste(pixKey, amount) {
-  const merchantName = 'MERCADO PAGAMENTO';
-  const merchantCity = 'SAO PAULO';
-  const amountStr = amount.toFixed(2).replace('.', '');
-
-  // EMV/Brcode PIX simplificado
-  return pixKey;
+// Gerar QR Code real a partir do Brcode
+async function generateRealQRCode(brcode) {
+  try {
+    return await QRCode.toDataURL(brcode, {
+      errorCorrectionLevel: 'H',
+      type: 'image/png',
+      width: 300,
+      margin: 1,
+      color: {
+        dark: '#000000',
+        light: '#FFFFFF'
+      }
+    });
+  } catch (err) {
+    console.error(`[QR Code] Erro ao gerar: ${err.message}`);
+    return null;
+  }
 }
 
 // Integração Skale Payments - Criar transação PIX
@@ -343,10 +329,12 @@ const server = http.createServer((req, res) => {
           return;
         }
 
-        const pixKey = skaleData.pixKey;
+        const pixKey = skaleData.pixKey; // Brcode real da Skale
         const expiresAt = skaleData.expiresAt || new Date(Date.now() + 30 * 60 * 1000).toISOString();
-        const qrCode = skaleData.qrCode || generateQrCodeBase64(pixKey);
-        const pixCopyPaste = pixKey;
+
+        // Gerar QR Code real a partir do Brcode
+        const qrCode = await generateRealQRCode(pixKey) || pixKey;
+        const pixCopyPaste = pixKey; // Brcode para copiar/colar
 
         const payment = {
           id: paymentId,

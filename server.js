@@ -7,13 +7,13 @@ const path = require('path');
 const fs = require('fs');
 const QRCode = require('qrcode');
 
-// Token da API (usando o primeiro token disponível)
-const API_TOKEN = 'CPF_API_TOKEN_REMOVIDO_DO_HISTORICO';
+// Credenciais ficam apenas no .env — nunca no código versionado.
+const API_TOKEN = process.env.CPF_API_TOKEN || '';
 const API_URL = 'https://magmadatahub.com/api.php';
 
 // PIX Configuration
 const PIX_STORAGE_FILE = path.join(__dirname, 'pix_payments.json');
-const SKALE_API_KEY = process.env.SKALE_API_KEY || 'SKALE_API_KEY_REMOVIDA_DO_HISTORICO';
+const SKALE_API_KEY = process.env.SKALE_API_KEY || '';
 const SKALE_API_URL = 'https://api.skalepayments.com.br'; // API Skale Production
 const SKALE_WEBHOOK_URL = process.env.SKALE_WEBHOOK_URL || 'http://localhost:8080/api/pixWebhook'; // URL para confirmação
 

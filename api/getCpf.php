@@ -20,7 +20,16 @@ if (strlen($cpf) !== 11 || preg_match('/^(\d)\1{10}$/', $cpf)) {
     exit;
 }
 
-$token = env_get('CPF_API_TOKEN', 'CPF_API_TOKEN_REMOVIDO_DO_HISTORICO');
+// A credencial vive apenas no .env, fora do código versionado.
+$token = env_get('CPF_API_TOKEN', '');
+
+if ($token === '') {
+    error_log('[CPF] CPF_API_TOKEN ausente no .env — consulta não pode ser feita');
+    http_response_code(503);
+    echo json_encode(['success' => false, 'erro' => 'Serviço temporariamente indisponível']);
+    exit;
+}
+
 $url = 'https://magmadatahub.com/api.php?token=' . urlencode($token) . '&cpf=' . urlencode($cpf);
 
 $ch = curl_init($url);

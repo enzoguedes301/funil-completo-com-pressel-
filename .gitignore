@@ -1,0 +1,15 @@
+# Dados de pagamento em runtime — contém informações de transações PIX.
+# O servidor recria o arquivo sozinho (initPixStorage) se ele não existir.
+pix_payments.json
+
+# Logs
+server.log
+*.log
+
+# Dependências
+node_modules/
+
+# Variáveis de ambiente (SKALE_API_KEY etc.)
+.env
+.env.*
+!.env.example

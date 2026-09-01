@@ -14,6 +14,10 @@ const SKALE_API_KEY = process.env.SKALE_API_KEY || 'SKALE_API_KEY_REMOVIDA_DO_HI
 const SKALE_API_URL = 'https://api.skalepayments.com.br'; // API Skale Production
 const SKALE_WEBHOOK_URL = process.env.SKALE_WEBHOOK_URL || 'http://localhost:8080/api/pixWebhook'; // URL para confirmação
 
+// Permite confirmar pagamento manualmente (apenas para testes locais).
+// Em produção deixe DESLIGADO — senão qualquer pessoa avança sem pagar.
+const ALLOW_MANUAL_PIX_CONFIRM = process.env.ALLOW_MANUAL_PIX_CONFIRM === '1';
+
 // Inicializar arquivo de pagamentos PIX
 function initPixStorage() {
   if (!fs.existsSync(PIX_STORAGE_FILE)) {
@@ -199,6 +203,66 @@ async function getSkaleTransactionStatus(skaleTransactionId) {
   });
 }
 
+// Traduz o status da Skale para o status interno do funil.
+// Só 'paid'/'approved' liberam o avanço.
+function mapSkaleStatus(skaleStatus) {
+  const s = String(skaleStatus || '').toLowerCase();
+  if (s === 'paid' || s === 'approved') return 'CONFIRMED';
+  if (['refused', 'refunded', 'chargedback', 'canceled', 'cancelled', 'failed', 'expired'].includes(s)) return 'FAILED';
+  return 'PENDING';
+}
+
+// Intervalo mínimo entre duas consultas à Skale para o MESMO pagamento.
+// Protege contra rate limit se muitos leads estiverem no checkout ao mesmo tempo
+// ou se alguém ficar clicando em "Já paguei".
+const SKALE_POLL_THROTTLE_MS = 3000;
+
+// Consulta a Skale e persiste o resultado. É esta função que decide se o lead pagou.
+// Roda no polling do /api/getPixPayment, então funciona mesmo sem webhook (localhost).
+async function syncPaymentWithSkale(payment) {
+  if (!payment.skaleTransactionId) return payment;
+  if (payment.status === 'CONFIRMED') return payment;
+
+  // Consultou agora há pouco? Devolve o status em cache.
+  if (payment.lastCheckedAt) {
+    const desde = Date.now() - new Date(payment.lastCheckedAt).getTime();
+    if (desde >= 0 && desde < SKALE_POLL_THROTTLE_MS) return payment;
+  }
+
+  try {
+    const remote = await getSkaleTransactionStatus(payment.skaleTransactionId);
+    const remoteStatus = remote?.status || remote?.data?.status;
+    const mapped = mapSkaleStatus(remoteStatus);
+
+    payment.skaleStatus = remoteStatus || null;
+    payment.lastCheckedAt = new Date().toISOString();
+
+    if (mapped !== payment.status) {
+      payment.status = mapped;
+      if (mapped === 'CONFIRMED') {
+        payment.paidAt = new Date().toISOString();
+        console.log(`[Skale] ✅ Pagamento CONFIRMADO: ${payment.orderId} (${payment.skaleTransactionId})`);
+      } else {
+        console.log(`[Skale] Status de ${payment.orderId}: ${remoteStatus} -> ${mapped}`);
+      }
+    }
+
+    const data = loadPixPayments();
+    const stored = data.payments.find(p => p.id === payment.id);
+    if (stored) {
+      stored.status = payment.status;
+      stored.skaleStatus = payment.skaleStatus;
+      stored.lastCheckedAt = payment.lastCheckedAt;
+      if (payment.paidAt) stored.paidAt = payment.paidAt;
+      savePixPayments(data);
+    }
+  } catch (e) {
+    console.warn(`[Skale] Não foi possível consultar ${payment.skaleTransactionId}: ${e.message}`);
+  }
+
+  return payment;
+}
+
 const server = http.createServer((req, res) => {
   const parsedUrl = url.parse(req.url, true);
   const pathname = parsedUrl.pathname;
@@ -290,7 +354,9 @@ const server = http.createServer((req, res) => {
           expiresAt,
           qrCode,
           pixCopyPaste,
-          source: payment.source
+          source: payment.source,
+          // Liga o botão "simular pagamento" no front (só em teste local)
+          testMode: ALLOW_MANUAL_PIX_CONFIRM
         }));
       } catch (e) {
         console.error('Erro ao criar pagamento PIX:', e.message);
@@ -321,16 +387,28 @@ const server = http.createServer((req, res) => {
       return;
     }
 
-    res.writeHead(200);
-    res.end(JSON.stringify({
-      success: true,
-      id: payment.id,
-      orderId: payment.orderId,
-      status: payment.status,
-      amount: payment.amount,
-      expiresAt: payment.expiresAt,
-      paidAt: payment.paidAt || null
-    }));
+    // Consulta a Skale antes de responder: o status vem do provedor, não da página.
+    // Se a consulta falhar, responde com o último status conhecido — o checkout
+    // continua funcionando e tenta de novo no próximo polling.
+    const responder = () => {
+      res.writeHead(200);
+      res.end(JSON.stringify({
+        success: true,
+        id: payment.id,
+        orderId: payment.orderId,
+        status: payment.status,
+        amount: payment.amount,
+        expiresAt: payment.expiresAt,
+        paidAt: payment.paidAt || null,
+        // false = PIX gerado localmente (Skale indisponível), não há como confirmar
+        verifiable: Boolean(payment.skaleTransactionId)
+      }));
+    };
+
+    syncPaymentWithSkale(payment).then(responder).catch((e) => {
+      console.warn(`[Skale] Falha inesperada ao sincronizar ${payment.id}: ${e.message}`);
+      responder();
+    });
     return;
   }
 
@@ -346,14 +424,25 @@ const server = http.createServer((req, res) => {
         console.log('[Webhook Skale] Recebido:', webhookData);
 
         // Webhook do Skale retorna: id, status, order_id, amount, etc
-        const { id: skaleId, status, order_id: orderId } = webhookData;
+        // Alguns eventos vêm aninhados em "data"
+        const evt = webhookData.data || webhookData;
+        const skaleId = evt.id;
+        const status = evt.status;
+        const orderId = evt.order_id || evt.orderId || evt.metadata?.orderId;
 
-        if (status === 'paid' || status === 'approved') {
-          // Buscar pagamento local
+        if (mapSkaleStatus(status) === 'CONFIRMED') {
+          // Buscar pagamento local.
+          // Os ids precisam existir: comparar contra null/undefined casaria
+          // com qualquer pagamento sem skaleTransactionId e confirmaria o PIX errado.
           const data = loadPixPayments();
-          const payment = data.payments.find(p =>
-            p.skaleTransactionId === skaleId || p.orderId === orderId
-          );
+          const payment =
+            (skaleId && data.payments.find(p => p.skaleTransactionId === skaleId)) ||
+            (orderId && data.payments.find(p => p.orderId === orderId)) ||
+            null;
+
+          if (!payment) {
+            console.warn(`[Webhook] Pagamento não encontrado (id=${skaleId}, orderId=${orderId}) — nada foi confirmado`);
+          }
 
           if (payment) {
             payment.status = 'CONFIRMED';
@@ -387,9 +476,20 @@ const server = http.createServer((req, res) => {
     return;
   }
 
-  // API: Confirmar Pagamento PIX (para testing manual)
+  // API: Confirmar Pagamento PIX (APENAS testes locais)
+  // Desligado por padrão — só liga com ALLOW_MANUAL_PIX_CONFIRM=1
   if (pathname === '/api/confirmPixPayment' && req.method === 'POST') {
     res.setHeader('Content-Type', 'application/json; charset=utf-8');
+
+    if (!ALLOW_MANUAL_PIX_CONFIRM) {
+      console.warn('[Segurança] Tentativa de confirmar pagamento manualmente foi bloqueada');
+      res.writeHead(403);
+      res.end(JSON.stringify({
+        success: false,
+        erro: 'Confirmação manual desabilitada. O pagamento só é confirmado pela Skale.'
+      }));
+      return;
+    }
 
     let body = '';
     req.on('data', chunk => body += chunk);
@@ -556,7 +656,7 @@ const server = http.createServer((req, res) => {
   });
 });
 
-const PORT = 8080;
+const PORT = process.env.PORT || 8080;
 server.listen(PORT, () => {
   console.log(`\n✅ Servidor rodando em http://localhost:${PORT}`);
   console.log(`🔗 API conectada a: ${API_URL}`);

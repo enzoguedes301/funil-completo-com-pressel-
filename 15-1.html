@@ -404,10 +404,41 @@
                 gap: 15px;
             }
         }
+
+        /* Estado do pagamento */
+        .pix-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            line-height: 1.35;
+            margin-bottom: 12px;
+            background: #fff8e1;
+            color: #7a5d00;
+        }
+        .pix-status__dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #f0ad4e;
+            flex-shrink: 0;
+            animation: pixPulse 1.2s ease-in-out infinite;
+        }
+        .pix-status--checking { background: #e7f1ff; color: #10456d; }
+        .pix-status--checking .pix-status__dot { background: #3d8bfd; }
+        .pix-status--paid { background: #d4edda; color: #155724; }
+        .pix-status--paid .pix-status__dot { background: #28c45c; animation: none; }
+        .pix-status--error { background: #f8d7da; color: #721c24; }
+        .pix-status--error .pix-status__dot { background: #dc3545; animation: none; }
+        .payment-button:disabled { opacity: 0.5; cursor: not-allowed; }
+        @keyframes pixPulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.25; } }
     </style>
 
     <!-- QR Code Library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="/pix-gate.js"></script>
 
     <!-- Pixel Facebook -->
     <script>
@@ -512,9 +543,15 @@
             Seu pedido foi processado.
         </div>
 
+        <!-- Estado do pagamento -->
+        <div class="pix-status" id="pixStatus">
+            <span class="pix-status__dot"></span>
+            <span id="pixStatusText">Gerando código PIX...</span>
+        </div>
+
         <!-- Botão de Pagamento -->
-        <button class="payment-button" id="payButton" onclick="processPixPayment()">
-            Confirmar Pagamento
+        <button class="payment-button" id="payButton" onclick="processPixPayment()" disabled>
+            Já paguei — verificar pagamento
         </button>
     </div>
 
@@ -660,16 +697,10 @@
 
             console.log('📤 Enviando requisição para criar PIX na Skale:', payload);
 
-            fetch('/api/createPixPayment', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            })
-            .then(res => res.json())
-            .then(data => {
-                console.log('✅ Resposta da Skale:', data);
+            PixGate.create(payload)
+                .then(data => {
+                    console.log('✅ Resposta da Skale:', data);
 
-                if (data.success && data.pixCopyPaste) {
                     const brcode = data.pixCopyPaste;
                     currentPixKey = brcode;
                     currentOrderId = data.orderId;
@@ -686,16 +717,35 @@
                         console.log('🔑 Brcode da Skale exibido');
                     }
 
+                    document.getElementById('payButton').disabled = false;
+                    setStatus('waiting', 'Aguardando o pagamento. A confirmação é automática.');
+
+                    // Avança sozinho assim que a Skale registrar o pagamento
+                    PixGate.watch(avancar);
+
                     console.log('✅ PIX da Skale pronto para usar!');
-                } else {
-                    console.error('❌ Erro: resposta inválida da API', data);
-                    alert('Erro ao gerar PIX. Recarregue a página.');
-                }
-            })
-            .catch(err => {
-                console.error('❌ Erro na requisição:', err);
-                alert('Erro ao conectar com a API PIX. Recarregue a página.');
-            });
+                })
+                .catch(err => {
+                    console.error('❌ Erro na requisição:', err);
+                    setStatus('error', 'Erro ao gerar o PIX. Recarregue a página.');
+                });
+        }
+
+        function setStatus(state, text) {
+            document.getElementById('pixStatus').className = 'pix-status pix-status--' + state;
+            document.getElementById('pixStatusText').textContent = text;
+        }
+
+        // Só roda depois que o servidor confirmar o pagamento na Skale
+        function avancar() {
+            PixGate.stop();
+            document.getElementById('payButton').disabled = true;
+            setStatus('paid', 'Pagamento confirmado! Redirecionando...');
+            document.getElementById('successMessage').classList.add('show');
+
+            setTimeout(() => {
+                window.location.href = PixGate.nextUrl('aprovado.html');
+            }, 2000);
         }
 
         // Timer
@@ -711,8 +761,8 @@
             }, 1000);
         }
 
-        // Confirmar pagamento
-        function processPixPayment() {
+        // "Já paguei": pergunta ao servidor. A página não decide se foi pago.
+        async function processPixPayment() {
             const fullName = document.getElementById('fullName').value.trim();
             const cpf = document.getElementById('cpf').value.trim();
 
@@ -727,20 +777,27 @@
                 return;
             }
 
-            console.log('✅ Pagamento confirmado para:', fullName, 'CPF:', cpf);
-            console.log('💳 PIX: ', currentOrderId);
+            console.log('🔎 Verificando pagamento de', fullName, '| PIX:', currentOrderId);
 
             const button = document.getElementById('payButton');
-            button.disabled = true;
-            button.innerHTML = '<span class="loading-spinner"></span>Confirmando...';
+            const originalText = button.textContent;
 
-            // Simular confirmação e redirecionar
-            setTimeout(() => {
-                document.getElementById('successMessage').classList.add('show');
-                setTimeout(() => {
-                    window.location.href = 'aprovado.html';
-                }, 2000);
-            }, 1500);
+            button.disabled = true;
+            button.innerHTML = '<span class="loading-spinner"></span>Verificando...';
+            setStatus('checking', 'Consultando o provedor de pagamento...');
+
+            const result = await PixGate.check();
+
+            if (result.paid) {
+                avancar();
+                return;
+            }
+
+            button.disabled = false;
+            button.textContent = originalText;
+            setStatus('waiting', result.verifiable
+                ? 'Pagamento ainda não identificado. Se você acabou de pagar, aguarde alguns segundos.'
+                : 'Não foi possível validar o pagamento com o provedor. Recarregue a página.');
         }
     </script>
 </body>

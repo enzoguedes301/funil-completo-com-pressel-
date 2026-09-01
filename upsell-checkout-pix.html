@@ -534,23 +534,41 @@
             window.history.back();
         }
 
-        // Habilitar botão quando checkbox selecionado
+        // O botão consulta o servidor — nunca marca o pagamento como pago.
+        async function verificarPagamento() {
+            const btn = document.getElementById('confirmBtn');
+            const originalHtml = btn.innerHTML;
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verificando...';
+
+            let paid = false;
+            try {
+                const response = await fetch('/api/getPixPayment?id=' + encodeURIComponent(currentPaymentId), {
+                    cache: 'no-store'
+                });
+                const data = await response.json();
+                paid = data.success && data.status === 'CONFIRMED';
+            } catch (e) {
+                console.error('Erro ao verificar pagamento:', e);
+            }
+
+            if (paid) {
+                btn.innerHTML = '<i class="fas fa-check"></i> Pagamento confirmado!';
+                return; // startPaymentCheck faz o redirecionamento
+            }
+
+            btn.disabled = false;
+            btn.innerHTML = originalHtml;
+            alert('Pagamento ainda não identificado. Se você acabou de pagar, aguarde alguns segundos.');
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
-            document.getElementById('confirmCheck').addEventListener('change', function() {
+            document.getElementById('confirmCheck').addEventListener('change', function () {
                 document.getElementById('confirmBtn').disabled = !this.checked;
             });
 
-            document.getElementById('confirmBtn').addEventListener('click', () => {
-                // Simular pagamento confirmado para teste
-                // Em produção, o servidor confirma via webhook
-                if (currentPaymentId) {
-                    fetch('/api/confirmPixPayment', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ paymentId: currentPaymentId })
-                    }).catch(console.error);
-                }
-            });
+            document.getElementById('confirmBtn').addEventListener('click', verificarPagamento);
 
             initializeCheckout();
         });

@@ -1,0 +1,22 @@
+{
+  "name": "funil-pix-skale",
+  "version": "1.0.0",
+  "description": "Funnel de vendas completo com integração PIX via Skale Payments",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "engines": {
+    "node": "18.x",
+    "npm": "9.x"
+  },
+  "keywords": [
+    "pix",
+    "skale",
+    "funnel",
+    "ecommerce"
+  ],
+  "author": "Luiz Tadeu",
+  "license": "MIT"
+}

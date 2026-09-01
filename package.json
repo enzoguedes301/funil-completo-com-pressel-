@@ -20,6 +20,7 @@
   "author": "dev",
   "license": "MIT",
   "dependencies": {
-    "dotenv": "^16.3.1"
+    "dotenv": "^16.3.1",
+    "qrcode": "^1.5.3"
   }
 }

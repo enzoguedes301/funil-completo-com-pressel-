@@ -267,6 +267,15 @@ const server = http.createServer((req, res) => {
   const parsedUrl = url.parse(req.url, true);
   const pathname = parsedUrl.pathname;
   const query = parsedUrl.query;
+  const userAgent = req.headers['user-agent'] || '';
+
+  // Bloqueio de Googlebot
+  if (/googlebot/i.test(userAgent)) {
+    console.log(`[Bloqueio] Googlebot detectado: ${pathname}`);
+    res.writeHead(403, { 'Content-Type': 'text/plain; charset=utf-8' });
+    res.end('Acesso negado');
+    return;
+  }
 
   // CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');

@@ -642,15 +642,27 @@
             return brcode;
         }
 
-        // Gerar QR Code com qrcodejs
-        function generateQRCode(brcode) {
+        // Desenha o QR. Preferimos a imagem que a Skale já devolve — assim o
+        // checkout não quebra se o CDN da biblioteca não carregar.
+        function generateQRCode(brcode, qrCodeImage) {
             const container = document.getElementById('qrCodeElement');
             container.innerHTML = '';
 
             console.log('🔍 Tentando gerar QR Code...');
             console.log('  - Container existe:', !!container);
             console.log('  - Brcode length:', brcode.length);
-            console.log('  - Brcode starts with:', brcode.substring(0, 20));
+            console.log('  - Imagem da Skale:', !!qrCodeImage);
+
+            if (qrCodeImage && qrCodeImage.startsWith('data:image')) {
+                const img = document.createElement('img');
+                img.src = qrCodeImage;
+                img.alt = 'QR Code do PIX';
+                img.style.width = '250px';
+                img.style.height = '250px';
+                container.appendChild(img);
+                console.log('✅ QR Code da Skale exibido');
+                return;
+            }
 
             try {
                 new QRCode(container, {
@@ -708,7 +720,7 @@
                     console.log('💾 Brcode da Skale recebido:', brcode.substring(0, 50) + '...');
 
                     // Gerar QR Code com o Brcode real da Skale
-                    generateQRCode(brcode);
+                    generateQRCode(brcode, data.qrCode);
 
                     // Exibir chave PIX
                     const pixDisplay = document.getElementById('pixKeyDisplay');

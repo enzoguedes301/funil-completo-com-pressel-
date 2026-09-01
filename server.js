@@ -298,25 +298,43 @@ const server = http.createServer((req, res) => {
 
         const paymentId = `PIX_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
-        // Tentar criar com Skale (se chave estiver configurada)
+        // O PIX precisa vir da Skale. Sem ela não há como gerar um Brcode que
+        // um banco aceite — o fallback local devolvia um UUID aleatório, e o
+        // cliente ficava com um QR Code impossível de pagar.
         let skaleData = null;
-        if (SKALE_API_KEY && !SKALE_API_KEY.includes('sua_chave')) {
-          try {
-            console.log(`[Skale] Criando transação PIX para: ${orderId}`);
-            skaleData = await createSkalePixTransaction(amount, orderId, customerName, customerEmail, description);
-            console.log(`[Skale] Transação criada com sucesso: ${skaleData.skaleTransactionId}`);
-          } catch (skaleError) {
-            console.warn(`[Skale] Erro ao criar transação (usando fallback local): ${skaleError.message}`);
-            // Fallback para geração local se Skale falhar
-          }
+        let skaleErro = null;
+
+        if (!SKALE_API_KEY || SKALE_API_KEY.includes('sua_chave')) {
+          console.error('[Skale] SKALE_API_KEY não configurada — não é possível gerar PIX');
+          res.writeHead(503);
+          res.end(JSON.stringify({
+            success: false,
+            erro: 'Meio de pagamento não configurado. Tente novamente em instantes.'
+          }));
+          return;
         }
 
-        // Gerar chave PIX se não vier do Skale
-        const pixKey = skaleData?.pixKey || generatePixKey();
+        try {
+          console.log(`[Skale] Criando transação PIX para: ${orderId}`);
+          skaleData = await createSkalePixTransaction(amount, orderId, customerName, customerEmail, description);
+          console.log(`[Skale] Transação criada com sucesso: ${skaleData.skaleTransactionId}`);
+        } catch (e) {
+          skaleErro = e;
+        }
 
-        // Usar dados do Skale ou gerar localmente
-        const expiresAt = skaleData?.expiresAt || new Date(Date.now() + 30 * 60 * 1000).toISOString();
-        const qrCode = skaleData?.qrCode || generateQrCodeBase64(pixKey);
+        if (!skaleData || !skaleData.pixKey) {
+          console.error(`[Skale] Falha ao criar PIX para ${orderId}: ${skaleErro?.message || 'resposta sem chave PIX'}`);
+          res.writeHead(503);
+          res.end(JSON.stringify({
+            success: false,
+            erro: 'Não foi possível gerar o PIX agora. Recarregue a página e tente de novo.'
+          }));
+          return;
+        }
+
+        const pixKey = skaleData.pixKey;
+        const expiresAt = skaleData.expiresAt || new Date(Date.now() + 30 * 60 * 1000).toISOString();
+        const qrCode = skaleData.qrCode || generateQrCodeBase64(pixKey);
         const pixCopyPaste = pixKey;
 
         const payment = {

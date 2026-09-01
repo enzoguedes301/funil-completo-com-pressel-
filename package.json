@@ -18,5 +18,8 @@
     "ecommerce"
   ],
   "author": "Luiz Tadeu",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "dotenv": "^16.3.1"
+  }
 }

@@ -479,8 +479,8 @@
                     document.getElementById('displayAmount').textContent = formatCurrency(amount);
                     document.getElementById('pixKey').textContent = data.pixCopyPaste;
 
-                    // Gerar QR Code
-                    generateQRCode(data.qrCode, amount);
+                    // Gerar QR Code a partir do que a Skale devolveu
+                    generateQRCode(data.qrCode, data.pixCopyPaste);
 
                     // Mostrar conteúdo PIX
                     document.getElementById('loadingSpinner').style.display = 'none';
@@ -508,20 +508,25 @@
         // GERAR QR CODE
         // =================================================================
 
-        function generateQRCode(data, amount) {
+        // qrCodeImage: PNG que a própria Skale devolve (preferido).
+        // brcode: código EMV real, usado para desenhar o QR se a imagem faltar.
+        function generateQRCode(qrCodeImage, brcode) {
             const container = document.getElementById('qrCodeElement');
-            container.innerHTML = ''; // Limpar conteúdo anterior
+            container.innerHTML = '';
 
-            // Para PIX real, usar um QR code adequado
-            // Aqui usamos um QR code com dados de exemplo
-            const qrData = `00020126360014br.gov.bcb.brcode01051.0.0` +
-                `03001500000000000000000000000000000000000000000000000000000000` +
-                `${String(amount.toFixed(2)).replace('.', '').padStart(10, '0')}5303986` +
-                `6013BRASILIA62070503***63041234`;
+            if (qrCodeImage && qrCodeImage.startsWith('data:image')) {
+                const img = document.createElement('img');
+                img.src = qrCodeImage;
+                img.alt = 'QR Code do PIX';
+                img.style.width = '250px';
+                img.style.height = '250px';
+                container.appendChild(img);
+                return;
+            }
 
             try {
                 new QRCode(container, {
-                    text: qrData,
+                    text: brcode,
                     width: 250,
                     height: 250,
                     colorDark: '#000000',
@@ -529,10 +534,11 @@
                     correctLevel: QRCode.CorrectLevel.H
                 });
             } catch (e) {
+                // Sem QR não há como escanear, mas o copia-e-cola segue válido.
                 container.innerHTML = `
                     <div style="text-align: center; color: #666;">
                         <i class="fas fa-qrcode" style="font-size: 3rem; opacity: 0.5;"></i>
-                        <p>QR Code gerado</p>
+                        <p>Use o código PIX copia e cola abaixo</p>
                     </div>
                 `;
             }

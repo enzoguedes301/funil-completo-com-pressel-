@@ -21,6 +21,25 @@ const SKALE_WEBHOOK_URL = process.env.SKALE_WEBHOOK_URL || 'http://localhost:808
 // Em produção deixe DESLIGADO — senão qualquer pessoa avança sem pagar.
 const ALLOW_MANUAL_PIX_CONFIRM = process.env.ALLOW_MANUAL_PIX_CONFIRM === '1';
 
+// Um .env com o texto de exemplo ainda por preencher derruba o funil inteiro:
+// o servidor manda "SUA_CHAVE_AQUI" para a Skale e nenhum PIX é gerado.
+// Barramos isso no boot, em vez de descobrir pelo cliente que não conseguiu pagar.
+function isChaveSkalePlausivel(chave) {
+  const k = String(chave || '').trim();
+  if (!k.startsWith('sk_')) return false;
+  if (k.length < 32) return false;
+  return !/sua[_ ]?chave|seu[_ ]?token|your[_ ]?key|aqui|placeholder|xxx/i.test(k);
+}
+
+if (!isChaveSkalePlausivel(SKALE_API_KEY)) {
+  console.error('═'.repeat(70));
+  console.error('⚠️  SKALE_API_KEY NÃO PARECE UMA CHAVE REAL');
+  console.error(`   Valor carregado: ${JSON.stringify(String(SKALE_API_KEY).slice(0, 24))}`);
+  console.error('   Nenhum PIX será gerado enquanto isso — o checkout vai recusar.');
+  console.error('   Corrija SKALE_API_KEY no arquivo .env (ela começa com sk_).');
+  console.error('═'.repeat(70));
+}
+
 // Inicializar arquivo de pagamentos PIX
 function initPixStorage() {
   if (!fs.existsSync(PIX_STORAGE_FILE)) {
@@ -124,9 +143,9 @@ async function createSkalePixTransaction(amount, orderId, customerName, customer
           console.log(`[Skale PIX] Status ${res.statusCode}: ${orderId}`, JSON.stringify(response, null, 2));
 
           if (res.statusCode === 201 || res.statusCode === 200) {
-            // O Brcode é o código EMV que o app do banco lê. Sem ele não há
-            // pagamento possível — não inventamos um código local.
-            const pixKey = response.pix?.brcode || response.pix?.qrcode;
+            // O código EMV que o app do banco lê vem em pix.qrcode.
+            // Sem ele não há pagamento possível — não inventamos um local.
+            const pixKey = response.pix?.qrcode || response.pix?.brcode;
 
             if (!pixKey) {
               console.error('[Skale PIX] ❌ Resposta 200 sem brcode/qrcode:', JSON.stringify(response));
@@ -141,6 +160,9 @@ async function createSkalePixTransaction(amount, orderId, customerName, customer
               success: true,
               skaleTransactionId: response.id,
               pixKey: pixKey,
+              // A Skale já devolve o PNG do QR pronto. Usar o dela é mais
+              // confiável do que redesenhar o código por conta própria.
+              qrCodeImage: response.pix?.qrcodeImage || null,
               expiresAt: response.pix?.expirationDate || new Date(Date.now() + 30 * 60 * 1000).toISOString(),
               status: response.status || 'waiting_payment'
             });
@@ -319,7 +341,7 @@ const server = http.createServer((req, res) => {
         let skaleData = null;
         let skaleErro = null;
 
-        if (!SKALE_API_KEY || SKALE_API_KEY.includes('sua_chave')) {
+        if (!SKALE_API_KEY || !isChaveSkalePlausivel(SKALE_API_KEY)) {
           console.error('[Skale] SKALE_API_KEY não configurada — não é possível gerar PIX');
           res.writeHead(503);
           res.end(JSON.stringify({
@@ -347,12 +369,13 @@ const server = http.createServer((req, res) => {
           return;
         }
 
-        const pixKey = skaleData.pixKey; // Brcode real da Skale
+        const pixKey = skaleData.pixKey; // Código EMV real da Skale
         const expiresAt = skaleData.expiresAt || new Date(Date.now() + 30 * 60 * 1000).toISOString();
 
-        // Gerar QR Code real a partir do Brcode
-        const qrCode = await generateRealQRCode(pixKey) || pixKey;
-        const pixCopyPaste = pixKey; // Brcode para copiar/colar
+        // Preferimos a imagem oficial da Skale; só desenhamos por conta
+        // própria se ela não vier.
+        const qrCode = skaleData.qrCodeImage || await generateRealQRCode(pixKey);
+        const pixCopyPaste = pixKey; // Código para copiar/colar
 
         const payment = {
           id: paymentId,

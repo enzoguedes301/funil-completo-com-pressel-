@@ -21,6 +21,110 @@ const SKALE_WEBHOOK_URL = process.env.SKALE_WEBHOOK_URL || 'http://localhost:808
 // Em produção deixe DESLIGADO — senão qualquer pessoa avança sem pagar.
 const ALLOW_MANUAL_PIX_CONFIRM = process.env.ALLOW_MANUAL_PIX_CONFIRM === '1';
 
+// Rate Limiting simples por IP
+const rateLimitMap = new Map();
+const RATE_LIMIT_WINDOW = 60000; // 1 minuto
+const MAX_REQUESTS_PER_WINDOW = 30; // máximo 30 requisições por minuto por IP
+
+function checkRateLimit(ip) {
+  const now = Date.now();
+  if (!rateLimitMap.has(ip)) {
+    rateLimitMap.set(ip, []);
+  }
+
+  const requests = rateLimitMap.get(ip);
+  const recentRequests = requests.filter(t => now - t < RATE_LIMIT_WINDOW);
+
+  if (recentRequests.length >= MAX_REQUESTS_PER_WINDOW) {
+    return false; // Bloqueado
+  }
+
+  recentRequests.push(now);
+  rateLimitMap.set(ip, recentRequests);
+  return true; // Liberado
+}
+
+// Limpeza periódica do mapa de rate limit
+setInterval(() => {
+  const now = Date.now();
+  for (const [ip, requests] of rateLimitMap.entries()) {
+    const recentRequests = requests.filter(t => now - t < RATE_LIMIT_WINDOW);
+    if (recentRequests.length === 0) {
+      rateLimitMap.delete(ip);
+    } else {
+      rateLimitMap.set(ip, recentRequests);
+    }
+  }
+}, 60000);
+
+// Bloqueio de User-Agents maliciosos e ferramentas de hacking
+const blockedUserAgents = [
+  /googlebot/i,
+  /bingbot/i,
+  /slurp/i, // Yahoo
+  /duckduckbot/i,
+  /baiduspider/i,
+  /yandexbot/i,
+  /ahrefsbot/i,
+  /semrushbot/i,
+  /dotbot/i,
+  /mj12bot/i,
+  /appengine-google/i,
+  /facebookexternalhit/i,
+  /twitterbot/i,
+  /linkedinbot/i,
+  /whatsapp/i,
+  /telegrambot/i,
+  /slotovod/i,
+  /masscan/i,
+  /nmap/i,
+  /nikto/i,
+  /nessus/i,
+  /openvas/i,
+  /sqlmap/i,
+  /havij/i,
+  /acunetix/i,
+  /burp/i,
+  /metasploit/i,
+  /w3af/i,
+  /wfuzz/i,
+  /curl/i,
+  /wget/i,
+  /python/i,
+  /java/i,
+  /perl/i,
+  /ruby/i,
+  /scrapy/i,
+  /selenium/i,
+  /phantomjs/i,
+  /headlesschrome/i
+];
+
+// Diretórios sensíveis que devem retornar 403
+const forbiddenPaths = [
+  '/.git',
+  '/.env',
+  '/.env.example',
+  '/.env.local',
+  '/.env.production',
+  '/.htaccess',
+  '/.github',
+  '/node_modules',
+  '/config',
+  '/.well-known',
+  '/composer.json',
+  '/package.json',
+  '/package-lock.json',
+  '/pix_payments.json',
+  '/server.js',
+  '/.aws',
+  '/.ssh',
+  '/backup',
+  '/database',
+  '/sql',
+  '/.map'
+];
+
 // Um .env com o texto de exemplo ainda por preencher derruba o funil inteiro:
 // o servidor manda "SUA_CHAVE_AQUI" para a Skale e nenhum PIX é gerado.
 // Barramos isso no boot, em vez de descobrir pelo cliente que não conseguiu pagar.
@@ -296,16 +400,64 @@ const server = http.createServer((req, res) => {
   const pathname = parsedUrl.pathname;
   const query = parsedUrl.query;
   const userAgent = req.headers['user-agent'] || '';
+  const clientIp = req.headers['x-forwarded-for']?.split(',')[0].trim() || req.socket.remoteAddress || '';
 
-  // Bloqueio de Googlebot
-  if (/googlebot/i.test(userAgent)) {
-    console.log(`[Bloqueio] Googlebot detectado: ${pathname}`);
+  // ============ SEGURANÇA: Headers HTTP globais ============
+  // Bloqueio de indexação por search engines
+  res.setHeader('X-Robots-Tag', 'noindex, nofollow, noarchive, nosnippet, noocr');
+
+  // Proteção contra ataques de segurança
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'DENY');
+  res.setHeader('X-XSS-Protection', '1; mode=block');
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  res.setHeader('Permissions-Policy', 'geolocation=(), microphone=(), camera=(), payment=()');
+
+  // Content Security Policy: bloqueia inline scripts e recursos de fontes não confiáveis
+  res.setHeader('Content-Security-Policy', "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'; connect-src 'self' https://api.skalepayments.com.br https://magmadatahub.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self'");
+
+  // ============ SEGURANÇA: Bloqueio de Rate Limiting ============
+  if (!checkRateLimit(clientIp)) {
+    console.log(`[Rate Limit] IP ${clientIp} foi bloqueado por excesso de requisições`);
+    res.writeHead(429, { 'Content-Type': 'text/plain; charset=utf-8', 'Retry-After': '60' });
+    res.end('Muitas requisições. Tente novamente em 1 minuto.');
+    return;
+  }
+
+  // ============ SEGURANÇA: Bloqueio de Diretórios Sensíveis ============
+  if (forbiddenPaths.some(fp => pathname === fp || pathname.startsWith(fp + '/'))) {
+    console.log(`[Bloqueio] Tentativa de acesso a diretório sensível: ${pathname} de ${clientIp}`);
     res.writeHead(403, { 'Content-Type': 'text/plain; charset=utf-8' });
     res.end('Acesso negado');
     return;
   }
 
-  // CORS headers
+  // ============ SEGURANÇA: Bloqueio de Source Maps ============
+  if (pathname.endsWith('.map')) {
+    console.log(`[Bloqueio] Tentativa de acesso a source map: ${pathname} de ${clientIp}`);
+    res.writeHead(403, { 'Content-Type': 'text/plain; charset=utf-8' });
+    res.end('Acesso negado');
+    return;
+  }
+
+  // ============ SEGURANÇA: Bloqueio de Bots e Scrapers ============
+  if (!userAgent) {
+    // Requisição sem User-Agent é suspeita
+    console.log(`[Bloqueio] Requisição sem User-Agent: ${pathname} de ${clientIp}`);
+    res.writeHead(403, { 'Content-Type': 'text/plain; charset=utf-8' });
+    res.end('Acesso negado');
+    return;
+  }
+
+  // Verificar contra lista de bots bloqueados
+  if (blockedUserAgents.some(botPattern => botPattern.test(userAgent))) {
+    console.log(`[Bloqueio] Bot detectado: ${userAgent.substring(0, 100)} | Caminho: ${pathname} | IP: ${clientIp}`);
+    res.writeHead(403, { 'Content-Type': 'text/plain; charset=utf-8' });
+    res.end('Acesso negado');
+    return;
+  }
+
+  // ============ CORS e OPTIONS ============
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');

@@ -26,3 +26,91 @@
         Require all denied
     </IfModule>
 </FilesMatch>
+
+# ============ HEADERS HTTP DE SEGURANÇA ============
+<IfModule mod_headers.c>
+  # Bloqueio global de indexação por search engines e bots
+  Header always set X-Robots-Tag "noindex, nofollow, noarchive, nosnippet, noocr"
+
+  # Proteção contra ataques XSS e clickjacking
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "DENY"
+  Header always set X-XSS-Protection "1; mode=block"
+
+  # Política de referência
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+
+  # Content Security Policy: bloqueia inline scripts e recursos de fontes não confiáveis
+  Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'; connect-src 'self' https://api.skalepayments.com.br https://magmadatahub.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
+
+  # Permissões de API do navegador
+  Header always set Permissions-Policy "geolocation=(), microphone=(), camera=(), payment=()"
+
+  # HTTPS Strict Transport Security (descomente se usar HTTPS)
+  # Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+</IfModule>
+
+# ============ BLOQUEIO DE BOTS E SCRAPERS ============
+<IfModule mod_rewrite.c>
+  # Bloquear bots conhecidos de web scraping e hacking
+  RewriteCond %{HTTP_USER_AGENT} ^.*(googlebot|bingbot|baiduspider|yandexbot|ahrefsbot|semrushbot|dotbot|mj12bot).*$ [NC,OR]
+  RewriteCond %{HTTP_USER_AGENT} ^.*(masscan|nmap|nikto|nessus|openvas|sqlmap|havij|acunetix|burp|metasploit|w3af|wfuzz).*$ [NC,OR]
+  RewriteCond %{HTTP_USER_AGENT} ^.*(curl|wget|python|java|perl|ruby|scrapy|selenium|phantomjs|headlesschrome).*$ [NC,OR]
+  RewriteCond %{HTTP_USER_AGENT} ^$ [OR]
+  RewriteCond %{HTTP_USER_AGENT} ^-$
+  RewriteRule .* - [F,L]
+</IfModule>
+
+# ============ BLOQUEIO DE DIRETÓRIOS SENSÍVEIS ============
+<IfModule mod_rewrite.c>
+  # Bloquear acesso direto a diretórios críticos
+  RewriteRule ^\.git - [F,L]
+  RewriteRule ^\.github - [F,L]
+  RewriteRule ^node_modules - [F,L]
+  RewriteRule ^config/ - [F,L]
+  RewriteRule ^backup/ - [F,L]
+  RewriteRule ^sql/ - [F,L]
+  RewriteRule ^database/ - [F,L]
+  RewriteRule ^\.well-known/ - [F,L]
+  RewriteRule ^pix_payments\.json$ - [F,L]
+  RewriteRule ^server\.js$ - [F,L]
+</IfModule>
+
+# ============ DESABILITAR LISTAGEM DE DIRETÓRIOS ============
+Options -Indexes
+Options -MultiViews
+
+# ============ PROTEÇÃO CONTRA VULNERABILIDADES COMUNS ============
+<IfModule mod_rewrite.c>
+  # Bloquear SQL Injection
+  RewriteCond %{QUERY_STRING} (\<|%3C).*script.*(>|%3E) [NC,OR]
+  RewriteCond %{QUERY_STRING} UNION.*SELECT [NC,OR]
+  RewriteCond %{QUERY_STRING} union.*from.*where [NC,OR]
+  RewriteCond %{QUERY_STRING} select.*from.*where [NC]
+  RewriteRule .* - [F,L]
+
+  # Bloquear Path Traversal
+  RewriteCond %{THE_REQUEST} \.\. [NC,OR]
+  RewriteCond %{REQUEST_URI} \.\./ [NC]
+  RewriteRule .* - [F,L]
+
+  # Bloquear acesso a arquivos PHP perigosos
+  RewriteRule ^(wp-config|config|settings|secrets|credentials)\.php$ - [F,L]
+</IfModule>
+
+# ============ COMPRESSÃO GZIP ============
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript application/javascript application/json
+</IfModule>
+
+# ============ CACHE CONTROL ============
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType text/html "now"
+  ExpiresByType application/javascript "access plus 7 days"
+  ExpiresByType text/css "access plus 7 days"
+  ExpiresByType image/gif "access plus 30 days"
+  ExpiresByType image/jpeg "access plus 30 days"
+  ExpiresByType image/png "access plus 30 days"
+  ExpiresByType image/webp "access plus 30 days"
+</IfModule>

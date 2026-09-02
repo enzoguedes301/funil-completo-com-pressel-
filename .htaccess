@@ -52,6 +52,11 @@
 
 # ============ BLOQUEIO DE BOTS E SCRAPERS ============
 <IfModule mod_rewrite.c>
+  # O webhook da Skale é servidor-para-servidor: chega com User-Agent de
+  # biblioteca HTTP (curl/Guzzle/python) ou sem User-Agent nenhum. Precisa ficar
+  # de fora do blocklist abaixo, senão a confirmação de pagamento toma 403.
+  RewriteCond %{REQUEST_URI} !^/api/pixWebhook(\.php)?$
+
   # Bloquear bots conhecidos de web scraping e hacking
   RewriteCond %{HTTP_USER_AGENT} ^.*(googlebot|bingbot|baiduspider|yandexbot|ahrefsbot|semrushbot|dotbot|mj12bot).*$ [NC,OR]
   RewriteCond %{HTTP_USER_AGENT} ^.*(masscan|nmap|nikto|nessus|openvas|sqlmap|havij|acunetix|burp|metasploit|w3af|wfuzz).*$ [NC,OR]

@@ -1,0 +1,35 @@
+---
+# Deploy do cPanel (Git Version Control da HostGator).
+#
+# O repositório é clonado em ~/repositories/funil (FORA do public_html) e este
+# arquivo copia para o site só o que precisa ficar público. Clonar direto no
+# public_html deixaria server.js, os .md e o funilcompleto.zip (33MB com o
+# código inteiro) acessíveis por URL.
+#
+# .env e pix_payments.json NÃO estão no repositório e não são tocados aqui:
+# são criados uma vez pelo Gerenciador de Arquivos e sobrevivem aos deploys.
+deployment:
+  tasks:
+    - export DEPLOYPATH=$HOME/public_html
+
+    # Páginas do funil
+    - /bin/cp -f *.html $DEPLOYPATH/
+    - /bin/cp -f redirecionamento.php $DEPLOYPATH/
+    - /bin/cp -f pix-gate.js $DEPLOYPATH/
+    - /bin/cp -f robots.txt $DEPLOYPATH/
+    - /bin/cp -f video.mp4 $DEPLOYPATH/
+
+    # Backend PIX em PHP
+    - /bin/mkdir -p $DEPLOYPATH/api
+    - /bin/cp -f api/*.php $DEPLOYPATH/api/
+
+    # Etapas do funil
+    - /bin/cp -Rf ml $DEPLOYPATH/
+    - /bin/cp -Rf upsell $DEPLOYPATH/
+    - /bin/cp -Rf conclusao $DEPLOYPATH/
+
+    # .htaccess por último: é ele que ativa o roteamento /api/* e a blindagem
+    - /bin/cp -f .htaccess $DEPLOYPATH/
+
+    # Credenciais nunca legíveis pelo servidor web
+    - /bin/chmod 600 $DEPLOYPATH/.env || true

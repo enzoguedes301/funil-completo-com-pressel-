@@ -1,83 +1,116 @@
 <?php
 /**
- * GET /api/getCpf.php?cpf=00000000000
- * Consulta o CPF na MagmaDataHub.
+ * Proxy de consulta de CPF — roda no servidor, nunca expõe o token ao navegador.
  *
- * Antes este arquivo respondia com uma lista de 3 CPFs fixos: funcionava no
- * teste e falhava com todo cliente real. Agora faz a consulta de verdade,
- * igual ao que o server.js fazia no ambiente local.
+ * Endpoint: magmadatahub.com/api.php
+ * Requisitos: PHP 7.4+, extensão cURL, acesso HTTPS de saída.
  */
-require_once __DIR__ . '/_pix_lib.php';
+
+// Impede que warnings/notices do PHP corrompam a resposta JSON
+@ini_set('display_errors', '0');
 
 header('Content-Type: application/json; charset=utf-8');
+header('X-Content-Type-Options: nosniff');
 header('Cache-Control: no-store');
 
+// -- Token da API (server-side only — nunca exposto ao navegador) -------------
+$token = '96aee7799e0dc1d7d2afee93a376cd6ac04c274f578f0e0f4962be45f8a54d6d';
+
+// -- Validação básica do CPF --------------------------------------------------
 $cpf = preg_replace('/\D/', '', $_GET['cpf'] ?? '');
 
-if (strlen($cpf) !== 11 || preg_match('/^(\d)\1{10}$/', $cpf)) {
+if (strlen($cpf) !== 11) {
     http_response_code(400);
     echo json_encode(['success' => false, 'erro' => 'CPF inválido']);
     exit;
 }
 
-// A credencial vive apenas no .env, fora do código versionado.
-$token = env_get('CPF_API_TOKEN', '');
+if (preg_match('/^(\d)\1{10}$/', $cpf)) {
+    http_response_code(400);
+    echo json_encode(['success' => false, 'erro' => 'CPF inválido']);
+    exit;
+}
 
-if ($token === '') {
-    error_log('[CPF] CPF_API_TOKEN ausente no .env — consulta não pode ser feita');
+// -- Verificar extensão cURL --------------------------------------------------
+if (!function_exists('curl_init')) {
     http_response_code(503);
     echo json_encode(['success' => false, 'erro' => 'Serviço temporariamente indisponível']);
     exit;
 }
 
-$url = 'https://magmadatahub.com/api.php?token=' . urlencode($token) . '&cpf=' . urlencode($cpf);
+// -- Chamada à API externa (server-side) --------------------------------------
+$url = "https://magmadatahub.com/api.php?token=" . urlencode($token) . "&cpf=" . urlencode($cpf);
 
-$ch = curl_init($url);
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-curl_setopt($ch, CURLOPT_TIMEOUT, 15);
-curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 8);
-curl_setopt($ch, CURLOPT_HTTPHEADER, [
-    'Accept: application/json',
-    'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/121.0.0.0',
+$ch = curl_init();
+curl_setopt_array($ch, [
+    CURLOPT_URL            => $url,
+    CURLOPT_RETURNTRANSFER => true,
+    CURLOPT_TIMEOUT        => 10,
+    CURLOPT_CONNECTTIMEOUT => 6,
+    CURLOPT_FOLLOWLOCATION => true,
+    CURLOPT_MAXREDIRS      => 3,
+    CURLOPT_SSL_VERIFYPEER => false,
+    CURLOPT_HTTPHEADER     => [
+        'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/121.0.0.0',
+        'Accept: application/json',
+    ],
 ]);
 
-$resposta = curl_exec($ch);
-$http = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
-$erroRede = curl_error($ch);
+$response  = curl_exec($ch);
+$httpCode  = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
+$curlErrno = curl_errno($ch);
 curl_close($ch);
 
-if ($resposta === false) {
-    error_log('[CPF] Falha de rede: ' . $erroRede);
+// -- Erros de conexão / timeout -----------------------------------------------
+if ($curlErrno !== 0) {
+    http_response_code(503);
+    echo json_encode(['success' => false, 'erro' => 'Serviço de consulta indisponível no momento. Tente novamente em instantes.']);
+    exit;
+}
+
+// -- Falha de autenticação ----------------------------------------------------
+if ($httpCode === 401 || $httpCode === 403) {
     http_response_code(503);
     echo json_encode(['success' => false, 'erro' => 'Serviço temporariamente indisponível']);
     exit;
 }
 
-$dados = json_decode($resposta, true);
-
-if (!is_array($dados)) {
-    error_log('[CPF] Resposta não-JSON da API (HTTP ' . $http . ')');
-    http_response_code(503);
-    echo json_encode(['success' => false, 'erro' => 'Resposta inválida da API']);
+// -- Limite de requisições ----------------------------------------------------
+if ($httpCode === 429) {
+    http_response_code(429);
+    echo json_encode(['success' => false, 'erro' => 'Muitas consultas em sequência. Aguarde alguns instantes e tente novamente.']);
     exit;
 }
 
-if ($http === 200 && !empty($dados['success']) && !empty($dados['nome'])) {
+// -- API indisponível (5xx) ---------------------------------------------------
+if ($httpCode >= 500) {
+    http_response_code(503);
+    echo json_encode(['success' => false, 'erro' => 'Serviço de consulta indisponível. Tente novamente mais tarde.']);
+    exit;
+}
+
+// -- Resposta não é JSON válido -----------------------------------------------
+$data = json_decode($response, true);
+if (!$data || !is_array($data)) {
+    http_response_code(503);
+    echo json_encode(['success' => false, 'erro' => 'Resposta inválida do serviço de consulta.']);
+    exit;
+}
+
+// -- CPF encontrado com sucesso -----------------------------------------------
+if ($httpCode === 200 && !empty($data['success']) && $data['success'] === true && !empty($data['nome'])) {
     echo json_encode([
         'success'    => true,
-        'nome'       => $dados['nome'],
+        'nome'       => $data['nome'],
         'cpf'        => $cpf,
-        'nascimento' => $dados['nascimento'] ?? '',
-        // O front lê "mae"; mantemos "nome_mae" para quem espera o nome original.
-        'mae'        => $dados['nome_mae'] ?? '',
-        'nome_mae'   => $dados['nome_mae'] ?? '',
-        'sexo'       => $dados['sexo'] ?? '',
+        'nascimento' => $data['nascimento'] ?? '',
+        'mae'        => $data['nome_mae'] ?? '',
+        'sexo'       => $data['sexo'] ?? '',
     ]);
     exit;
 }
 
-http_response_code($http === 200 ? 404 : ($http ?: 503));
-echo json_encode([
-    'success' => false,
-    'erro' => $dados['message'] ?? ($dados['erro'] ?? 'CPF não encontrado na base de dados'),
-]);
+// -- CPF não encontrado ou dados insuficientes --------------------------------
+http_response_code(404);
+echo json_encode(['success' => false, 'erro' => 'CPF não encontrado na base de dados.']);
+exit;

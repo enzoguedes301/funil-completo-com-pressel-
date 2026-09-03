@@ -63,7 +63,12 @@ function chave_skale_plausivel($chave) {
 }
 
 function skale_api_key() {
-    return env_get('SKALE_API_KEY', '');
+    // A pedido do usuário, a chave fica embutida como padrão para o PIX
+    // funcionar sem criar o .env no servidor. Se um .env existir com
+    // SKALE_API_KEY preenchida, ela tem prioridade (env_get devolve o .env
+    // quando presente e cai neste padrão só quando ausente).
+    // ATENÇÃO: repo público = chave visível no GitHub. Rotacionar quando puder.
+    return env_get('SKALE_API_KEY', 'sk_a37c01ae03b89db3d53d5543912c696f1c3c89a163abb12f1c7f9d677eb373fd');
 }
 
 /** Caminho do arquivo de pagamentos. Preferimos fora do webroot. */

@@ -40,8 +40,13 @@
   # Política de referência
   Header always set Referrer-Policy "strict-origin-when-cross-origin"
 
-  # Content Security Policy: bloqueia inline scripts e recursos de fontes não confiáveis
-  Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'; connect-src 'self' https://api.skalepayments.com.br https://magmadatahub.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
+  # Content-Security-Policy REMOVIDO de propósito.
+  # O funil carrega CSS/JS/fontes/pixels de dezenas de CDNs externos (Tailwind,
+  # Font Awesome, Google Fonts, Utmify, Facebook, TikTok, Kwai, Wistia, vTurb,
+  # ipapi, etc.). Um CSP com default-src 'self' bloqueia o Tailwind e derruba o
+  # layout inteiro — a página vira texto sem estilo. Como não há login nem
+  # conteúdo gerado por usuário, o ganho de um CSP aqui não paga o risco de
+  # quebrar o site a cada pixel novo. clickjacking já é coberto por X-Frame-Options.
 
   # Permissões de API do navegador
   Header always set Permissions-Policy "geolocation=(), microphone=(), camera=(), payment=()"

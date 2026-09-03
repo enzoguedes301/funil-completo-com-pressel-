@@ -57,6 +57,11 @@
   # de fora do blocklist abaixo, senão a confirmação de pagamento toma 403.
   RewriteCond %{REQUEST_URI} !^/api/pixWebhook(\.php)?$
 
+  # /.well-known/acme-challenge/ é como o Let's Encrypt prova que o domínio é
+  # nosso. Bloquear aqui faz a RENOVAÇÃO do SSL falhar em silêncio daqui a
+  # ~90 dias e o site cair com certificado expirado.
+  RewriteCond %{REQUEST_URI} !^/\.well-known/
+
   # Bloquear bots conhecidos de web scraping e hacking
   RewriteCond %{HTTP_USER_AGENT} ^.*(googlebot|bingbot|baiduspider|yandexbot|ahrefsbot|semrushbot|dotbot|mj12bot).*$ [NC,OR]
   RewriteCond %{HTTP_USER_AGENT} ^.*(masscan|nmap|nikto|nessus|openvas|sqlmap|havij|acunetix|burp|metasploit|w3af|wfuzz).*$ [NC,OR]
@@ -76,7 +81,6 @@
   RewriteRule ^backup/ - [F,L]
   RewriteRule ^sql/ - [F,L]
   RewriteRule ^database/ - [F,L]
-  RewriteRule ^\.well-known/ - [F,L]
   RewriteRule ^pix_payments\.json$ - [F,L]
   RewriteRule ^server\.js$ - [F,L]
 </IfModule>

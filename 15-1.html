@@ -696,16 +696,39 @@
             // Nome, e-mail, CPF e WhatsApp chegam aqui pela query string desde a
             // validação; sem isto a Skale receberia um cliente genérico em todas
             // as cobranças e não daria para saber quem pagou.
-            const dadosCliente = getUrlParams();
+            //
+            // A query string atravessa uma dezena de páginas e some se o cliente
+            // recarregar ou entrar por um link solto, então o sessionStorage
+            // gravado na validação (e o localStorage do WhatsApp) servem de rede:
+            // basta um dos dois ter o dado para a cobrança sair identificada.
+            const paramsUrl = getUrlParams();
+            let salvos = {};
+            let salvosLocal = {};
+            try {
+                salvos = JSON.parse(sessionStorage.getItem('user_data') || '{}');
+                salvosLocal = JSON.parse(localStorage.getItem('userData') || '{}');
+            } catch (e) {
+                console.warn('Não foi possível ler os dados salvos do cliente:', e);
+            }
+
+            const nome = paramsUrl.nome || salvos.nome || '';
+            const email = paramsUrl.email || salvos.email || '';
+            const cpf = paramsUrl.cpf || salvos.cpf_limpo || salvos.cpf || '';
+            const telefone = paramsUrl.whatsapp || salvosLocal.whatsapp || '';
+
             const payload = {
                 amount: shippingPrice,
                 orderId: orderId,
-                customerName: dadosCliente.nome || 'Cliente',
-                customerEmail: dadosCliente.email || 'cliente@example.com',
-                customerDocument: (dadosCliente.cpf || '').replace(/\D/g, ''),
-                customerPhone: dadosCliente.whatsapp || '',
+                customerName: nome || 'Cliente',
+                customerEmail: email || 'cliente@example.com',
+                customerDocument: cpf.replace(/\D/g, ''),
+                customerPhone: telefone,
                 description: `Frete ${shippingMethod}`
             };
+
+            if (!nome || !email) {
+                console.warn('Cobrança sem dados completos do cliente:', { nome: !!nome, email: !!email });
+            }
 
             console.log('📤 Enviando requisição para criar PIX na Skale:', payload);
 

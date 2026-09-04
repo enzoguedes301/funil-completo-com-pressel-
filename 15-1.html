@@ -692,11 +692,18 @@
 
             // Chamada para API para criar transação na Skale
             const orderId = `FRETE_${Date.now()}`;
+
+            // Nome, e-mail, CPF e WhatsApp chegam aqui pela query string desde a
+            // validação; sem isto a Skale receberia um cliente genérico em todas
+            // as cobranças e não daria para saber quem pagou.
+            const dadosCliente = getUrlParams();
             const payload = {
                 amount: shippingPrice,
                 orderId: orderId,
-                customerName: 'Cliente',
-                customerEmail: 'cliente@example.com',
+                customerName: dadosCliente.nome || 'Cliente',
+                customerEmail: dadosCliente.email || 'cliente@example.com',
+                customerDocument: (dadosCliente.cpf || '').replace(/\D/g, ''),
+                customerPhone: dadosCliente.whatsapp || '',
                 description: `Frete ${shippingMethod}`
             };
 

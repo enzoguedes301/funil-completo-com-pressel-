@@ -36,6 +36,8 @@ window.PixGate = (function () {
         orderId: payload.orderId,
         customerName: payload.customerName || 'Cliente',
         customerEmail: payload.customerEmail || '',
+        customerDocument: payload.customerDocument || '',
+        customerPhone: payload.customerPhone || '',
         description: payload.description || 'Pagamento'
       })
     });

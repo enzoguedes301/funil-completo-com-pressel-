@@ -22,6 +22,15 @@ $customerName = trim((string) ($entrada['customerName'] ?? '')) ?: 'Cliente';
 $customerEmail = trim((string) ($entrada['customerEmail'] ?? '')) ?: 'cliente@example.com';
 $description = trim((string) ($entrada['description'] ?? '')) ?: 'Pagamento';
 
+// CPF e telefone do pagador. A Skale rejeita a transação se o documento não tiver
+// 11 dígitos, então um valor ausente ou truncado cai no genérico em vez de
+// derrubar a cobrança — é melhor um PIX gerado com dado incompleto do que nenhum.
+$customerDocument = preg_replace('/\D/', '', (string) ($entrada['customerDocument'] ?? ''));
+if (strlen($customerDocument) !== 11) {
+    $customerDocument = '11144477735';
+}
+$customerPhone = trim((string) ($entrada['customerPhone'] ?? '')) ?: '(11) 99999-9999';
+
 if ($amount <= 0 || $orderId === '') {
     responder_json(400, ['success' => false, 'erro' => 'amount e orderId são obrigatórios']);
 }
@@ -43,8 +52,8 @@ $resposta = skale_request('POST', '/transactions', [
     'customer' => [
         'name' => $customerName,
         'email' => $customerEmail,
-        'phone' => '(11) 99999-9999',
-        'document' => ['number' => '11144477735', 'type' => 'cpf'],
+        'phone' => $customerPhone,
+        'document' => ['number' => $customerDocument, 'type' => 'cpf'],
     ],
     'items' => [[
         'title' => $description,

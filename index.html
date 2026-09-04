@@ -187,27 +187,11 @@
 
         <!-- Hero Section -->
         <div class="relative">
-            <div class="bg-[#FFE600] w-full flex items-center justify-center" style="min-height: 280px;">
-                <img id="heroImg" src="/images/card-hero.webp" alt="Plataforma Digital Card"
-                    class="w-full object-contain" loading="lazy">
+            <div class="bg-[#FFE600] w-full flex items-center justify-center" style="min-height: 320px;">
+                <img src="/images/card-hero.webp" alt="Plataforma Digital Card"
+                    class="w-full object-contain" loading="eager" decoding="async">
             </div>
         </div>
-        <script>
-            // Fallback se a imagem não carregar em tempo útil
-            const heroImg = document.getElementById('heroImg');
-            if (heroImg) {
-                const timeout = setTimeout(() => {
-                    if (!heroImg.complete || heroImg.naturalHeight === 0) {
-                        heroImg.style.display = 'none';
-                    }
-                }, 3000);
-
-                heroImg.addEventListener('load', () => clearTimeout(timeout));
-                heroImg.addEventListener('error', () => {
-                    heroImg.style.display = 'none';
-                });
-            }
-        </script>
 
         <!-- Card de Vantagens -->
         <div class="px-4 mt-4 relative z-10">

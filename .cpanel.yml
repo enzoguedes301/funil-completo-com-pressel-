@@ -23,6 +23,9 @@ deployment:
     - /bin/mkdir -p $DEPLOYPATH/api
     - /bin/cp -f api/*.php $DEPLOYPATH/api/
 
+    # Imagens do funil (-R para levar junto subpastas como images/passos)
+    - /bin/cp -Rf images $DEPLOYPATH/
+
     # Etapas do funil
     - /bin/cp -Rf ml $DEPLOYPATH/
     - /bin/cp -Rf upsell $DEPLOYPATH/

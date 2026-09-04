@@ -187,11 +187,27 @@
 
         <!-- Hero Section -->
         <div class="relative">
-            <div class="bg-[#FFE600] w-full flex items-center justify-center">
-                <img src="/images/card-hero.webp" alt="Plataforma Digital Card"
-                    class="w-full object-contain">
+            <div class="bg-[#FFE600] w-full flex items-center justify-center" style="min-height: 280px;">
+                <img id="heroImg" src="/images/card-hero.webp" alt="Plataforma Digital Card"
+                    class="w-full object-contain" loading="lazy">
             </div>
         </div>
+        <script>
+            // Fallback se a imagem não carregar em tempo útil
+            const heroImg = document.getElementById('heroImg');
+            if (heroImg) {
+                const timeout = setTimeout(() => {
+                    if (!heroImg.complete || heroImg.naturalHeight === 0) {
+                        heroImg.style.display = 'none';
+                    }
+                }, 3000);
+
+                heroImg.addEventListener('load', () => clearTimeout(timeout));
+                heroImg.addEventListener('error', () => {
+                    heroImg.style.display = 'none';
+                });
+            }
+        </script>
 
         <!-- Card de Vantagens -->
         <div class="px-4 mt-4 relative z-10">
@@ -470,10 +486,17 @@
         function redirectToPage(page) {
             const nextPageUrl = buildUrlWithParams(page);
             console.log('Redirecionando para:', nextPageUrl);
-            
-            setTimeout(() => {
-                window.location.href = nextPageUrl;
-            }, 100);
+
+            // Mostrar loading
+            const btn = document.getElementById('btnSolicitar') || document.getElementById('btnVerLimite');
+            if (btn) {
+                btn.disabled = true;
+                btn.textContent = 'Carregando...';
+                btn.style.opacity = '0.7';
+            }
+
+            // Redirecionar imediatamente (sem delay)
+            window.location.href = nextPageUrl;
         }
 
         // =======================================================

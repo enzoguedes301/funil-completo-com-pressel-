@@ -414,7 +414,7 @@ const server = http.createServer((req, res) => {
   res.setHeader('Permissions-Policy', 'geolocation=(), microphone=(), camera=(), payment=()');
 
   // Content Security Policy: bloqueia inline scripts e recursos de fontes não confiáveis
-  res.setHeader('Content-Security-Policy', "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'; connect-src 'self' https://api.skalepayments.com.br https://magmadatahub.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self'");
+  res.setHeader('Content-Security-Policy', "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://cdnjs.cloudflare.com https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://api.skalepayments.com.br https://magmadatahub.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self'");
 
   // ============ SEGURANÇA: Bloqueio de Rate Limiting ============
   if (!checkRateLimit(clientIp)) {

@@ -486,14 +486,34 @@
                     <input type="text" class="form-control" id="cpf" placeholder="000.000.000-00" required>
                 </div>
             </div>
+            <div class="form-group">
+                <label class="form-label" for="email">E-mail</label>
+                <input type="email" class="form-control" id="email" placeholder="seu@email.com" inputmode="email" autocomplete="email" required>
+                <span id="emailErro" style="display: none; color: #e53935; font-size: 12px; margin-top: 6px;">
+                    Digite um e-mail válido para gerar o PIX.
+                </span>
+                <span style="display: block; color: #999999; font-size: 12px; margin-top: 6px;">
+                    O comprovante e o código de rastreio vão para este e-mail.
+                </span>
+            </div>
         </div>
 
         <!-- Pagamento PIX -->
         <div class="section">
             <div class="section-title">Escanear QR Code PIX</div>
 
+            <!-- Trava do e-mail: a transação da Skale não pode ser editada depois
+                 de criada, então o PIX só nasce quando já houver um e-mail válido
+                 para identificar o pagador. -->
+            <div id="pixGateBox" style="background: #F8F8F8; padding: 24px 20px; border-radius: 8px; text-align: center; margin-bottom: 20px;">
+                <p style="font-size: 14px; color: #666; margin-bottom: 16px;">
+                    Confirme seu e-mail acima para liberar o código PIX.
+                </p>
+                <button class="payment-button" id="gerarPixBtn" onclick="gerarPix()">Gerar código PIX</button>
+            </div>
+
             <!-- QR Code PIX -->
-            <div class="qr-code-container active" id="qrContainer">
+            <div class="qr-code-container" id="qrContainer">
                 <p style="font-size: 14px; color: #666; margin-bottom: 20px;">Escaneie com seu banco para pagar</p>
                 <div id="qrCodeElement" style="text-align: center; padding: 20px; background: white; border-radius: 12px; border: 3px solid #3483FA; display: inline-block; width: 100%;"></div>
                 <p style="font-size: 12px; color: #999; margin-top: 20px; margin-bottom: 15px;">Ou copie a chave PIX abaixo</p>
@@ -596,8 +616,9 @@
                 }
             }
 
-            // Criar PIX automaticamente
-            createPixOnPageLoad();
+            // O PIX não nasce sozinho: espera o e-mail (veja gerarPix)
+            preencherDadosCliente();
+            setStatus('waiting', 'Informe seu e-mail para gerar o código PIX.');
 
             startTimer();
         });
@@ -672,9 +693,87 @@
             }
         }
 
-        // Criar PIX na página load
-        function createPixOnPageLoad() {
-            console.log('🚀 Iniciando criação automática de PIX via Skale...');
+        // Nome, CPF e WhatsApp chegam até aqui pela query string desde a validação.
+        // A query atravessa uma dezena de páginas e some se o cliente recarregar ou
+        // entrar por um link solto, então o sessionStorage gravado na validação (e o
+        // localStorage do WhatsApp) servem de rede: basta um dos dois ter o dado.
+        function dadosCliente() {
+            const paramsUrl = getUrlParams();
+            let salvos = {};
+            let salvosLocal = {};
+
+            try {
+                salvos = JSON.parse(sessionStorage.getItem('user_data') || '{}');
+                salvosLocal = JSON.parse(localStorage.getItem('userData') || '{}');
+            } catch (e) {
+                console.warn('Não foi possível ler os dados salvos do cliente:', e);
+            }
+
+            return {
+                nome: paramsUrl.nome || salvos.nome || '',
+                email: paramsUrl.email || salvos.email || '',
+                cpf: paramsUrl.cpf || salvos.cpf_limpo || salvos.cpf || '',
+                telefone: paramsUrl.whatsapp || salvosLocal.whatsapp || ''
+            };
+        }
+
+        function formatarCpf(valor) {
+            const digitos = String(valor).replace(/\D/g, '').slice(0, 11);
+            if (digitos.length !== 11) return valor;
+            return digitos.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+        }
+
+        // Preenche o formulário com o que o funil já sabe. O e-mail é o único dado
+        // que ninguém pediu antes — é ele que trava a geração do PIX.
+        function preencherDadosCliente() {
+            const cliente = dadosCliente();
+            if (cliente.nome) document.getElementById('fullName').value = cliente.nome;
+            if (cliente.cpf) document.getElementById('cpf').value = formatarCpf(cliente.cpf);
+            if (cliente.email) document.getElementById('email').value = cliente.email;
+        }
+
+        function emailValido(valor) {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(valor);
+        }
+
+        // Botão "Gerar código PIX": valida o e-mail e só então cria a cobrança.
+        function gerarPix() {
+            const campoEmail = document.getElementById('email');
+            const erroEmail = document.getElementById('emailErro');
+            const email = campoEmail.value.trim().toLowerCase();
+
+            if (!emailValido(email)) {
+                erroEmail.style.display = 'block';
+                campoEmail.focus();
+                return;
+            }
+
+            erroEmail.style.display = 'none';
+            campoEmail.value = email;
+
+            // Guarda para as etapas seguintes (upsells) não pedirem de novo
+            try {
+                const salvos = JSON.parse(sessionStorage.getItem('user_data') || '{}');
+                salvos.email = email;
+                sessionStorage.setItem('user_data', JSON.stringify(salvos));
+            } catch (e) {
+                console.warn('Não foi possível salvar o e-mail:', e);
+            }
+
+            const botao = document.getElementById('gerarPixBtn');
+            botao.disabled = true;
+            botao.textContent = 'Gerando código PIX...';
+            setStatus('checking', 'Gerando código PIX...');
+
+            criarPix(email, function () {
+                botao.disabled = false;
+                botao.textContent = 'Gerar código PIX';
+            });
+        }
+
+        // Cria a transação na Skale com o e-mail confirmado no checkout
+        function criarPix(email, aoFalhar) {
+            console.log('🚀 Iniciando criação de PIX via Skale...');
 
             const freightDataStr = localStorage.getItem('userdata');
             let shippingMethod = 'SEDEX';
@@ -693,41 +792,26 @@
             // Chamada para API para criar transação na Skale
             const orderId = `FRETE_${Date.now()}`;
 
-            // Nome, e-mail, CPF e WhatsApp chegam aqui pela query string desde a
-            // validação; sem isto a Skale receberia um cliente genérico em todas
-            // as cobranças e não daria para saber quem pagou.
-            //
-            // A query string atravessa uma dezena de páginas e some se o cliente
-            // recarregar ou entrar por um link solto, então o sessionStorage
-            // gravado na validação (e o localStorage do WhatsApp) servem de rede:
-            // basta um dos dois ter o dado para a cobrança sair identificada.
-            const paramsUrl = getUrlParams();
-            let salvos = {};
-            let salvosLocal = {};
-            try {
-                salvos = JSON.parse(sessionStorage.getItem('user_data') || '{}');
-                salvosLocal = JSON.parse(localStorage.getItem('userData') || '{}');
-            } catch (e) {
-                console.warn('Não foi possível ler os dados salvos do cliente:', e);
-            }
-
-            const nome = paramsUrl.nome || salvos.nome || '';
-            const email = paramsUrl.email || salvos.email || '';
-            const cpf = paramsUrl.cpf || salvos.cpf_limpo || salvos.cpf || '';
-            const telefone = paramsUrl.whatsapp || salvosLocal.whatsapp || '';
+            // O que o cliente vê no formulário manda: ele pode corrigir o nome ou o
+            // CPF antes de gerar. Sem esses dados a Skale receberia um cliente
+            // genérico em todas as cobranças e não daria para saber quem pagou.
+            const cliente = dadosCliente();
+            const nome = document.getElementById('fullName').value.trim() || cliente.nome;
+            const cpf = document.getElementById('cpf').value.trim() || cliente.cpf;
+            const telefone = cliente.telefone;
 
             const payload = {
                 amount: shippingPrice,
                 orderId: orderId,
                 customerName: nome || 'Cliente',
-                customerEmail: email || 'cliente@example.com',
+                customerEmail: email,
                 customerDocument: cpf.replace(/\D/g, ''),
                 customerPhone: telefone,
                 description: `Frete ${shippingMethod}`
             };
 
-            if (!nome || !email) {
-                console.warn('Cobrança sem dados completos do cliente:', { nome: !!nome, email: !!email });
+            if (!nome) {
+                console.warn('Cobrança sem o nome do cliente');
             }
 
             console.log('📤 Enviando requisição para criar PIX na Skale:', payload);
@@ -741,6 +825,10 @@
                     currentOrderId = data.orderId;
 
                     console.log('💾 Brcode da Skale recebido:', brcode.substring(0, 50) + '...');
+
+                    // Some com a trava do e-mail e revela o QR
+                    document.getElementById('pixGateBox').style.display = 'none';
+                    document.getElementById('qrContainer').classList.add('active');
 
                     // Gerar QR Code com o Brcode real da Skale
                     generateQRCode(brcode, data.qrCode);
@@ -762,7 +850,8 @@
                 })
                 .catch(err => {
                     console.error('❌ Erro na requisição:', err);
-                    setStatus('error', 'Erro ao gerar o PIX. Recarregue a página.');
+                    setStatus('error', 'Erro ao gerar o PIX. Tente novamente.');
+                    if (typeof aoFalhar === 'function') aoFalhar();
                 });
         }
 

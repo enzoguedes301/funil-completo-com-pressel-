@@ -384,22 +384,6 @@
                     <span class="user-data-value" id="user-birth">-</span>
                 </div>
             </div>
-            <div class="form-section">
-                <div class="form-group">
-                    <label class="form-label" for="email">E-mail para receber o comprovante</label>
-                    <input
-                        type="email"
-                        id="email"
-                        class="form-input"
-                        placeholder="seu@email.com"
-                        inputmode="email"
-                        autocomplete="email"
-                    >
-                    <span id="email-erro" class="hidden" style="color:#e53935;font-size:13px;display:block;margin-top:6px;">
-                        Digite um e-mail válido para continuar.
-                    </span>
-                </div>
-            </div>
             <button class="button" id="continuar-final">Continuar</button>
         </div>
     </div>
@@ -543,31 +527,12 @@
         // EVENTO DO BOTÃO FINAL - REDIRECIONA PRESERVANDO PARÂMETROS
         // =======================================================
         
-        // Só um e-mail plausível segue adiante: ele vai para o gateway junto com a
-        // cobrança, então um valor inválido aqui vira uma transação sem contato.
-        function emailValido(valor) {
-            return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(valor);
-        }
-
+        // O e-mail é pedido só no checkout, junto da cobrança — aqui seguem
+        // apenas os dados que vieram da consulta de CPF.
         document.getElementById('continuar-final').addEventListener('click', function() {
-            const campoEmail = document.getElementById('email');
-            const erroEmail = document.getElementById('email-erro');
-            const email = campoEmail.value.trim().toLowerCase();
-
-            if (!emailValido(email)) {
-                erroEmail.classList.remove('hidden');
-                campoEmail.focus();
-                return;
-            }
-            erroEmail.classList.add('hidden');
-
-            currentUserData.email = email;
-            UserData.update({ email: email });
-
             const paramsToSend = {
                 cpf: currentUserData.cpf_limpo,
                 nome: currentUserData.nome,
-                email: email,
                 data_nascimento: currentUserData.data_nascimento
             };
 

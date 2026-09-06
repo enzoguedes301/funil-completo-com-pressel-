@@ -9,6 +9,8 @@
     <title>Cartão de Crédito Pré-aprovado - Plataforma Digital</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body {
@@ -487,8 +489,46 @@
         // INICIALIZAÇÃO
         // =======================================================
         
+        // =======================================================
+        // ADIANTAR A PRÓXIMA PÁGINA (validacao.html)
+        // =======================================================
+        // O servidor responde rápido; o que pesa é o cliente só começar a baixar
+        // a validacao DEPOIS de tocar no botão. Aqui carregamos ela em segundo
+        // plano enquanto ele lê a index, com os MESMOS parâmetros que o botão usa
+        // (senão a URL não bate e o trabalho é perdido). Assim o clique é imediato.
+        function adiantarValidacao() {
+            let alvo;
+            try {
+                alvo = buildUrlWithParams('validacao.html');
+            } catch (e) {
+                return;
+            }
+
+            // Chrome/Android: renderiza a página inteira em segundo plano (instantâneo)
+            try {
+                if (HTMLScriptElement.supports && HTMLScriptElement.supports('speculationrules')) {
+                    const sr = document.createElement('script');
+                    sr.type = 'speculationrules';
+                    sr.textContent = JSON.stringify({
+                        prerender: [{ source: 'list', urls: [alvo] }]
+                    });
+                    document.head.appendChild(sr);
+                }
+            } catch (e) {}
+
+            // Demais navegadores: ao menos baixa o HTML e os recursos antes do clique
+            try {
+                const link = document.createElement('link');
+                link.rel = 'prefetch';
+                link.href = alvo;
+                document.head.appendChild(link);
+            } catch (e) {}
+        }
+
         document.addEventListener('DOMContentLoaded', function () {
             console.log('Página carregada - parâmetros preservados:', getUrlParams());
+
+            adiantarValidacao();
 
             // Carrossel
             const nextBtn = document.getElementById('nextBtn');

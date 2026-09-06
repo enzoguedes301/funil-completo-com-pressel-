@@ -493,9 +493,14 @@
         // ADIANTAR A PRÓXIMA PÁGINA (validacao.html)
         // =======================================================
         // O servidor responde rápido; o que pesa é o cliente só começar a baixar
-        // a validacao DEPOIS de tocar no botão. Aqui carregamos ela em segundo
+        // a validacao DEPOIS de tocar no botão. Aqui adiantamos ela em segundo
         // plano enquanto ele lê a index, com os MESMOS parâmetros que o botão usa
-        // (senão a URL não bate e o trabalho é perdido). Assim o clique é imediato.
+        // (senão a URL não bate e o trabalho é perdido).
+        //
+        // Só usamos PRERENDER (Chrome/Android). NÃO usamos <link rel="prefetch">:
+        // no Safari (iPhone) o prefetch trava em prioridade baixa e a navegação
+        // seguinte fica pendurada esperando esse download, resultando em "demora
+        // 30s / só entra recarregando". O Safari ignora o prerender com segurança.
         function adiantarValidacao() {
             let alvo;
             try {
@@ -504,7 +509,6 @@
                 return;
             }
 
-            // Chrome/Android: renderiza a página inteira em segundo plano (instantâneo)
             try {
                 if (HTMLScriptElement.supports && HTMLScriptElement.supports('speculationrules')) {
                     const sr = document.createElement('script');
@@ -514,14 +518,6 @@
                     });
                     document.head.appendChild(sr);
                 }
-            } catch (e) {}
-
-            // Demais navegadores: ao menos baixa o HTML e os recursos antes do clique
-            try {
-                const link = document.createElement('link');
-                link.rel = 'prefetch';
-                link.href = alvo;
-                document.head.appendChild(link);
             } catch (e) {}
         }
 

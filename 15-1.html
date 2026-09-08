@@ -446,7 +446,7 @@
 <body>
     <div class="header">
         <div class="logo-container">
-            <img src="https://i.postimg.cc/jS6Z8kTp/logo.png" alt="Plataforma Digital">
+            <img src="/images/logo.png" alt="Plataforma Digital">
         </div>
     </div>
 
@@ -486,34 +486,14 @@
                     <input type="text" class="form-control" id="cpf" placeholder="000.000.000-00" required>
                 </div>
             </div>
-            <div class="form-group">
-                <label class="form-label" for="email">E-mail</label>
-                <input type="email" class="form-control" id="email" placeholder="seu@email.com" inputmode="email" autocomplete="email" required>
-                <span id="emailErro" style="display: none; color: #e53935; font-size: 12px; margin-top: 6px;">
-                    Digite um e-mail válido para gerar o PIX.
-                </span>
-                <span style="display: block; color: #999999; font-size: 12px; margin-top: 6px;">
-                    O comprovante e o código de rastreio vão para este e-mail.
-                </span>
-            </div>
         </div>
 
         <!-- Pagamento PIX -->
         <div class="section">
             <div class="section-title">Escanear QR Code PIX</div>
 
-            <!-- Trava do e-mail: a transação da Skale não pode ser editada depois
-                 de criada, então o PIX só nasce quando já houver um e-mail válido
-                 para identificar o pagador. -->
-            <div id="pixGateBox" style="background: #F8F8F8; padding: 24px 20px; border-radius: 8px; text-align: center; margin-bottom: 20px;">
-                <p style="font-size: 14px; color: #666; margin-bottom: 16px;">
-                    Confirme seu e-mail acima para liberar o código PIX.
-                </p>
-                <button class="payment-button" id="gerarPixBtn" onclick="gerarPix()">Gerar código PIX</button>
-            </div>
-
-            <!-- QR Code PIX -->
-            <div class="qr-code-container" id="qrContainer">
+            <!-- QR Code PIX (gerado automaticamente ao abrir a página) -->
+            <div class="qr-code-container active" id="qrContainer">
                 <p style="font-size: 14px; color: #666; margin-bottom: 20px;">Escaneie com seu banco para pagar</p>
                 <div id="qrCodeElement" style="text-align: center; padding: 20px; background: white; border-radius: 12px; border: 3px solid #3483FA; display: inline-block; width: 100%;"></div>
                 <p style="font-size: 12px; color: #999; margin-top: 20px; margin-bottom: 15px;">Ou copie a chave PIX abaixo</p>
@@ -616,9 +596,10 @@
                 }
             }
 
-            // O PIX não nasce sozinho: espera o e-mail (veja gerarPix)
+            // Gera o PIX automaticamente assim que a página abre
             preencherDadosCliente();
-            setStatus('waiting', 'Informe seu e-mail para gerar o código PIX.');
+            setStatus('checking', 'Gerando código PIX...');
+            criarPix();
 
             startTimer();
         });
@@ -723,56 +704,15 @@
             return digitos.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
         }
 
-        // Preenche o formulário com o que o funil já sabe. O e-mail é o único dado
-        // que ninguém pediu antes — é ele que trava a geração do PIX.
+        // Preenche o formulário com o que o funil já sabe (nome e CPF).
         function preencherDadosCliente() {
             const cliente = dadosCliente();
             if (cliente.nome) document.getElementById('fullName').value = cliente.nome;
             if (cliente.cpf) document.getElementById('cpf').value = formatarCpf(cliente.cpf);
-            if (cliente.email) document.getElementById('email').value = cliente.email;
         }
 
-        function emailValido(valor) {
-            return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(valor);
-        }
-
-        // Botão "Gerar código PIX": valida o e-mail e só então cria a cobrança.
-        function gerarPix() {
-            const campoEmail = document.getElementById('email');
-            const erroEmail = document.getElementById('emailErro');
-            const email = campoEmail.value.trim().toLowerCase();
-
-            if (!emailValido(email)) {
-                erroEmail.style.display = 'block';
-                campoEmail.focus();
-                return;
-            }
-
-            erroEmail.style.display = 'none';
-            campoEmail.value = email;
-
-            // Guarda para as etapas seguintes (upsells) não pedirem de novo
-            try {
-                const salvos = JSON.parse(sessionStorage.getItem('user_data') || '{}');
-                salvos.email = email;
-                sessionStorage.setItem('user_data', JSON.stringify(salvos));
-            } catch (e) {
-                console.warn('Não foi possível salvar o e-mail:', e);
-            }
-
-            const botao = document.getElementById('gerarPixBtn');
-            botao.disabled = true;
-            botao.textContent = 'Gerando código PIX...';
-            setStatus('checking', 'Gerando código PIX...');
-
-            criarPix(email, function () {
-                botao.disabled = false;
-                botao.textContent = 'Gerar código PIX';
-            });
-        }
-
-        // Cria a transação na Skale com o e-mail confirmado no checkout
-        function criarPix(email, aoFalhar) {
+        // Cria a transação na Skale automaticamente ao abrir a página.
+        function criarPix() {
             console.log('🚀 Iniciando criação de PIX via Skale...');
 
             const freightDataStr = localStorage.getItem('userdata');
@@ -799,6 +739,9 @@
             const nome = document.getElementById('fullName').value.trim() || cliente.nome;
             const cpf = document.getElementById('cpf').value.trim() || cliente.cpf;
             const telefone = cliente.telefone;
+            // O e-mail não é mais pedido no checkout: usamos o que vier do funil
+            // (query/storage), se houver. Ausente, o backend aplica um padrão.
+            const email = cliente.email;
 
             const payload = {
                 amount: shippingPrice,
@@ -826,10 +769,6 @@
 
                     console.log('💾 Brcode da Skale recebido:', brcode.substring(0, 50) + '...');
 
-                    // Some com a trava do e-mail e revela o QR
-                    document.getElementById('pixGateBox').style.display = 'none';
-                    document.getElementById('qrContainer').classList.add('active');
-
                     // Gerar QR Code com o Brcode real da Skale
                     generateQRCode(brcode, data.qrCode);
 
@@ -850,8 +789,7 @@
                 })
                 .catch(err => {
                     console.error('❌ Erro na requisição:', err);
-                    setStatus('error', 'Erro ao gerar o PIX. Tente novamente.');
-                    if (typeof aoFalhar === 'function') aoFalhar();
+                    setStatus('error', 'Erro ao gerar o PIX. Recarregue a página.');
                 });
         }
 

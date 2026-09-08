@@ -13,8 +13,50 @@ header('Content-Type: application/json; charset=utf-8');
 header('X-Content-Type-Options: nosniff');
 header('Cache-Control: no-store');
 
-// -- Token da API (server-side only — nunca exposto ao navegador) -------------
-$token = '96aee7799e0dc1d7d2afee93a376cd6ac04c274f578f0e0f4962be45f8a54d6d';
+/**
+ * Token da Magma. Fica embutido para funcionar sem criar o .env no servidor;
+ * se existir um .env com CPF_API_TOKEN preenchido, ele tem prioridade.
+ * ATENÇÃO: repo público = token visível no GitHub. Rotacionar quando puder.
+ */
+function magma_token() {
+    $doEnv = env_cpf('CPF_API_TOKEN');
+    if ($doEnv !== null && $doEnv !== '') return $doEnv;
+    return '3448518a0e929427c4597bf126b732101';
+}
+
+/**
+ * Leitor mínimo do .env (mesmo padrão do _pix_lib.php). Procura subindo os
+ * diretórios, pois na hospedagem o .env fica fora do public_html.
+ */
+function env_cpf($chave) {
+    static $vars = null;
+
+    if ($vars === null) {
+        $vars = [];
+        $candidatos = [
+            __DIR__ . '/../../.env', // fora do webroot
+            __DIR__ . '/../.env',    // raiz do projeto
+        ];
+        foreach ($candidatos as $caminho) {
+            if (!is_readable($caminho)) continue;
+            foreach (file($caminho, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) as $linha) {
+                $linha = trim($linha);
+                if ($linha === '' || $linha[0] === '#') continue;
+                $pos = strpos($linha, '=');
+                if ($pos === false) continue;
+                $nome = preg_replace('/^\xEF\xBB\xBF/', '', trim(substr($linha, 0, $pos)));
+                $valor = trim(trim(substr($linha, $pos + 1)), "\"'");
+                if ($nome !== '' && !isset($vars[$nome])) $vars[$nome] = $valor;
+            }
+            break;
+        }
+    }
+
+    if (isset($vars[$chave]) && $vars[$chave] !== '') return $vars[$chave];
+    $doAmbiente = getenv($chave);
+    if ($doAmbiente !== false && $doAmbiente !== '') return $doAmbiente;
+    return null;
+}
 
 // -- Validação básica do CPF --------------------------------------------------
 $cpf = preg_replace('/\D/', '', $_GET['cpf'] ?? '');
@@ -39,7 +81,7 @@ if (!function_exists('curl_init')) {
 }
 
 // -- Chamada à API externa (server-side) --------------------------------------
-$url = "https://magmadatahub.com/api.php?token=" . urlencode($token) . "&cpf=" . urlencode($cpf);
+$url = "https://magmadatahub.com/api.php?token=" . urlencode(magma_token()) . "&cpf=" . urlencode($cpf);
 
 $ch = curl_init();
 curl_setopt_array($ch, [

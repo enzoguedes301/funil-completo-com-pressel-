@@ -24,7 +24,9 @@ const ALLOW_MANUAL_PIX_CONFIRM = process.env.ALLOW_MANUAL_PIX_CONFIRM === '1';
 // Rate Limiting simples por IP
 const rateLimitMap = new Map();
 const RATE_LIMIT_WINDOW = 60000; // 1 minuto
-const MAX_REQUESTS_PER_WINDOW = 30; // máximo 30 requisições por minuto por IP
+// 30 estourava fácil ao navegar o funil (cada página = HTML + fontes + imagens
+// + chamadas de API). Este limite vale só no server.js local; a produção é PHP.
+const MAX_REQUESTS_PER_WINDOW = 600; // máximo por minuto por IP
 
 function checkRateLimit(ip) {
   const now = Date.now();

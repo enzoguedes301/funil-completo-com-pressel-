@@ -31,6 +31,20 @@ if (strlen($customerDocument) !== 11) {
 }
 $customerPhone = trim((string) ($entrada['customerPhone'] ?? '')) ?: '(11) 99999-9999';
 
+// Parâmetros de origem (UTMify/anúncio). Vão para o metadata da transação
+// para que o UTMify, ao ler a venda na Skale, atribua ao anúncio certo.
+// Sem isto a venda chega "órfã" e não bate com nenhuma campanha.
+$trackingPermitido = ['utm_source','utm_medium','utm_campaign','utm_content','utm_term','src','sck','fbclid','gclid','gbraid','wbraid','utmify_id'];
+$tracking = [];
+if (isset($entrada['tracking']) && is_array($entrada['tracking'])) {
+    foreach ($trackingPermitido as $chave) {
+        $valor = $entrada['tracking'][$chave] ?? null;
+        if (is_string($valor) && $valor !== '') {
+            $tracking[$chave] = substr($valor, 0, 500);
+        }
+    }
+}
+
 if ($amount <= 0 || $orderId === '') {
     responder_json(400, ['success' => false, 'erro' => 'amount e orderId são obrigatórios']);
 }
@@ -62,7 +76,7 @@ $resposta = skale_request('POST', '/transactions', [
         'tangible' => false,
     ]],
     'pix' => ['expiresInDays' => 1],
-    'metadata' => ['orderId' => $orderId, 'source' => 'web_checkout'],
+    'metadata' => array_merge(['orderId' => $orderId, 'source' => 'web_checkout'], $tracking),
 ]);
 
 $corpo = $resposta['body'];

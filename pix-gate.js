@@ -27,6 +27,29 @@ window.PixGate = (function () {
     if (typeof onPaidFallback === 'function') onPaidFallback(result);
   }
 
+  // Coleta os parâmetros de origem (UTMify/anúncio) para anexar à venda na Skale.
+  // Sem isto a transação chega no UTMify sem origem e a venda não é atribuída
+  // a nenhum anúncio. Lê da URL (o funil propaga os params página a página) e
+  // guarda no localStorage como rede de segurança, caso a query se perca.
+  function coletarUtms() {
+    var chaves = ['utm_source','utm_medium','utm_campaign','utm_content','utm_term','src','sck','fbclid','gclid','gbraid','wbraid','utmify_id'];
+    var out = {};
+    try {
+      var url = new URLSearchParams(window.location.search);
+      chaves.forEach(function (k) { var v = url.get(k); if (v) out[k] = v; });
+
+      var salvos = {};
+      try { salvos = JSON.parse(localStorage.getItem('utm_tracking') || '{}'); } catch (e) {}
+      // A URL tem prioridade; o storage completa o que faltar.
+      chaves.forEach(function (k) { if (!out[k] && salvos[k]) out[k] = salvos[k]; });
+
+      if (Object.keys(out).length) {
+        try { localStorage.setItem('utm_tracking', JSON.stringify(out)); } catch (e) {}
+      }
+    } catch (e) {}
+    return out;
+  }
+
   async function create(payload) {
     const response = await fetch('/api/createPixPayment', {
       method: 'POST',
@@ -38,7 +61,8 @@ window.PixGate = (function () {
         customerEmail: payload.customerEmail || '',
         customerDocument: payload.customerDocument || '',
         customerPhone: payload.customerPhone || '',
-        description: payload.description || 'Pagamento'
+        description: payload.description || 'Pagamento',
+        tracking: coletarUtms()
       })
     });
 

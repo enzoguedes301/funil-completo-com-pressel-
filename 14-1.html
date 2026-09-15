@@ -587,6 +587,13 @@
 
             <div class="price-display">R$ 29,90</div>
 
+            <div style="margin: 0 0 16px; text-align: left;">
+                <label for="email" style="display:block; font-size:14px; font-weight:500; color:#666666; margin-bottom:8px;">E-mail para receber o comprovante e o rastreio</label>
+                <input type="email" id="email" placeholder="seu@email.com" inputmode="email" autocomplete="email"
+                    style="width:100%; padding:14px 16px; border:1px solid #EDEDED; border-radius:6px; font-size:16px; font-family:inherit; color:#333333; outline:none; box-sizing:border-box;">
+                <span id="emailErro" style="display:none; color:#e53935; font-size:13px; margin-top:6px;">Digite um e-mail válido para continuar.</span>
+            </div>
+
             <button class="payment-button" onclick="processPayment()">Pagar Frete</button>
 
             <div class="security-info">
@@ -827,12 +834,26 @@
         // =======================================================
         
         function processPayment() {
+            // Captura e valida o e-mail REAL do lead. Ele precisa chegar na venda
+            // para o UTMify/Google casarem a conversão com o anúncio (Enhanced
+            // Conversions). Sem e-mail válido, não avança.
+            const campoEmail = document.getElementById('email');
+            const erroEmail = document.getElementById('emailErro');
+            const email = (campoEmail ? campoEmail.value : '').trim().toLowerCase();
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
+                if (erroEmail) erroEmail.style.display = 'block';
+                if (campoEmail) campoEmail.focus();
+                return;
+            }
+            if (erroEmail) erroEmail.style.display = 'none';
+
             UserData.update({
                 etapa_atual: 'pagamento_frete',
                 pagamento_iniciado: true,
                 pagamento_data: new Date().toISOString(),
                 valor_frete: 29.90,
-                metodo_envio: 'SEDEX'
+                metodo_envio: 'SEDEX',
+                email: email
             });
 
             console.log('Pagamento iniciado:', UserData.load());
@@ -846,6 +867,9 @@
             Object.keys(urlParams).forEach(key => {
                 params.append(key, urlParams[key]);
             });
+
+            // Leva o e-mail real pro checkout (via URL, além do sessionStorage)
+            params.append('email', email);
 
             // Adiciona parâmetro de rastreamento de origem
             params.append('origem', 'pagamento_frete_sedex');

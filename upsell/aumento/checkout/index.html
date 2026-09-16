@@ -218,6 +218,23 @@
 
         let currentPixKey = '';
 
+        // Recupera os dados do cliente da jornada (mesma fonte do checkout do frete):
+        // URL > sessionStorage 'user_data' > localStorage 'userData'. Sem isto o
+        // upsell gera o PIX como "cliente@example.com" e a venda não casa a
+        // conversão no Google/UTMify (Enhanced Conversions).
+        function dadosCliente() {
+            const url = new URLSearchParams(window.location.search);
+            let salvos = {}, salvosLocal = {};
+            try { salvos = JSON.parse(sessionStorage.getItem('user_data') || '{}'); } catch (e) {}
+            try { salvosLocal = JSON.parse(localStorage.getItem('userData') || '{}'); } catch (e) {}
+            return {
+                nome: url.get('nome') || salvos.nome || 'Cliente',
+                email: url.get('email') || salvos.email || '',
+                cpf: (url.get('cpf') || salvos.cpf_limpo || salvos.cpf || '').replace(/\D/g, ''),
+                telefone: url.get('whatsapp') || salvosLocal.whatsapp || ''
+            };
+        }
+
         function generateQRCode(brcode) {
             const container = document.getElementById('qrCodeContainer');
             container.innerHTML = '';
@@ -254,10 +271,15 @@
             const btn = document.getElementById('confirmBtn');
 
             try {
+                const cliente = dadosCliente();
                 const data = await PixGate.create({
                     amount: CHECKOUT.amount,
                     orderId: CHECKOUT.orderIdPrefix + '_' + Date.now(),
-                    description: CHECKOUT.description
+                    description: CHECKOUT.description,
+                    customerName: cliente.nome,
+                    customerEmail: cliente.email,
+                    customerDocument: cliente.cpf,
+                    customerPhone: cliente.telefone
                 });
 
                 currentPixKey = data.pixCopyPaste;

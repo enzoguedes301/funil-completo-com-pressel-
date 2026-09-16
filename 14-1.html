@@ -856,6 +856,15 @@
                 email: email
             });
 
+            // Persiste o e-mail no sessionStorage (rede de segurança para o
+            // checkout e para os upsells): a URL pode perder o parâmetro em
+            // algum salto da jornada, mas o sessionStorage sobrevive na aba.
+            try {
+                const _ud = JSON.parse(sessionStorage.getItem('user_data') || '{}');
+                _ud.email = email;
+                sessionStorage.setItem('user_data', JSON.stringify(_ud));
+            } catch (e) {}
+
             console.log('Pagamento iniciado:', UserData.load());
 
             // Captura os parâmetros da URL atual
